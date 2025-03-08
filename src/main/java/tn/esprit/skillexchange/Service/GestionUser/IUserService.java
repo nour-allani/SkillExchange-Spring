@@ -10,6 +10,7 @@ public interface IUserService {
     User add(User user);
     User update(User user);
     User retrieveUserById(Long id);
+    User retrieveUserByEmail(String email);
     void remove(Long id);
 
     UserDetailsService userDetailsService();

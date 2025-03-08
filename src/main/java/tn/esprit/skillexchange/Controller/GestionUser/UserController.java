@@ -40,4 +40,9 @@ public class UserController {
     public void deleteUser(@PathVariable Long id) {
         userService.remove(id);
     }
+
+    @GetMapping("/email/{email}")
+    public User getUserByEmail(@PathVariable String email) {
+        return userService.retrieveUserByEmail(email);
+    }
 }

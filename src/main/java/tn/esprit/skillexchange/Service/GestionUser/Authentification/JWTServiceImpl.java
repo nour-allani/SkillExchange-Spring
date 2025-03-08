@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
+import tn.esprit.skillexchange.Entity.GestionUser.User;
 
 import java.security.Key;
 import java.util.Date;
@@ -25,7 +26,15 @@ public class JWTServiceImpl implements IJWTService {
     private static final String SECRET_KEY = "415f442847284862B06555685660597033733567639792442264529484040551";
 
     public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+
+        if (userDetails instanceof User user) {
+            claims.put("role", user.getRole().name());
+            claims.put("name", user.getRole().name());
+        }
+
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 heures

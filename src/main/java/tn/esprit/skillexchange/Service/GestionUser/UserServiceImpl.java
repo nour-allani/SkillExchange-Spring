@@ -35,7 +35,13 @@ public class UserServiceImpl implements IUserService{
     @Override
     public User retrieveUserById(Long id) {
         return userRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Bloc not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    @Override
+    public User retrieveUserByEmail(String email) {
+        return userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Override
