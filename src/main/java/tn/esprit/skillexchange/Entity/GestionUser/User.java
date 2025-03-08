@@ -3,6 +3,7 @@ package tn.esprit.skillexchange.Entity.GestionUser;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionEvents.Events;
+import tn.esprit.skillexchange.Entity.GestionFormation.Category;
 import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
 import tn.esprit.skillexchange.Entity.GestionForumPost.Posts;
 import tn.esprit.skillexchange.Entity.GestionProduit.Product;
@@ -54,5 +55,6 @@ public class User {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private Set<Courses> courses;
 
-
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    private Set<Category> Categories ;
 }

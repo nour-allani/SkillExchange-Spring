@@ -37,4 +37,6 @@ public class Courses {
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
     private Set<ParticipationCourses> participationCourses;
 
+    @ManyToOne
+    Category category ;
 }
