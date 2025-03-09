@@ -30,6 +30,7 @@ public class Courses {
     private User author;
 
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<RatingCourse> ratingCourse;
 
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
@@ -37,6 +38,7 @@ public class Courses {
     private Set<CourseComment> courseComments;
 
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<ParticipationCourses> participationCourses;
 
     @ManyToOne

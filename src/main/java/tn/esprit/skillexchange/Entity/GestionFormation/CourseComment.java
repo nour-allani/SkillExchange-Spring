@@ -1,5 +1,6 @@
 package tn.esprit.skillexchange.Entity.GestionFormation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,6 +27,7 @@ public class CourseComment {
     private Courses course;
 
     @OneToMany(mappedBy = "courseComment",cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<EmojisCommentCourse> emojisCommentCourse;
 
 }
