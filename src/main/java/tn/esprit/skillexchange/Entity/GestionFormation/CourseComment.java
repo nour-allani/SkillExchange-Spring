@@ -16,7 +16,7 @@ import java.util.Set;
 public class CourseComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idComment;
+    private long id;
 
     private long author;
     private String content;
