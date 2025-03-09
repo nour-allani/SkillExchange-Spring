@@ -5,5 +5,6 @@ import org.springframework.stereotype.Repository;
 import tn.esprit.skillexchange.Entity.GestionForumPost.EmojiComments;
 @Repository
 
+@Repository
 public interface EmojisCommentRepo extends JpaRepository<EmojiComments,Long> {
 }
