@@ -2,6 +2,7 @@ package tn.esprit.skillexchange.Controller.GestionProduit;
 
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionProduit.ImageProduct;
 import tn.esprit.skillexchange.Service.GestionProduit.IImageProductService;
@@ -14,6 +15,7 @@ import java.util.List;
 @RequestMapping("/imageProd")
 
 public class ImageProductController {
+   @Autowired
     private IImageProductService impS;
 
     @GetMapping("/retrieve-ImageProducts")

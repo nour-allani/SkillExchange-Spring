@@ -2,6 +2,7 @@ package tn.esprit.skillexchange.Controller.GestionProduit;
 
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionProduit.Cart;
 import tn.esprit.skillexchange.Service.GestionProduit.ICartService;
@@ -12,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/cart")
 public class CartController {
+    @Autowired
     private ICartService cartS;
     @GetMapping("/retrieve-carts")
     public List<Cart> getCarts(){
