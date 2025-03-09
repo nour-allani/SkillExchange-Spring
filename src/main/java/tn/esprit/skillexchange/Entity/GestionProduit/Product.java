@@ -25,7 +25,7 @@ public class Product {
     @ManyToOne
     private User postedBy;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @ManyToMany (mappedBy = "products", cascade = CascadeType.ALL)
     private Set<Cart> cart;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
