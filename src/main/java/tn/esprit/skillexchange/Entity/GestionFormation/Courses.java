@@ -1,5 +1,6 @@
 package tn.esprit.skillexchange.Entity.GestionFormation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionEvents.ParticipationEvents;
@@ -21,7 +22,7 @@ public class Courses {
     private String image;
     private String title;
     private String description;
-    private int duration;
+    private float duration;
     private String requiredSkills;
     private String state;
 
@@ -29,12 +30,17 @@ public class Courses {
     private User author;
 
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<RatingCourse> ratingCourse;
 
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<CourseComment> courseComments;
 
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<ParticipationCourses> participationCourses;
 
+    @ManyToOne
+    Category category ;
 }

@@ -1,10 +1,11 @@
 package tn.esprit.skillexchange.Entity.GestionFormation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import tn.esprit.skillexchange.Entity.GestionUser.User;
 
-import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -13,21 +14,22 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+public class Category {
 
-public class CourseComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
-    private long author;
-    private String content;
-    private Date date;
+    private String image;
+    private String name;
+    private String description;
 
     @ManyToOne
-    private Courses course;
+    @JoinColumn(name = "user_id")
+    User user ;
 
-    @OneToMany(mappedBy = "courseComment",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<EmojisCommentCourse> emojisCommentCourse;
+    private Set<Courses> courses ;
+
 
 }

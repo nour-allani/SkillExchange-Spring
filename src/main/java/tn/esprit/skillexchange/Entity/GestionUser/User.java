@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionEvents.Events;
+import tn.esprit.skillexchange.Entity.GestionFormation.Category;
 import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
 import tn.esprit.skillexchange.Entity.GestionForumPost.Posts;
 import tn.esprit.skillexchange.Entity.GestionProduit.Product;
@@ -54,7 +55,10 @@ public class User {
     private Set<Product> products;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Courses> courses;
 
-
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Category> Categories ;
 }
