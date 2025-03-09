@@ -55,6 +55,7 @@ public class User {
     private Set<Product> products;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Courses> courses;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)

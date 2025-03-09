@@ -1,5 +1,6 @@
 package tn.esprit.skillexchange.Entity.GestionFormation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,6 +28,7 @@ public class Category {
     User user ;
 
     @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Courses> courses ;
 
 
