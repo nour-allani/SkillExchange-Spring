@@ -1,14 +1,17 @@
 package tn.esprit.skillexchange.Controller.GestionProduit;
 
 
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionProduit.ImageProduct;
 import tn.esprit.skillexchange.Service.GestionProduit.IImageProductService;
 
 import java.util.List;
 
-@RequestMapping("/imageProd")
+
 @RestController
+@AllArgsConstructor
+@RequestMapping("/imageProd")
 
 public class ImageProductController {
     private IImageProductService impS;

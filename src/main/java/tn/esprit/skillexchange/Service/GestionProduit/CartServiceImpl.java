@@ -1,6 +1,7 @@
 package tn.esprit.skillexchange.Service.GestionProduit;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.skillexchange.Entity.GestionProduit.Cart;
 import tn.esprit.skillexchange.Repository.GestionProduit.CartRepo;
@@ -9,6 +10,7 @@ import java.util.List;
  @Service
  @AllArgsConstructor
 public class CartServiceImpl implements ICartService{
+     @Autowired
     private CartRepo cartRepo;
     @Override
     public List<Cart> retrieveCarts() {

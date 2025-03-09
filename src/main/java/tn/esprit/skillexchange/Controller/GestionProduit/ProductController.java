@@ -1,5 +1,6 @@
 package tn.esprit.skillexchange.Controller.GestionProduit;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionProduit.Product;
@@ -7,8 +8,10 @@ import tn.esprit.skillexchange.Service.GestionProduit.IProductService;
 
 import java.util.List;
 
-@RequestMapping("/product")
+
 @RestController
+@AllArgsConstructor
+@RequestMapping("/product")
 
 public class ProductController {
     @Autowired

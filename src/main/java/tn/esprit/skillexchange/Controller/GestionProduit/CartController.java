@@ -7,9 +7,10 @@ import tn.esprit.skillexchange.Entity.GestionProduit.Cart;
 import tn.esprit.skillexchange.Service.GestionProduit.ICartService;
 
 import java.util.List;
-@RequestMapping("/cart")
-@RestController
 
+@RestController
+@AllArgsConstructor
+@RequestMapping("/cart")
 public class CartController {
     private ICartService cartS;
     @GetMapping("/retrieve-carts")
@@ -26,7 +27,7 @@ public class CartController {
         return cartS.addCart(c);
     }
     @DeleteMapping("/remove-cart/{cart-id}")
-    public void removeChambre(@PathVariable("cart-id") Long cartId) {
+    public void removeCart(@PathVariable("cart-id") Long cartId) {
         cartS.removeCart(cartId);
     }
     // http://localhost:8084/tpfoyer/chambre/modify-chambre

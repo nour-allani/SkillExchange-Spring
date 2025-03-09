@@ -1,13 +1,16 @@
 package tn.esprit.skillexchange.Controller.GestionProduit;
 
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionProduit.ReviewProduct;
 import tn.esprit.skillexchange.Service.GestionProduit.IReviewProductService;
 
 import java.util.List;
 
-@RequestMapping("/reviewProduct")
+
 @RestController
+@AllArgsConstructor
+@RequestMapping("/reviewProduct")
 
 public class ReviewProductController {
     private IReviewProductService revpS;
