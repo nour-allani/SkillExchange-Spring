@@ -1,5 +1,6 @@
 package tn.esprit.skillexchange.Entity.GestionFormation;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
@@ -22,6 +23,7 @@ public class Category {
     private String description;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     User user ;
 
     @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)

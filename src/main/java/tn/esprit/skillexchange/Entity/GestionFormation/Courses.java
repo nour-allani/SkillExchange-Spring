@@ -21,7 +21,7 @@ public class Courses {
     private String image;
     private String title;
     private String description;
-    private int duration;
+    private float duration;
     private String requiredSkills;
     private String state;
 
