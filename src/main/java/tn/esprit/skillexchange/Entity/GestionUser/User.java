@@ -1,5 +1,6 @@
 package tn.esprit.skillexchange.Entity.GestionUser;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionEvents.Events;
@@ -46,6 +47,7 @@ public class User {
     private Set<Posts> posts;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Events> events;
 
     @OneToMany(mappedBy = "postedBy", cascade = CascadeType.ALL)

@@ -20,7 +20,7 @@ public class ParticipationEventsController {
     }
 
     @GetMapping("/retrieveParticipationEvents/{ParticipationEvents-id}")
-    public ParticipationEvents getParticipationEventsById(@PathVariable Long id) {
+    public ParticipationEvents getParticipationEventsById(@PathVariable("ParticipationEvents-id") Long id) {
         return participationEventsService.retrieveParticipationEventsById(id);
     }
 
@@ -36,7 +36,7 @@ public class ParticipationEventsController {
 
 
     @DeleteMapping("/removeParticipationEvents/{ParticipationEvents-id}")
-    public void deleteParticipationEvents(@PathVariable Long id) {
+    public void deleteParticipationEvents(@PathVariable("ParticipationEvents-id") Long id) {
         participationEventsService.removeParticipationEvents(id);
     }
 }

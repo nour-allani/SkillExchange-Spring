@@ -23,7 +23,7 @@ public class EventsController {
     }
 
     @GetMapping("/retrieveEvents/{Event-id}")
-    public Events getEventById(@PathVariable Long id) {
+    public Events getEventById(@PathVariable("Event-id") Long id) {
         return eventsService.retrieveEventById(id);
     }
 
@@ -39,7 +39,7 @@ public class EventsController {
 
 
     @DeleteMapping("/removeEvent/{Event-id}")
-    public void deleteEvent(@PathVariable Long id) {
+    public void deleteEvent(@PathVariable("Event-id") Long id) {
         eventsService.removeEvent(id);
     }
 }

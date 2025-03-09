@@ -21,7 +21,7 @@ public class EventsCommentController {
     }
 
     @GetMapping("/retrieveEventComment/{EventComment-id}")
-    public EventComment getEventCommenttById(@PathVariable Long id) {
+    public EventComment getEventCommenttById(@PathVariable("EventComment-id") Long id) {
         return eventCommentService.retrieveEventCommentById(id);
     }
 
@@ -37,7 +37,7 @@ public class EventsCommentController {
 
 
     @DeleteMapping("/removeEventComment/{EventComment-id}")
-    public void deleteEventComment(@PathVariable Long id) {
+    public void deleteEventComment(@PathVariable("EventComment-id") Long id) {
         eventCommentService.removeEventComment(id);
     }
 }

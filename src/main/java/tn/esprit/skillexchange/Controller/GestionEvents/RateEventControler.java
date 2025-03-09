@@ -19,7 +19,7 @@ public class RateEventControler {
     }
 
     @GetMapping("/retrieveRateEvent/{RateEvent-id}")
-    public RateEvent getRateEventById(@PathVariable Long id) {
+    public RateEvent getRateEventById(@PathVariable("RateEvent-id") Long id) {
         return rateEventService.retrieveRateEventById(id);
     }
 
@@ -35,7 +35,7 @@ public class RateEventControler {
 
 
     @DeleteMapping("/removeRateEvent/{RateEvent-id}")
-    public void deleteEvent(@PathVariable Long id) {
+    public void deleteEvent(@PathVariable("RateEvent-id") Long id) {
         rateEventService.removeRateEvent(id);
     }
 }

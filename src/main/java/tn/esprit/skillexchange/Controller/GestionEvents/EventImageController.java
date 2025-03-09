@@ -22,7 +22,7 @@ public class EventImageController {
     }
 
     @GetMapping("/retrieveEventImage/{EventImage-id}")
-    public EventImage getEventImagetById(@PathVariable Long id) {
+    public EventImage getEventImagetById(@PathVariable("EventImage-id") Long id) {
         return imageService.retrieveEventImageById(id);
     }
 
@@ -38,7 +38,7 @@ public class EventImageController {
 
 
     @DeleteMapping("/removeEventImage/{EventImage-id}")
-    public void deleteEventImage(@PathVariable Long id) {
+    public void deleteEventImage(@PathVariable("EventImage-id") Long id) {
         imageService.removeEventImage(id);
     }
 }

@@ -19,6 +19,8 @@ public class EventComment {
     private Long idComment;
     private String content;
     private Date date;
+    private int idUser;
+
 
     @ManyToOne
     private Events event;
