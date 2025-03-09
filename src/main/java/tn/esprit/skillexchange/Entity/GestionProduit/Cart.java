@@ -22,6 +22,6 @@ public class Cart {
 
     private long idUser;
 
-    @ManyToOne
-    private Product product;
+    @ManyToMany(cascade=CascadeType.ALL)
+    private Set<Product> products;
 }
