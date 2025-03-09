@@ -1,6 +1,7 @@
 package tn.esprit.skillexchange.Service.GestionProduit;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.skillexchange.Entity.GestionProduit.ImageProduct;
 import tn.esprit.skillexchange.Repository.GestionProduit.ImageProductRepo;
@@ -9,7 +10,8 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class ImageProductServiceImpl implements  IImageProductService{
-ImageProductRepo impRepo;
+    @Autowired
+    ImageProductRepo impRepo;
     @Override
     public List<ImageProduct> retrieveImageProducts() {
         return impRepo.findAll();
