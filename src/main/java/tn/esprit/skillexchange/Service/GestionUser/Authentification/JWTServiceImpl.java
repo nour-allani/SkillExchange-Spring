@@ -30,7 +30,8 @@ public class JWTServiceImpl implements IJWTService {
 
         if (userDetails instanceof User user) {
             claims.put("role", user.getRole().name());
-            claims.put("name", user.getRole().name());
+            claims.put("name", user.getName());
+            claims.put("id", user.getId());
         }
 
         return Jwts.builder()
