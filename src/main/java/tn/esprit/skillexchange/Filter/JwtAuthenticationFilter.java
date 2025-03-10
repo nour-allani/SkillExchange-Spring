@@ -6,7 +6,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +17,6 @@ import tn.esprit.skillexchange.Service.GestionUser.Authentification.IJWTService;
 import tn.esprit.skillexchange.Service.GestionUser.IUserService;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 @Component
 @RequiredArgsConstructor
@@ -33,13 +31,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
 
-        if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith("Bearer ")) {  // ✅ Vérification améliorée
+        if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith("Bearer ")) {
             System.out.println("No JWT token found in request headers");
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String jwt = authHeader.substring(7);  // ✅ Extraction sécurisée
+        final String jwt = authHeader.substring(7);
         final String userEmail = jwtService.extractUserName(jwt);
 
         if (StringUtils.isNotEmpty(userEmail) && SecurityContextHolder.getContext().getAuthentication() == null) {
