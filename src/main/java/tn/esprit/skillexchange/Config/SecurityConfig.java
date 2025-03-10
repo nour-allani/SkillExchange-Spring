@@ -37,8 +37,10 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request.requestMatchers("/auth/**")
                         .permitAll()
+                        .requestMatchers("/**").permitAll()
                         .requestMatchers("/admin/**").hasAnyAuthority(Role.ADMIN.name())
-                        .requestMatchers("/**").hasAnyAuthority(Role.USER.name())
+                        .requestMatchers("/user/**").hasAnyAuthority(Role.USER.name())
+
 
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -50,8 +52,10 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+
         authenticationProvider.setUserDetailsService(userService.userDetailsService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
+
         return authenticationProvider;
     }
 
