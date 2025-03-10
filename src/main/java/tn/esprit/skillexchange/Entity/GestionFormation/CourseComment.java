@@ -1,5 +1,6 @@
 package tn.esprit.skillexchange.Entity.GestionFormation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +17,7 @@ import java.util.Set;
 public class CourseComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idComment;
+    private long id;
 
     private long author;
     private String content;
@@ -26,6 +27,7 @@ public class CourseComment {
     private Courses course;
 
     @OneToMany(mappedBy = "courseComment",cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<EmojisCommentCourse> emojisCommentCourse;
 
 }

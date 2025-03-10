@@ -13,7 +13,7 @@ import lombok.*;
 public class ImageProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idImage ;
+    private Long idImage ;
     private String Image ;
 
     @ManyToOne

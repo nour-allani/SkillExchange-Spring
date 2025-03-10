@@ -20,6 +20,8 @@ public class RateEvent {
     private Date createdAt;
     private Date updatedAt;
     private int rating;
+    private int idUser;
+
 
     @ManyToOne
     private Events event;
