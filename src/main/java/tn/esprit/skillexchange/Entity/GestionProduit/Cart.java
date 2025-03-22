@@ -1,6 +1,7 @@
 package tn.esprit.skillexchange.Entity.GestionProduit;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
@@ -23,5 +24,6 @@ public class Cart {
     private long idUser;
 
     @ManyToMany(cascade=CascadeType.ALL)
+    @JsonIgnore
     private Set<Product> products;
 }

@@ -10,5 +10,6 @@ public interface ICartService {
     public Cart addCart(Cart c);
     public void removeCart(Long CartId);
     public Cart modifyCart(Cart Cart);
+    public Cart affecterProductToCart(long cartId , long productId);
 
 }

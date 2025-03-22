@@ -38,6 +38,11 @@ public class CartController {
         return cartS.modifyCart(c);
 
     }
+    @PutMapping("/affecterProductToCart/{productId}/{cartId}")
+    @ResponseBody
+    public  void affecterProductToCart(@PathVariable("productId")long productId,@PathVariable("cartId")long cartId){
+        cartS.affecterProductToCart(productId, cartId);
+    }
 
 
 }
