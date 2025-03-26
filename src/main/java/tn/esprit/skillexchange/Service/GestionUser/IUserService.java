@@ -4,6 +4,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IUserService {
     List<User> retrieveUsers();
@@ -14,4 +15,6 @@ public interface IUserService {
     void remove(Long id);
 
     UserDetailsService userDetailsService();
+
+    User updateUserPartially(Long id, Map<String,Object> updates);
 }

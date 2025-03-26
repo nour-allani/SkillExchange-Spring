@@ -7,6 +7,7 @@ import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Service.GestionUser.IUserService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -28,7 +29,7 @@ public class UserController {
 
     @PutMapping
     public User updateUser(@RequestBody User user) {
-        return userService.update(user);
+        return userService.add(user);
     }
 
     @GetMapping("/{id}")
@@ -44,5 +45,10 @@ public class UserController {
     @GetMapping("/email/{email}")
     public User getUserByEmail(@PathVariable String email) {
         return userService.retrieveUserByEmail(email);
+    }
+
+    @PatchMapping("/{id}")
+    public User updateUserPartially(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+        return userService.updateUserPartially(id, updates);
     }
 }
