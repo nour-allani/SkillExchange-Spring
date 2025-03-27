@@ -33,6 +33,8 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
     private boolean verified;
+
+    @Column(columnDefinition = "LONGTEXT")
     private String image;
     private float balance;
     private String signature;

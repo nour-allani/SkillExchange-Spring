@@ -17,4 +17,6 @@ public interface IUserService {
     UserDetailsService userDetailsService();
 
     User updateUserPartially(Long id, Map<String,Object> updates);
+
+    User updateUserImage(Long id, String base64Image);
 }

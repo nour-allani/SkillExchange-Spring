@@ -3,9 +3,12 @@ package tn.esprit.skillexchange.Controller.GestionUser;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Service.GestionUser.IUserService;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -50,5 +53,13 @@ public class UserController {
     @PatchMapping("/{id}")
     public User updateUserPartially(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         return userService.updateUserPartially(id, updates);
+    }
+
+
+
+    @PostMapping("/{id}/image")
+    public User uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
+        String base64Image = Base64.getEncoder().encodeToString(file.getBytes());
+        return userService.updateUserImage(id, base64Image);
     }
 }
