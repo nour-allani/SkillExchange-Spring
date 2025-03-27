@@ -1,5 +1,6 @@
 package tn.esprit.skillexchange.Service.GestionUser;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -99,6 +100,14 @@ public class UserServiceImpl implements IUserService{
             }
         });
 
+        return userRepo.save(user);
+    }
+
+    @Override
+    public User updateUserImage(Long userId, String imageBase64) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+        user.setImage(imageBase64);
         return userRepo.save(user);
     }
 
