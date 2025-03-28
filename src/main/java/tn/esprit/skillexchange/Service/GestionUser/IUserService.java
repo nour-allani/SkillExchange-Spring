@@ -19,4 +19,6 @@ public interface IUserService {
     User updateUserPartially(Long id, Map<String,Object> updates);
 
     User updateUserImage(Long id, String base64Image);
+
+    void changePassword(String email, String currentPassword, String newPassword);
 }

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tn.esprit.skillexchange.Entity.GestionUser.Role;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
@@ -14,10 +15,14 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class UserServiceImpl implements IUserService{
+public class UserServiceImpl implements IUserService, UserDetailsService{
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public List<User> retrieveUsers() {
         return userRepo.findAll();
@@ -111,4 +116,19 @@ public class UserServiceImpl implements IUserService{
         return userRepo.save(user);
     }
 
+    @Override
+    public void changePassword(String email, String currentPassword, String newPassword) {
+        User user = retrieveUserByEmail(email);
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
 }
