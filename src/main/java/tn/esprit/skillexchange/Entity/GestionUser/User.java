@@ -38,6 +38,10 @@ public class User implements UserDetails {
     private String image;
     private float balance;
     private String signature;
+    private String bio;
+    private String facebook;
+    private String github;
+    private String linkedin;
 
     @OneToOne
     private Banned ban;
