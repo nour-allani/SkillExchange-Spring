@@ -100,6 +100,18 @@ public class UserServiceImpl implements IUserService, UserDetailsService{
                 case "signature":
                     user.setSignature((String) value);
                     break;
+                case "bio":
+                    user.setBio((String) value);
+                    break;
+                case "facebook":
+                    user.setFacebook((String) value);
+                    break;
+                case "github":
+                    user.setGithub((String) value);
+                    break;
+                case "linkedin":
+                    user.setLinkedin((String) value);
+                    break;
                 default:
                     break;
             }
