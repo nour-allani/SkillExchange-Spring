@@ -1,9 +1,16 @@
 package tn.esprit.skillexchange.Controller.GestionUser;
 
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.skillexchange.Entity.GestionUser.Authentication.ChangePasswordRequest;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Service.GestionUser.IUserService;
 
@@ -55,11 +62,22 @@ public class UserController {
         return userService.updateUserPartially(id, updates);
     }
 
-
-
     @PostMapping("/{id}/image")
     public User uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
         String base64Image = Base64.getEncoder().encodeToString(file.getBytes());
         return userService.updateUserImage(id, base64Image);
+    }
+
+
+    @PutMapping("/change-password")
+    public ResponseEntity<String> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        userService.changePassword(userDetails.getUsername(),
+                request.getCurrentPassword(),
+                request.getNewPassword()
+        );
+        return ResponseEntity.ok().build();
     }
 }
