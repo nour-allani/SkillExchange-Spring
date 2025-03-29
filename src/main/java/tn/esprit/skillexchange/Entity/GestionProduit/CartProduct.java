@@ -1,14 +1,10 @@
 package tn.esprit.skillexchange.Entity.GestionProduit;
 
-
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
-import tn.esprit.skillexchange.Entity.GestionUser.User;
-import tn.esprit.skillexchange.Entity.GestionProduit.CartProduct;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.io.Serializable;
 
 @Entity
 @Getter
@@ -17,18 +13,21 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString
 //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Cart {
+
+public class CartProduct {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    private int quantity;
 
-   @ManyToOne
-   @JoinColumn(name = "idUser")
-   private User user;
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
 
+    private Cart cart;
 
-   @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "product_id")
 
-    private Set<CartProduct>  cartProducts= new HashSet<>();
-
+    private Product product;
 }

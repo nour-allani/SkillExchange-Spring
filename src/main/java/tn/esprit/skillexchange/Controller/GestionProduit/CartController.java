@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
+//@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/cart")
 public class CartController {
     @Autowired
@@ -28,16 +29,23 @@ public class CartController {
     public Cart addCart(@RequestBody Cart c) {
         return cartS.addCart(c);
     }
+
     @DeleteMapping("/remove-cart/{cart-id}")
     public void removeCart(@PathVariable("cart-id") Long cartId) {
         cartS.removeCart(cartId);
     }
+
     // http://localhost:8084/tpfoyer/chambre/modify-chambre
-    @PutMapping("/modify-cart")
+    @PatchMapping("/modify-cart")
     public Cart modifyCart(@RequestBody Cart c) {
         return cartS.modifyCart(c);
 
     }
+   /* @PutMapping("/affecterProductToCart/{productId}/{cartId}")
+    @ResponseBody
+    public  void affecterProductToCart(@PathVariable("productId")long productId,@PathVariable("cartId")long cartId){
+        cartS.affecterProductToCart(productId, cartId);
+    }*/
 
 
 }
