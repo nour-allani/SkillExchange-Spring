@@ -17,7 +17,6 @@ import java.util.Set;
 public class CartServiceImpl implements ICartService{
      @Autowired
     private CartRepo cartRepo;
-     private ProductRepo productRepo;
     @Override
     public List<Cart> retrieveCarts() {
         return cartRepo.findAll();
