@@ -19,10 +19,8 @@ import java.util.Set;
 
 public class Product  {
 
-public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idProduct ;
     private long idProduct ;
     private String productName ;
     private String type ;
@@ -33,8 +31,6 @@ public class Product {
 
     private User postedBy;
 
-    @ManyToMany (mappedBy = "products", cascade = CascadeType.ALL)
-    private Set<Cart> cart;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
 

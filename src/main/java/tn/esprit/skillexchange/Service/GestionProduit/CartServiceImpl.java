@@ -17,6 +17,7 @@ import java.util.Set;
 public class CartServiceImpl implements ICartService{
      @Autowired
     private CartRepo cartRepo;
+    // private ProductRepo productRepo;
     @Override
     public List<Cart> retrieveCarts() {
         return cartRepo.findAll();
@@ -42,7 +43,7 @@ public class CartServiceImpl implements ICartService{
     public Cart modifyCart(Cart Cart) {
         return cartRepo.save(Cart);
     }
-     @Override
+    /* @Override
      public Cart affecterProductToCart(long cartId, long productId) {
          Cart c=cartRepo.findById(cartId).get();
          Product pr=productRepo.findById(productId).get();
@@ -54,5 +55,5 @@ public class CartServiceImpl implements ICartService{
          c.setProducts(productMisesAjour);
          cartRepo.save(c);
          return c;
-     }
+     }*/
  }

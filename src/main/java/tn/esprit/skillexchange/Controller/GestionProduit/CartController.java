@@ -36,17 +36,16 @@ public class CartController {
     }
 
     // http://localhost:8084/tpfoyer/chambre/modify-chambre
-    @PutMapping("/modify-cart")
     @PatchMapping("/modify-cart")
     public Cart modifyCart(@RequestBody Cart c) {
         return cartS.modifyCart(c);
 
     }
-    @PutMapping("/affecterProductToCart/{productId}/{cartId}")
+   /* @PutMapping("/affecterProductToCart/{productId}/{cartId}")
     @ResponseBody
     public  void affecterProductToCart(@PathVariable("productId")long productId,@PathVariable("cartId")long cartId){
         cartS.affecterProductToCart(productId, cartId);
-    }
+    }*/
 
 
 }

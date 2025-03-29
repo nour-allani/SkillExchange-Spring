@@ -16,6 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,11 +26,7 @@ public class Cart {
    @JoinColumn(name = "idUser")
    private User user;
 
-    private long idUser;
 
-    @ManyToMany(cascade=CascadeType.ALL)
-    @JsonIgnore
-    private Set<Product> products;
    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
 
     private Set<CartProduct>  cartProducts= new HashSet<>();
