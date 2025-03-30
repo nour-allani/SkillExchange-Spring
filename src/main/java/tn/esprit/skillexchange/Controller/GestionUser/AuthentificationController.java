@@ -3,10 +3,10 @@ package tn.esprit.skillexchange.Controller.GestionUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.skillexchange.Entity.GestionUser.Authentication.RefreshTokenRequest;
-import tn.esprit.skillexchange.Entity.GestionUser.Authentication.SignInRequest;
-import tn.esprit.skillexchange.Entity.GestionUser.Authentication.SignUpRequest;
-import tn.esprit.skillexchange.Entity.GestionUser.Authentication.jwtAuthentifactionResponse;
+import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.RefreshTokenRequest;
+import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.SignInRequest;
+import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.SignUpRequest;
+import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.jwtAuthentifactionResponse;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Service.GestionUser.Authentification.IAuthentificationService;
 

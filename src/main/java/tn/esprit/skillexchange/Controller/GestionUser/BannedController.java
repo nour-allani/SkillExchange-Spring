@@ -14,30 +14,9 @@ public class BannedController {
 
     @Autowired
     private IBannedService bannedService;
-
-
+    
     @GetMapping
     public List<Banned> getAll() {
         return bannedService.retrieveAllBanned();
-    }
-
-    @PostMapping
-    public Banned add(@RequestBody Banned banned) {
-        return bannedService.add(banned);
-    }
-
-    @PutMapping
-    public Banned update(@RequestBody Banned banned) {
-        return bannedService.update(banned);
-    }
-
-    @GetMapping("/{id}")
-    public Banned getBannedById(@PathVariable Long id) {
-        return bannedService.retrieveBannedById(id);
-    }
-
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        bannedService.remove(id);
     }
 }
