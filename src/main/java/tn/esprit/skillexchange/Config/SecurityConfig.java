@@ -38,9 +38,8 @@ public class SecurityConfig {
                         .requestMatchers("/**").permitAll()
                         .requestMatchers("/admin/**").hasAnyAuthority(Role.ADMIN.name())
                         .requestMatchers("/user/**").hasAnyAuthority(Role.USER.name())
-
-
-                        .anyRequest().authenticated())
+                        .anyRequest().authenticated()
+                )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(
                         jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class

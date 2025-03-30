@@ -1,10 +1,13 @@
 package tn.esprit.skillexchange.Service.GestionUser.Authentification;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.RefreshTokenRequest;
 import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.SignInRequest;
 import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.SignUpRequest;
@@ -26,6 +29,14 @@ public class AuthentificationServiceImpl implements IAuthentificationService {
     private final IJWTService jwtService;
 
     public User signup(SignUpRequest signUpRequest) {
+
+        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Email already registered"
+            );
+        }
+
         User user = new User();
         user.setName(signUpRequest.getName());
         user.setPassword(signUpRequest.getPassword());
@@ -38,8 +49,25 @@ public class AuthentificationServiceImpl implements IAuthentificationService {
 
 
     public jwtAuthentifactionResponse signin(SignInRequest signInRequest) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword())) ;
-        var user = userRepository.findByEmail(signInRequest.getEmail()).orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+
+        User user = userRepository.findByEmail(signInRequest.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        if (user.getBan() != null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Account is banned");
+        }
+
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            signInRequest.getEmail(),
+                            signInRequest.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+        }
+
         var jwt = jwtService.generateToken(user);
         var refreshTocken = jwtService.generateRefreshToken(new HashMap<>(),user);
 

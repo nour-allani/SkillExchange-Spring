@@ -159,7 +159,7 @@ public class UserServiceImpl implements IUserService, UserDetailsService{
         Banned ban = new Banned();
         ban.setReason(reason);
         ban.setEndDate(endDate);
-        ban.setBannedBy(userBannedBy);
+        ban.setBannedBy(bannedBy);
         ban.setUser(user);
 
         bannedRepository.save(ban);
