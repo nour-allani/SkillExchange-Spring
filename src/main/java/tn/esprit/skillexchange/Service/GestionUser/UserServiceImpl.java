@@ -145,11 +145,11 @@ public class UserServiceImpl implements IUserService, UserDetailsService{
     }
 
     @Override
-    public void banUser(Long userId, String reason, Date endDate, long bannedBy) {
+    public void banUser(Long userId, String reason, Date endDate, Long bannedBy) {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User to ban not found"));
 
-        User userBannedBy = userRepo.findById(bannedBy)
+        userRepo.findById(bannedBy)
                 .orElseThrow(() -> new EntityNotFoundException("User that will ban not found"));
 
         if (user.getBan() != null) {

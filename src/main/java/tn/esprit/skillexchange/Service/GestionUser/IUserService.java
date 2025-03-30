@@ -23,7 +23,7 @@ public interface IUserService {
 
     void changePassword(String email, String currentPassword, String newPassword);
 
-    void banUser(Long id, String reason, Date endDate, long bannedBy);
+    void banUser(Long id, String reason, Date endDate, Long bannedBy);
 
     void unbanUser(Long id);
 }
