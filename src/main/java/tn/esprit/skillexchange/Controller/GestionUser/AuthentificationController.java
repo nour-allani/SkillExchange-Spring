@@ -24,7 +24,7 @@ public class AuthentificationController {
             return ResponseEntity.ok(authentificationService.signup(signUpRequest));
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode())
-                    .body(Collections.singletonMap("error", e.getReason()));
+                    .body(Collections.singletonMap("message", e.getReason()));
         }
     }
 
@@ -35,7 +35,7 @@ public class AuthentificationController {
             return ResponseEntity.ok(authentificationService.signin(signinRequest));
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode())
-                    .body(Collections.singletonMap("error", e.getReason()));
+                    .body(Collections.singletonMap("message", e.getReason()));
         }
     }
     @PostMapping("/refresh")

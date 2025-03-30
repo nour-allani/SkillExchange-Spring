@@ -23,7 +23,7 @@ import java.util.HashMap;
 public class AuthentificationServiceImpl implements IAuthentificationService {
 
     private final UserRepo userRepository;
-    private final PasswordEncoder passwordEncoder;  // ✅ Injection correcte
+    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
     private final IJWTService jwtService;
