@@ -1,9 +1,9 @@
 package tn.esprit.skillexchange.Service.GestionUser.Authentification;
 
-import tn.esprit.skillexchange.Entity.GestionUser.Authentication.RefreshTokenRequest;
-import tn.esprit.skillexchange.Entity.GestionUser.Authentication.SignInRequest;
-import tn.esprit.skillexchange.Entity.GestionUser.Authentication.SignUpRequest;
-import tn.esprit.skillexchange.Entity.GestionUser.Authentication.jwtAuthentifactionResponse;
+import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.RefreshTokenRequest;
+import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.SignInRequest;
+import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.SignUpRequest;
+import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.jwtAuthentifactionResponse;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 
 public interface IAuthentificationService {

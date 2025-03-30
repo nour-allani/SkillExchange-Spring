@@ -1,4 +1,4 @@
-package tn.esprit.skillexchange.Entity.GestionUser.Authentication;
+package tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication;
 
 import jakarta.validation.constraints.NotBlank;
 

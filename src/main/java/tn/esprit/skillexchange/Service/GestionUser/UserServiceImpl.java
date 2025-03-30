@@ -7,10 +7,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import tn.esprit.skillexchange.Entity.GestionUser.Banned;
 import tn.esprit.skillexchange.Entity.GestionUser.Role;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
+import tn.esprit.skillexchange.Repository.GestionUser.BannedRepo;
 import tn.esprit.skillexchange.Repository.GestionUser.UserRepo;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +22,9 @@ public class UserServiceImpl implements IUserService, UserDetailsService{
 
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private BannedRepo bannedRepository;
+
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -136,6 +142,45 @@ public class UserServiceImpl implements IUserService, UserDetailsService{
         }
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepo.save(user);
+    }
+
+    @Override
+    public void banUser(Long userId, String reason, Date endDate, long bannedBy) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User to ban not found"));
+
+        User userBannedBy = userRepo.findById(bannedBy)
+                .orElseThrow(() -> new EntityNotFoundException("User that will ban not found"));
+
+        if (user.getBan() != null) {
+            throw new IllegalStateException("User is already banned");
+        }
+
+        Banned ban = new Banned();
+        ban.setReason(reason);
+        ban.setEndDate(endDate);
+        ban.setBannedBy(userBannedBy);
+        ban.setUser(user);
+
+        bannedRepository.save(ban);
+        user.setBan(ban);
+        userRepo.save(user);
+    }
+
+    @Override
+    public void unbanUser(Long userId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        if (user.getBan() == null) {
+            throw new IllegalStateException("User is not banned");
+        }
+
+        Banned ban = user.getBan();
+        user.setBan(null);
+        userRepo.save(user);
+
+        bannedRepository.delete(ban);
     }
 
     @Override

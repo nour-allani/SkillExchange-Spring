@@ -19,7 +19,9 @@ public class Banned {
     private long id;
     private String reason;
     private Date endDate;
-    private int bannedBy;
+
+    @OneToOne
+    private User bannedBy;
 
     @OneToOne
     private User user;

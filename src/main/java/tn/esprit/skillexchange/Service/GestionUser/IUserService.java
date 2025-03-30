@@ -3,6 +3,7 @@ package tn.esprit.skillexchange.Service.GestionUser;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -21,4 +22,8 @@ public interface IUserService {
     User updateUserImage(Long id, String base64Image);
 
     void changePassword(String email, String currentPassword, String newPassword);
+
+    void banUser(Long id, String reason, Date endDate, long bannedBy);
+
+    void unbanUser(Long id);
 }

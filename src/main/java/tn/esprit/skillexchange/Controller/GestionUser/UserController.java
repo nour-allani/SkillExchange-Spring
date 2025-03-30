@@ -3,19 +3,20 @@ package tn.esprit.skillexchange.Controller.GestionUser;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import tn.esprit.skillexchange.Entity.GestionUser.Authentication.ChangePasswordRequest;
+import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.ChangePasswordRequest;
+import tn.esprit.skillexchange.Entity.GestionUser.DTO.Ban.BanRequest;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Service.GestionUser.IUserService;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -68,7 +69,6 @@ public class UserController {
         return userService.updateUserImage(id, base64Image);
     }
 
-
     @PutMapping("/change-password")
     public ResponseEntity<String> changePassword(
             @Valid @RequestBody ChangePasswordRequest request,
@@ -80,4 +80,21 @@ public class UserController {
         );
         return ResponseEntity.ok().build();
     }
+
+
+    @PostMapping("/{id}/ban")
+    public ResponseEntity<?> banUser(
+            @PathVariable Long id,
+            @RequestBody BanRequest banRequest) {
+
+        userService.banUser(id, banRequest.getReason(), banRequest.getEndDate(), banRequest.getBannedBy());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/unban")
+    public ResponseEntity<?> unbanUser(@PathVariable Long id) {
+        userService.unbanUser(id);
+        return ResponseEntity.ok().build();
+    }
+
 }
