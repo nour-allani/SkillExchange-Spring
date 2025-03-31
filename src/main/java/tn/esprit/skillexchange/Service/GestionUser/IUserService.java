@@ -1,11 +1,13 @@
 package tn.esprit.skillexchange.Service.GestionUser;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
+import tn.esprit.skillexchange.Entity.GestionUser.Badge;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface IUserService {
     List<User> retrieveUsers();
@@ -26,4 +28,10 @@ public interface IUserService {
     void banUser(Long id, String reason, Date endDate, Long bannedBy);
 
     void unbanUser(Long id);
+
+    void assignBadgeToUser(Long userId, Long badgeId);
+
+    void removeBadgeFromUser(Long userId, Long badgeId);
+
+    Set<Badge> getUserBadges(Long userId);
 }
