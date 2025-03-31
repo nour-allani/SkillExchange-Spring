@@ -4,6 +4,8 @@ package tn.esprit.skillexchange.Entity.GestionUser;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -19,6 +21,6 @@ public class Badge {
     private String description;
     private String image;
 
-    @ManyToOne
-    private User user;
+    @ManyToMany
+    private Set<User> user;
 }

@@ -46,8 +46,8 @@ public class User implements UserDetails {
     @OneToOne
     private Banned ban;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<Badge> badge;
+    @ManyToMany
+    private Set<Badge> badges;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<HistoricTransactions> historicTransactions;
