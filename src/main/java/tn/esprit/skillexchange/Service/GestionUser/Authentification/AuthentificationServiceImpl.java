@@ -53,10 +53,6 @@ public class AuthentificationServiceImpl implements IAuthentificationService {
         User user = userRepository.findByEmail(signInRequest.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        if (user.getBan() != null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Account is banned");
-        }
-
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -66,6 +62,11 @@ public class AuthentificationServiceImpl implements IAuthentificationService {
             );
         } catch (BadCredentialsException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+        }
+
+
+        if (user.getBan() != null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Account is banned");
         }
 
         var jwt = jwtService.generateToken(user);

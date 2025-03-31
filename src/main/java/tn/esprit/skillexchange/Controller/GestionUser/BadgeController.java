@@ -4,9 +4,11 @@ package tn.esprit.skillexchange.Controller.GestionUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionUser.Badge;
+import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Service.GestionUser.IBadgeService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/badges")
@@ -39,5 +41,11 @@ public class BadgeController {
     @DeleteMapping("/{id}")
     public void deleteBadge(@PathVariable Long id) {
         badgeService.remove(id);
+    }
+
+
+    @PatchMapping("/{id}")
+    public Badge updateBadgePartially(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+        return badgeService.updateBadgePartially(id, updates);
     }
 }
