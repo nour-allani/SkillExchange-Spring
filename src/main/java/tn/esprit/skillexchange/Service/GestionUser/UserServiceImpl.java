@@ -7,15 +7,18 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import tn.esprit.skillexchange.Entity.GestionUser.Badge;
 import tn.esprit.skillexchange.Entity.GestionUser.Banned;
 import tn.esprit.skillexchange.Entity.GestionUser.Role;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
+import tn.esprit.skillexchange.Repository.GestionUser.BadgeRepo;
 import tn.esprit.skillexchange.Repository.GestionUser.BannedRepo;
 import tn.esprit.skillexchange.Repository.GestionUser.UserRepo;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements IUserService, UserDetailsService{
@@ -24,6 +27,8 @@ public class UserServiceImpl implements IUserService, UserDetailsService{
     private UserRepo userRepo;
     @Autowired
     private BannedRepo bannedRepository;
+    @Autowired
+    private BadgeRepo badgeRepo;
 
 
     @Autowired
@@ -181,6 +186,37 @@ public class UserServiceImpl implements IUserService, UserDetailsService{
         userRepo.save(user);
 
         bannedRepository.delete(ban);
+    }
+
+    @Override
+    public void assignBadgeToUser(Long userId, Long badgeId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        Badge badge = badgeRepo.findById(badgeId)
+                .orElseThrow(() -> new EntityNotFoundException("Badge not found"));
+
+        user.getBadges().add(badge);
+        badge.getUsers().add(user);
+        userRepo.save(user);
+    }
+
+    @Override
+    public void removeBadgeFromUser(Long userId, Long badgeId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        Badge badge = badgeRepo.findById(badgeId)
+                .orElseThrow(() -> new EntityNotFoundException("Badge not found"));
+
+        user.getBadges().remove(badge);
+        badge.getUsers().remove(user);
+        userRepo.save(user);
+    }
+
+    @Override
+    public Set<Badge> getUserBadges(Long userId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        return user.getBadges();
     }
 
     @Override

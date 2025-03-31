@@ -47,6 +47,11 @@ public class User implements UserDetails {
     private Banned ban;
 
     @ManyToMany
+    @JoinTable(
+            name = "user_badge",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "badge_id")
+    )
     private Set<Badge> badges;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

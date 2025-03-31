@@ -9,16 +9,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.skillexchange.Entity.GestionUser.Badge;
 import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.ChangePasswordRequest;
 import tn.esprit.skillexchange.Entity.GestionUser.DTO.Ban.BanRequest;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Service.GestionUser.IUserService;
 
 import java.io.IOException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/users")
@@ -95,6 +93,31 @@ public class UserController {
     public ResponseEntity<?> unbanUser(@PathVariable Long id) {
         userService.unbanUser(id);
         return ResponseEntity.ok().build();
+    }
+
+
+    @PostMapping("/{userId}/badges/{badgeId}")
+    public ResponseEntity<User> assignBadgeToUser(
+            @PathVariable Long userId,
+            @PathVariable Long badgeId
+    ) {
+        userService.assignBadgeToUser(userId, badgeId);
+        return ResponseEntity.ok().build();
+    }
+
+
+    @DeleteMapping("/{userId}/badges/{badgeId}")
+    public ResponseEntity<User> removeBadgeFromUser(
+            @PathVariable Long userId,
+            @PathVariable Long badgeId
+    ) {
+        userService.removeBadgeFromUser(userId, badgeId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{userId}/badges")
+    public ResponseEntity<Set<Badge>> getUserBadges(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.getUserBadges(userId));
     }
 
 }

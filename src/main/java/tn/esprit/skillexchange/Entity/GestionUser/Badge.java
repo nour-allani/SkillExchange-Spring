@@ -1,6 +1,7 @@
 package tn.esprit.skillexchange.Entity.GestionUser;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,6 +22,7 @@ public class Badge {
     private String description;
     private String image;
 
-    @ManyToMany
-    private Set<User> user;
+    @ManyToMany(mappedBy = "badges")
+    @JsonIgnore
+    private Set<User> users;
 }
