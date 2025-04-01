@@ -25,6 +25,8 @@ public interface IUserService {
 
     void changePassword(String email, String currentPassword, String newPassword);
 
+    void resetPassword(String email, String newPassword);
+
     void banUser(Long id, String reason, Date endDate, Long bannedBy);
 
     void unbanUser(Long id);

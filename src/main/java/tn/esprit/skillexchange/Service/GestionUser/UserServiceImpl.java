@@ -150,6 +150,13 @@ public class UserServiceImpl implements IUserService, UserDetailsService{
     }
 
     @Override
+    public void resetPassword(String email, String newPassword) {
+        User user = retrieveUserByEmail(email);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
+    }
+
+    @Override
     public void banUser(Long userId, String reason, Date endDate, Long bannedBy) {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User to ban not found"));
