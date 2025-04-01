@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.skillexchange.Entity.GestionUser.Badge;
 import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.ChangePasswordRequest;
+import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.ResetPasswordRequest;
 import tn.esprit.skillexchange.Entity.GestionUser.DTO.Ban.BanRequest;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Service.GestionUser.IUserService;
@@ -74,6 +75,18 @@ public class UserController {
     ) {
         userService.changePassword(userDetails.getUsername(),
                 request.getCurrentPassword(),
+                request.getNewPassword()
+        );
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PutMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(
+            @RequestBody ResetPasswordRequest request
+    ) {
+        userService.resetPassword(
+                request.getEmail(),
                 request.getNewPassword()
         );
         return ResponseEntity.ok().build();

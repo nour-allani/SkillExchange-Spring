@@ -37,7 +37,7 @@ public class User implements UserDetails {
     @Column(columnDefinition = "LONGTEXT")
     private String image;
     private float balance;
-    
+
     @Column(columnDefinition = "LONGTEXT")
     private String signature;
     private String bio;
