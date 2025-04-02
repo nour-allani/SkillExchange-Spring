@@ -15,7 +15,7 @@ import java.util.Date;
 public class RateEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idEvent;
+    private Long idRate;
     private String content;
     private Date createdAt;
     private Date updatedAt;
