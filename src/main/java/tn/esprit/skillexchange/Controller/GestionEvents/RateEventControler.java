@@ -13,7 +13,7 @@ public class RateEventControler {
     private IRateEventService rateEventService;
 
 
-    @RequestMapping("/retrieve-RateEvents")
+    @GetMapping("/retrieve-RateEvents")
     public List<RateEvent> getAllRateEvents() {
         return rateEventService.retrieveRateEvent();
     }
@@ -28,7 +28,7 @@ public class RateEventControler {
         return rateEventService.addRateEvent(rateEvent);
     }
 
-    @PutMapping("/modify-RateEvent")
+    @PatchMapping("/modify-RateEvent")
     public RateEvent updatRateEvent(@RequestBody RateEvent rateEvent) {
         return rateEventService.updateRateEvent(rateEvent);
     }

@@ -14,7 +14,7 @@ public class ParticipationEventsController {
     private IParticipationEventsService  participationEventsService;
 
 
-    @RequestMapping("/retrieve-ParticipationEvents")
+    @GetMapping("/retrieve-ParticipationEvents")
     public List<ParticipationEvents> getAllParticipationEvents() {
         return participationEventsService.retrieveParticipationEvents();
     }
@@ -29,7 +29,7 @@ public class ParticipationEventsController {
         return participationEventsService.addParticipationEvents(participationEvents);
     }
 
-    @PutMapping("/modify-ParticipationEvents")
+    @PatchMapping("/modify-ParticipationEvents")
     public ParticipationEvents updatParticipationEvents(@RequestBody ParticipationEvents participationEvents) {
         return participationEventsService.updateParticipationEvents(participationEvents);
     }
