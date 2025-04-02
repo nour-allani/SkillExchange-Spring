@@ -1,5 +1,6 @@
 package tn.esprit.skillexchange.Entity.GestionUser;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,8 +20,10 @@ public class Banned {
     private long id;
     private String reason;
     private Date endDate;
-    private int bannedBy;
+
+    private long bannedBy;
 
     @OneToOne
+    @JsonIgnore
     private User user;
 }
