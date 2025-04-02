@@ -45,7 +45,7 @@ public class User implements UserDetails {
     private String github;
     private String linkedin;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Banned ban;
 
     @ManyToMany
