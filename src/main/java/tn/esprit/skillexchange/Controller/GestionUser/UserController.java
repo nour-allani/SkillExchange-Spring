@@ -13,6 +13,7 @@ import tn.esprit.skillexchange.Entity.GestionUser.Badge;
 import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.ChangePasswordRequest;
 import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.ResetPasswordRequest;
 import tn.esprit.skillexchange.Entity.GestionUser.DTO.Ban.BanRequest;
+import tn.esprit.skillexchange.Entity.GestionUser.HistoricTransactions;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Service.GestionUser.IUserService;
 
@@ -131,6 +132,20 @@ public class UserController {
     @GetMapping("/{userId}/badges")
     public ResponseEntity<Set<Badge>> getUserBadges(@PathVariable Long userId) {
         return ResponseEntity.ok(userService.getUserBadges(userId));
+    }
+
+    @PostMapping("/{userId}/transactions")
+    public ResponseEntity<HistoricTransactions> addTransaction(
+            @PathVariable Long userId,
+            @RequestBody HistoricTransactions transaction) {
+        HistoricTransactions savedTransaction = userService.addTransactionToUser(userId, transaction);
+        return ResponseEntity.ok(savedTransaction);
+    }
+
+    @GetMapping("/{userId}/transactions")
+    public ResponseEntity<List<HistoricTransactions>> getUserTransactions(@PathVariable Long userId) {
+        List<HistoricTransactions> transactions = userService.getUserTransactions(userId);
+        return ResponseEntity.ok(transactions);
     }
 
 }
