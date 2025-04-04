@@ -29,11 +29,13 @@ public class Product  {
 
     @ManyToOne
 
+
     private User postedBy;
 
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
 
+    @JsonIgnoreProperties("product")
 
     private Set<CartProduct> cartProducts= new HashSet<>();
 

@@ -36,4 +36,10 @@ public class ReviewProductServiceImpl implements  IReviewProductService{
     public ReviewProduct modifyReviewProduct(ReviewProduct ReviewProduct) {
         return rpRepo.save(ReviewProduct);
     }
+
+    @Override
+    public List<ReviewProduct> retrieveReviewsProductById(Long productId) {
+        return rpRepo.findByProduct_IdProduct(productId);
+    }
+
 }
