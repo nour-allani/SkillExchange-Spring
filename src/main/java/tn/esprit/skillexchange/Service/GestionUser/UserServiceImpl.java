@@ -252,4 +252,12 @@ public class UserServiceImpl implements IUserService, UserDetailsService{
     public List<HistoricTransactions> getUserTransactions(Long userId) {
         return historicTransictionRepo.findByUser_IdOrderByDateDesc(userId);
     }
+
+    @Override
+    public void changeUserStatus(String email, UserStatus status) {
+        User user = retrieveUserByEmail(email);
+
+        user.setStatus(status);
+        userRepo.save(user);
+    }
 }
