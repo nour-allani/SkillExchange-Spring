@@ -1,6 +1,7 @@
 package tn.esprit.skillexchange.Service.GestionProduit;
 
 import tn.esprit.skillexchange.Entity.GestionProduit.Product;
+import tn.esprit.skillexchange.Entity.GestionProduit.ReviewProduct;
 
 import java.util.List;
 
@@ -10,4 +11,5 @@ public interface IProductService {
     public Product addProduct(Product p);
     public void removeProduct(Long ProductId);
     public Product modifyProduct(Product Product);
+    public ReviewProduct addReviewToProduct(Long productId, ReviewProduct review);
 }

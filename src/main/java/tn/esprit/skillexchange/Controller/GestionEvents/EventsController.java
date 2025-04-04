@@ -17,7 +17,7 @@ public class EventsController {
     private IEventsService eventsService;
 
 
-    @RequestMapping("/retrieve-Events")
+    @GetMapping("/retrieve-Events")
     public List<Events> getAllEvents() {
         return eventsService.retrieveEvents();
     }
@@ -32,7 +32,7 @@ public class EventsController {
         return eventsService.addEvent(events);
     }
 
-    @PutMapping("/modify-Event")
+    @PatchMapping("/modify-Event")
     public Events updatEvent(@RequestBody Events events) {
         return eventsService.updateEvent(events);
     }

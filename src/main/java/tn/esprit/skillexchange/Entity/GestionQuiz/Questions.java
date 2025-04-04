@@ -1,5 +1,6 @@
 package tn.esprit.skillexchange.Entity.GestionQuiz;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +24,7 @@ public class Questions {
     private String option4;
 
     @ManyToOne
+    @JsonIgnore
     private Quiz quiz;
 
 
