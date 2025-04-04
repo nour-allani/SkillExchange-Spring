@@ -22,6 +22,8 @@ public class Reclamations {
     private Date date;
     private Long idUser;
     private String reponse;
+    
+    @Column(columnDefinition = "LONGTEXT")
     private String image;
     private String title;
 
