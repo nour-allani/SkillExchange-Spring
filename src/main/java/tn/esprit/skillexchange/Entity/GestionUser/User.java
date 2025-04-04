@@ -45,6 +45,9 @@ public class User implements UserDetails {
     private String github;
     private String linkedin;
 
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
+
     @OneToOne(cascade = CascadeType.ALL)
     private Banned ban;
 
