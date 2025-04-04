@@ -50,7 +50,11 @@ public class CartProductServiceImpl implements  ICartProductService{
             // Vérifier si le produit est déjà présent dans le panier
             CartProduct existingCartProduct = cartProductRepo.findByCartAndProduct(cart, product);
             if (existingCartProduct != null) {
-                existingCartProduct.setQuantity(existingCartProduct.getQuantity() + quantity);
+               // existingCartProduct.setQuantity(existingCartProduct.getQuantity() + quantity);
+                int newQuantity = existingCartProduct.getQuantity() + quantity;
+                existingCartProduct.setQuantity(newQuantity);
+                // Décrémenter le stock du produit
+                product.setStock(product.getStock() - quantity);
                 return cartProductRepo.save(existingCartProduct);
             }
             // Sinon, créer une nouvelle entrée dans le panier
@@ -58,25 +62,61 @@ public class CartProductServiceImpl implements  ICartProductService{
             cp.setCart(cart);
             cp.setProduct(product);
             cp.setQuantity(quantity);
+            product.setStock(product.getStock() - quantity);
             return cartProductRepo.save(cp);
         }
 
-
-
     @Override
-    public void removeCartProduct(Long cartpId) {
-  cartProductRepo.deleteById(cartpId);
+    public List<CartProduct> getProductsInCart(Long cartId) {
+        return cartProductRepo.findByCartId(cartId);
     }
 
+    /*@Override
+    public void removeCartProduct(Long cartpId) {
+  cartProductRepo.deleteById(cartpId);
+    }*/
     @Override
+    public void removeCartProduct(Long cartPId) {
+        CartProduct cartProduct = cartProductRepo.findById(cartPId).orElse(null);
+        if (cartProduct == null) {
+            return;
+        }
+
+        Product product = cartProduct.getProduct();
+
+        // 🔹 Restaurer le stock du produit supprimé
+        product.setStock(product.getStock() + cartProduct.getQuantity());
+        productRepo.save(product); // Mettre à jour le stock dans la base
+
+        // 🔹 Supprimer le produit du panier
+        cartProductRepo.delete(cartProduct);
+    }
+
+   /* @Override
     public void clearCart(Long cartId) {
         List<CartProduct> cartProducts = cartProductRepo.findByCartId(cartId);
         if (!cartProducts.isEmpty()) { // Vérifie s'il y a des produits avant de supprimer
             cartProductRepo.deleteAll(cartProducts);
         }
-    }
+    }*/
+   @Override
+   public void clearCart(Long cartId) {
+       List<CartProduct> cartProducts = cartProductRepo.findByCartId(cartId);
+       if (!cartProducts.isEmpty()) {
+           for (CartProduct cartProduct : cartProducts) {
+               Product product = cartProduct.getProduct();
 
-    @Override
+               // 🔹 Restaurer le stock sans dépasser le stock initial
+               product.setStock(product.getStock() + cartProduct.getQuantity());
+
+               productRepo.save(product);
+           }
+           cartProductRepo.deleteAll(cartProducts);
+       }
+   }
+
+
+    /*@Override
     public CartProduct modifyCartProduct(Long cartPId, int newQuantity) {
         // Vérifier si le CartProduct existe
         CartProduct cartProduct = cartProductRepo.findById(cartPId).orElse(null);
@@ -102,5 +142,39 @@ public class CartProductServiceImpl implements  ICartProductService{
         cartProduct.setQuantity(newQuantity);
 
         return cartProductRepo.save(cartProduct);
+    }*/
+    @Override
+    public CartProduct modifyCartProduct(Long cartPId, int newQuantity) {
+        CartProduct cartProduct = cartProductRepo.findById(cartPId).orElse(null);
+        if (cartProduct == null) {
+            return null;
+        }
+
+        Product product = cartProduct.getProduct();
+        int oldQuantity = cartProduct.getQuantity();  // Quantité avant modification
+
+        // 🔹 Si suppression du produit, restaurer tout le stock pris
+        if (newQuantity <= 0) {
+            product.setStock(product.getStock() + oldQuantity);
+            productRepo.save(product);
+            cartProductRepo.delete(cartProduct);
+            return null;
+        }
+
+        int difference = newQuantity - oldQuantity;  // 🔄 Différence entre ancienne et nouvelle quantité
+
+        // 🔸 Vérifier que la nouvelle quantité demandée est possible
+        if (difference > product.getStock()) {
+            return null; // Pas assez de stock pour augmenter
+        }
+
+        // 🔹 Mettre à jour le stock et sauvegarder
+        product.setStock(product.getStock() - difference);
+        productRepo.save(product);
+
+        // 🔹 Mettre à jour la quantité du produit dans le panier
+        cartProduct.setQuantity(newQuantity);
+        return cartProductRepo.save(cartProduct);
     }
+
 }
