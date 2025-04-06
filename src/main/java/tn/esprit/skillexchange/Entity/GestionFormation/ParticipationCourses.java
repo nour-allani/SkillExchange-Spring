@@ -13,7 +13,7 @@ import tn.esprit.skillexchange.Entity.GestionQuiz.Quiz;
 public class ParticipationCourses {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idp;
+    private int id;
     private int progress;
 
     private int participant;

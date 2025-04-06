@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 
+import java.sql.Date;
 import java.util.Set;
 
 @Entity
@@ -21,7 +22,9 @@ public class Category {
     private long id;
     private String image;
     private String name;
+    private int status;
     private String description;
+    private Date date_ajout ;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

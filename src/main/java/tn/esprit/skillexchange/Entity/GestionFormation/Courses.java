@@ -6,6 +6,7 @@ import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionEvents.ParticipationEvents;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -18,13 +19,14 @@ import java.util.Set;
 public class Courses {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idCourse;
+    private int id;
     private String image;
     private String title;
     private String description;
     private float duration;
     private String requiredSkills;
-    private String state;
+    private int state;
+    private Date date_ajout ;
 
     @ManyToOne
     private User author;

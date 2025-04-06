@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
 import tn.esprit.skillexchange.Repository.GestionFormation.CourseRepo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -26,6 +27,7 @@ public class FormationServiceImpl implements FormationService {
 
     @Override
     public Courses addCourse(Courses c) {
+        c.setDate_ajout(java.sql.Date.valueOf(LocalDate.now()));
         return courseRepo.save(c);
     }
 

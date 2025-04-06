@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionFormation.Category;
 import tn.esprit.skillexchange.Service.GestionFormation.CategoryService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -32,6 +33,7 @@ public class CategoryRestController {
     @PostMapping("/add-category")
     public Category addCategory(@RequestBody Category g) {
         Category category = categoryService.addCategory(g);
+        category.setDate_ajout(java.sql.Date.valueOf(LocalDate.now()));
         return category;
     }
 
