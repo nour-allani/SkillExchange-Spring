@@ -69,20 +69,15 @@ public class ReviewProductController {
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ReviewProduct> modifyReviewProduct(@PathVariable("id") Long id, @RequestBody ReviewProduct reviewProduct) {
-        // Ajouter une vérification de l'ID dans le service
-        reviewProduct.setIdReview(id);  // Mettre à jour l'ID de la revue pour correspondre à celui de l'URL
+    public ReviewProduct modifyReviewProduct(@PathVariable("id") Long id, @RequestBody ReviewProduct reviewProduct) {
+        reviewProduct.setIdReview(id);
 
         ReviewProduct updatedReview = revpS.modifyReviewProduct(reviewProduct);
 
-        if (updatedReview == null) {
-            // Si la revue n'existe pas, retour d'une réponse NOT_FOUND
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-
-        // Retourner la revue mise à jour avec un statut 200 OK
-        return ResponseEntity.ok(updatedReview);
+   
+        return updatedReview;
     }
+
 
 
 
