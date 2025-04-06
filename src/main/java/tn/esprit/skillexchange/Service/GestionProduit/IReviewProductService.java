@@ -14,4 +14,6 @@ public interface IReviewProductService {
     public ReviewProduct modifyReviewProduct(ReviewProduct ReviewProduct);
 
     List<ReviewProduct> retrieveReviewsProductById(Long productId);
+
+
 }
