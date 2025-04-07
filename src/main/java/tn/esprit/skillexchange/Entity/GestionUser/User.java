@@ -73,6 +73,7 @@ public class User implements UserDetails {
     private Set<Events> events;
 
     @OneToMany(mappedBy = "postedBy", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Product> products;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
