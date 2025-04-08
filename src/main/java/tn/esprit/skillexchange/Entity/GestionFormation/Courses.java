@@ -6,6 +6,7 @@ import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionEvents.ParticipationEvents;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -18,15 +19,20 @@ import java.util.Set;
 public class Courses {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idCourse;
-    private String image;
+    private int id;
+    @Lob
+    private byte[] image;
+    private String imageType;
     private String title;
     private String description;
     private float duration;
     private String requiredSkills;
-    private String state;
+    private int state;
+    private Date date_ajout ;
+    private float price;
 
     @ManyToOne
+    @JoinColumn(name = "author_id")
     private User author;
 
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
