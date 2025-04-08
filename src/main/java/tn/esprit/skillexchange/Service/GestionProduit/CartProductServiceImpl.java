@@ -31,7 +31,7 @@ public class CartProductServiceImpl implements  ICartProductService{
     }
 
 
-        @Override
+       /* @Override
         public CartProduct addProductToCart(Long cartId, Long productId, int quantity) {
             // Récupérer le panier et le produit sans utiliser d'exception
             Cart cart = cartRepo.findById(cartId).orElse(null);
@@ -65,6 +65,33 @@ public class CartProductServiceImpl implements  ICartProductService{
             product.setStock(product.getStock() - quantity);
             return cartProductRepo.save(cp);
         }
+*/
+       @Override
+       public CartProduct addProductToCart(Long cartId, Long productId, int quantity) {
+           Cart cart = cartRepo.findById(cartId).orElse(null);
+           if (cart == null) return null;
+
+           Product product = productRepo.findById(productId).orElse(null);
+           if (product == null) return null;
+
+           // Optionnel : vérifier que le stock est suffisant au moment de l'ajout au panier
+           if (product.getStock() < quantity) {
+               return null;
+           }
+
+           CartProduct existingCartProduct = cartProductRepo.findByCartAndProduct(cart, product);
+           if (existingCartProduct != null) {
+               int newQuantity = existingCartProduct.getQuantity() + quantity;
+               existingCartProduct.setQuantity(newQuantity);
+               return cartProductRepo.save(existingCartProduct);
+           }
+
+           CartProduct cp = new CartProduct();
+           cp.setCart(cart);
+           cp.setProduct(product);
+           cp.setQuantity(quantity);
+           return cartProductRepo.save(cp);
+       }
 
     @Override
     public List<CartProduct> getProductsInCart(Long cartId) {
@@ -85,8 +112,8 @@ public class CartProductServiceImpl implements  ICartProductService{
         Product product = cartProduct.getProduct();
 
         // 🔹 Restaurer le stock du produit supprimé
-        product.setStock(product.getStock() + cartProduct.getQuantity());
-        productRepo.save(product); // Mettre à jour le stock dans la base
+     /*   product.setStock(product.getStock() + cartProduct.getQuantity());
+        productRepo.save(product); */ // Mettre à jour le stock dans la base
 
         // 🔹 Supprimer le produit du panier
         cartProductRepo.delete(cartProduct);
@@ -107,7 +134,7 @@ public class CartProductServiceImpl implements  ICartProductService{
                Product product = cartProduct.getProduct();
 
                // 🔹 Restaurer le stock sans dépasser le stock initial
-               product.setStock(product.getStock() + cartProduct.getQuantity());
+              // product.setStock(product.getStock() + cartProduct.getQuantity());
 
                productRepo.save(product);
            }

@@ -8,5 +8,8 @@ import java.util.List;
 
 @Repository
 public interface ReviewProductRepo extends JpaRepository<ReviewProduct,Long> {
-    List<ReviewProduct> findByProduct_IdProduct(Long productId);
+
+    public List<ReviewProduct> findByProduct_IdProduct(Long idProduct);
+
+
 }

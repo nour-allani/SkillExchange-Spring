@@ -58,12 +58,7 @@ public class CartProductController {
         }
     }
 
-   /* @PatchMapping("/update/{cartPId}")
-    public CartProduct updateCartProduct(@PathVariable("cartPId") Long cartPId,
-                                         @RequestParam("quantity") int quantity) {
 
-        return cartpS.modifyCartProduct(cartPId, quantity);
-    }*/
    @PatchMapping("/update/{cartPId}")
    public ResponseEntity<?> updateCartProduct(@PathVariable("cartPId") Long cartPId,
                                               @RequestParam("quantity") int quantity) {
