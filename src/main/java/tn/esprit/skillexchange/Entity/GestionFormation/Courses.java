@@ -20,15 +20,19 @@ public class Courses {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String image;
+    @Lob
+    private byte[] image;
+    private String imageType;
     private String title;
     private String description;
     private float duration;
     private String requiredSkills;
     private int state;
     private Date date_ajout ;
+    private float price;
 
     @ManyToOne
+    @JoinColumn(name = "author_id")
     private User author;
 
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)

@@ -40,4 +40,9 @@ public class FormationServiceImpl implements FormationService {
     public Courses modifyCourse(Courses course) {
         return courseRepo.save(course);
     }
+
+    @Override
+    public List<Courses> getCoursesByUserId(int id) {
+        return courseRepo.getCoursesByUserId(id) ;
+    }
 }

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.skillexchange.Entity.GestionFormation.Category;
+import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
 import tn.esprit.skillexchange.Repository.GestionFormation.CategoryRepo;
 
 import java.time.LocalDate;
@@ -31,6 +32,11 @@ public class CategoryServiceImpl implements CategoryService {
         g.setDate_ajout(java.sql.Date.valueOf(LocalDate.now()));
 
         return catRepo.save(g);
+    }
+
+    @Override
+    public List<Courses> getCoursesByCategorieId(int id) {
+        return catRepo.findCoursesByCategorieId(id);
     }
 
     @Override

@@ -20,7 +20,9 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String image;
+    @Lob
+    private byte[] image;
+    private String imageType;
     private String name;
     private int status;
     private String description;

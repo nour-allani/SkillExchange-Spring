@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionFormation.Category;
+import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
 import tn.esprit.skillexchange.Service.GestionFormation.CategoryService;
 
 import java.time.LocalDate;
@@ -23,6 +24,12 @@ public class CategoryRestController {
         List<Category> listCategories = categoryService.retrieveAllCategories();
         return listCategories;
     }
+    @PostMapping("findById/")
+    public List<Courses> getCoursesByCategorie(@RequestBody  int id) {
+        //TODO: process POST request
+        System.out.println("test takwa"+ id );
+        return categoryService.getCoursesByCategorieId(id) ;	}
+
 
     @GetMapping("/retrieve-category/{category-id}")
     public Category retrieveCategory(@PathVariable("category-id") Long catId) {

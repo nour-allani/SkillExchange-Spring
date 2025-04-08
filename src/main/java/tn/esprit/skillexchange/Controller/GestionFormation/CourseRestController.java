@@ -49,4 +49,10 @@ public class CourseRestController {
         return course;
     }
 
+    @PostMapping("findById/")
+    public List<Courses> getCoursesByUserId(@RequestBody  int id) {
+        System.out.println("test user"+ id );
+        return courseService.getCoursesByUserId(id) ;	}
+
+
 }
