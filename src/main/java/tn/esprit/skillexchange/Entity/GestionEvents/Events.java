@@ -1,5 +1,9 @@
 package tn.esprit.skillexchange.Entity.GestionEvents;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionForumPost.EmojiComments;
@@ -25,11 +29,13 @@ public class Events {
     private Date endDate;
     private String place;
     private int nbr_max;
-    private Status status;
+
     @ManyToOne
+    @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "event",cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Set<ParticipationEvents> participationEvents;
 
     @OneToMany(mappedBy = "event",cascade = CascadeType.ALL)
@@ -42,3 +48,5 @@ public class Events {
     private Set<EventImage> images;
 
 }
+
+

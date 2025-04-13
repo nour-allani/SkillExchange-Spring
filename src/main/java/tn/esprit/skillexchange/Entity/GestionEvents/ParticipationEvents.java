@@ -1,5 +1,6 @@
 package tn.esprit.skillexchange.Entity.GestionEvents;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +18,7 @@ public class ParticipationEvents {
     @Enumerated(EnumType.STRING)
     private Status status;
     @ManyToOne
+    @JsonBackReference
     private Events event;
 
 }
