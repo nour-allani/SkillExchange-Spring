@@ -1,5 +1,6 @@
 package tn.esprit.skillexchange.Entity.GestionForumPost;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,8 +21,10 @@ public class CommentPost {
     private String content ;
     private Date createdAt ;
     private Date updatedAt ;
-
+    private String email;
     @ManyToOne
+    @JoinColumn(name = "post_id_post")
+    @JsonIgnore
     private Posts post;
 
     @OneToMany(mappedBy = "commentPost",cascade = CascadeType.ALL)

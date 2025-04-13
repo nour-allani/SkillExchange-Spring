@@ -5,14 +5,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tn.esprit.skillexchange.Entity.GestionForumPost.CommentPost;
 import tn.esprit.skillexchange.Repository.GestionForumPost.CommentPostRepo;
+import tn.esprit.skillexchange.Repository.GestionForumPost.PostsRepo;
 
 import java.util.List;
 
 @Service
 @AllArgsConstructor
 @Slf4j
-public class CommentPostServiceImpl implements ICommentPostService{
-    CommentPostRepo comPost;
+public class CommentPostServiceImpl implements ICommentPostService {
+
+    private final CommentPostRepo comPost;
+    private final PostsRepo post;
+
     @Override
     public List<CommentPost> retrieveCommentPosts() {
         return comPost.findAll();
@@ -29,13 +33,12 @@ public class CommentPostServiceImpl implements ICommentPostService{
     }
 
     @Override
-    public CommentPost retrieveCommentPostById(Long id) {
-        return comPost.findById(id).get();
+    public List<CommentPost> retrieveCommentPostsByPostId(Long postId) {
+        return comPost.findByPostIdPost(postId);
     }
 
     @Override
     public void remove(Long id) {
         comPost.deleteById(id);
-
     }
 }
