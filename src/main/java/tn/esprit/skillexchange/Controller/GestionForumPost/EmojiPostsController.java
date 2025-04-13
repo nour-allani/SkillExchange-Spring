@@ -10,7 +10,7 @@ import tn.esprit.skillexchange.Service.GestionForumPost.IEmojiPostsService;
 import java.util.Map;
 
 
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/emojiPosts")
 @AllArgsConstructor

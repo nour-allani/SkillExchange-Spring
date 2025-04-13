@@ -84,7 +84,7 @@ public class PostsController {
     }
 
     @PostMapping("/react")
-    @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+    //@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
     public EmojiPosts reactToPost(@RequestBody EmojiReactionDTO reactionDTO) {
         return emojiPostsService.reactToPost(reactionDTO.postId, reactionDTO.email, reactionDTO.emoji);
     }
