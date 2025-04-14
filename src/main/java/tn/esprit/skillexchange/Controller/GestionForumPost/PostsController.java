@@ -11,13 +11,16 @@ import tn.esprit.skillexchange.Entity.GestionForumPost.EmojiPosts;
 import tn.esprit.skillexchange.Entity.GestionForumPost.ImagePost;
 import tn.esprit.skillexchange.Entity.GestionForumPost.Posts;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
+import tn.esprit.skillexchange.Repository.GestionForumPost.EmojiPostsRepo;
 import tn.esprit.skillexchange.Repository.GestionUser.UserRepo;
 import tn.esprit.skillexchange.Service.GestionForumPost.IEmojiPostsService;
 import tn.esprit.skillexchange.Service.GestionForumPost.IPostsService;
 
 import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/posts")
@@ -82,12 +85,15 @@ public class PostsController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404 Not Found
         }
     }
+    @Autowired
+private EmojiPostsRepo emojiPostsRepository;
 
     @PostMapping("/react")
-    //@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+
     public EmojiPosts reactToPost(@RequestBody EmojiReactionDTO reactionDTO) {
         return emojiPostsService.reactToPost(reactionDTO.postId, reactionDTO.email, reactionDTO.emoji);
     }
+
 
 
 }

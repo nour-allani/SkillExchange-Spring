@@ -26,6 +26,11 @@ public class EmojiPostsServiceImpl implements IEmojiPostsService {
     private final PostsRepo postR;
     private final UserRepo UserR;
 
+    // Récupérer les utilisateurs ayant réagi avec un emoji spécifique pour un post donné
+    public List<User> getUsersByEmojiAndPostId(Long postId, Emojis emoji) {
+        return emoPost.findUsersByEmojiAndPostId(postId, emoji);
+    }
+
 
     @Override
     public List<EmojiPosts> retrieveEmojiPostss() {
@@ -87,4 +92,20 @@ public class EmojiPostsServiceImpl implements IEmojiPostsService {
             return emoPost.save(reaction);
         }
     }
+    @Override
+    public boolean hasUserReactedWithEmoji(Long postId, String email, Emojis emoji) {
+        EmojiPosts existingReaction = emoPost.findByUserAndPost(email, postId);
+        return existingReaction != null && existingReaction.getEmoji().equals(emoji);
+    }
+    @Override
+    public void removeReaction(Long postId, String email, Emojis emoji) {
+        EmojiPosts existingReaction = emoPost.findByUserAndPost(email, postId);
+
+        if (existingReaction != null && existingReaction.getEmoji().equals(emoji)) {
+            emoPost.delete(existingReaction);  // Supprimer la réaction existante
+        } else {
+            throw new RuntimeException("Réaction non trouvée à supprimer.");
+        }
+    }
+
 }
