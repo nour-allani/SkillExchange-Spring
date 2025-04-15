@@ -13,4 +13,11 @@ import java.util.List;
 public interface CategoryRepo extends JpaRepository<Category,Long> {
     @Query("SELECT c FROM Courses c WHERE c.category.id =:id")
     List<Courses> findCoursesByCategorieId(@Param("id") int id);
+
+    @Query("SELECT c.category.id AS categoryId, COUNT(c) AS courseCount FROM Courses c WHERE c.state = 1 GROUP BY c.category.id")
+    List<Object[]> getCourseCountPerCategory();
+
+//    @Query("SELECT c.category.id AS categoryId, COUNT(c) AS courseCount FROM Course c GROUP BY c.category.id")
+//    List<CategoryCourseCountProjection> getCourseCountPerCategory();
+
 }

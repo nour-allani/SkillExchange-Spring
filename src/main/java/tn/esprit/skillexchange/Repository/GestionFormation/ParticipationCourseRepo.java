@@ -1,9 +1,16 @@
 package tn.esprit.skillexchange.Repository.GestionFormation;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import tn.esprit.skillexchange.Entity.GestionFormation.ParticipationCourses;
+
+import java.util.List;
+
 @Repository
 
 public interface ParticipationCourseRepo extends JpaRepository<ParticipationCourses,Long> {
+    @Query("SELECT p FROM ParticipationCourses p WHERE p.course.id =:id")
+    List<ParticipationCourses> getParticipationsByIdCourse(@Param("id") int id);
 }
