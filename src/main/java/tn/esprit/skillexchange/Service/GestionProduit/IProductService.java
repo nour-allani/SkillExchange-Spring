@@ -10,6 +10,7 @@ public interface IProductService {
     public Product retrieveProductById(Long ProductId);
     public Product addProduct(Product p);
     public void removeProduct(Long ProductId);
-    public Product modifyProduct(Product Product);
+    public Product modifyProduct(Product p);
     public ReviewProduct addReviewToProduct(Long productId, ReviewProduct review);
+
 }

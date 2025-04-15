@@ -47,8 +47,8 @@ public class ProductController {
 
     @PostMapping("/add")
     public ResponseEntity<Product> addProduct(@RequestBody Product product) {
-        // On suppose qu'un utilisateur avec l'ID 1 existe déjà dans la base
-        User existingUser = userRepo.findById(4L).orElse(null);
+
+        User existingUser = userRepo.findById(product.getPostedBy().getId()).orElse(null);
 
         if (existingUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -59,10 +59,7 @@ public class ProductController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(addedProduct);
     }
-   /* @DeleteMapping("/remove-product/{product-id}")
-    public void removeProduct(@PathVariable("product-id") Long pId) {
-        pS.removeProduct(pId);
-    }*/
+
    @DeleteMapping("/delete/{id}")
    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
        Product p = pS.retrieveProductById(id);
@@ -89,6 +86,7 @@ public class ProductController {
           existing.setType(updatedProduct.getType());
           existing.setPrice(updatedProduct.getPrice());
           existing.setStock(updatedProduct.getStock());
+          existing.setImageProducts(updatedProduct.getImageProducts());
 
           Product saved = pS.addProduct(existing); // ou save(existing)
           return ResponseEntity.ok(saved);
@@ -102,6 +100,5 @@ public class ProductController {
     public ReviewProduct addProductReview(@PathVariable Long productId, @RequestBody ReviewProduct review) {
         return pS.addReviewToProduct(productId, review);
     }
-    
 
 }

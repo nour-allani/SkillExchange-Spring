@@ -3,8 +3,11 @@ package tn.esprit.skillexchange.Service.GestionProduit;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import tn.esprit.skillexchange.Entity.GestionProduit.ImageProduct;
 import tn.esprit.skillexchange.Entity.GestionProduit.Product;
 import tn.esprit.skillexchange.Entity.GestionProduit.ReviewProduct;
+import tn.esprit.skillexchange.Repository.GestionProduit.ImageProductRepo;
 import tn.esprit.skillexchange.Repository.GestionProduit.ProductRepo;
 import tn.esprit.skillexchange.Repository.GestionProduit.ReviewProductRepo;
 
@@ -16,6 +19,8 @@ public class ProductServiceImpl implements  IProductService{
    ProductRepo pRepo;
     @Autowired
     private ReviewProductRepo reviewRepo;
+    @Autowired
+    private ImageProductRepo imgRepo;
     @Override
     public List<Product> retrieveProducts() {
         return pRepo.findAll();
@@ -28,6 +33,11 @@ public class ProductServiceImpl implements  IProductService{
 
     @Override
     public Product addProduct(Product p) {
+        if (p.getImageProducts() != null) {
+            for (ImageProduct img : p.getImageProducts()) {
+                img.setProduct(p); // 🔗 Lier l'image au produit
+            }
+        }
         return pRepo.save(p);
     }
 
@@ -37,8 +47,14 @@ public class ProductServiceImpl implements  IProductService{
     }
 
     @Override
-    public Product modifyProduct(Product Product) {
-        return pRepo.save(Product);
+    public Product modifyProduct(Product p) {
+
+        if (p.getImageProducts() != null) {
+            for (ImageProduct img : p.getImageProducts()) {
+                img.setProduct(p); // 🔗 Très important pour la relation bidirectionnelle
+            }
+        }
+        return pRepo.save(p);
     }
 
 
@@ -54,4 +70,7 @@ public class ProductServiceImpl implements  IProductService{
             return null;  // Retourner null ou vous pouvez retourner un message ou un objet de type erreur
         }
     }
+
+
 }
+

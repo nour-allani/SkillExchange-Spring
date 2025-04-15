@@ -14,7 +14,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/cart-products") // URL plus claire
+@RequestMapping("/cart-products")
 public class CartProductController {
 
     @Autowired
@@ -31,12 +31,12 @@ public class CartProductController {
     public CartProduct getCartProductById(@PathVariable("cartPId") Long cartPId) {
         return cartpS.retrieveCartProductById(cartPId);
     }
+    @GetMapping("/cart/{cartId}/products")
+    public List<CartProduct> getCartProducts(@PathVariable Long cartId) {
+        return cartpS.getProductsInCart(cartId);
+    }
 
-    // Ajouter un produit au panier
-   /* @PostMapping("/add")
-    public CartProduct addCartProduct(@RequestBody CartProduct cp) {
-        return cartpS.addCartProduct(cp);
-    }*/
+
     @PostMapping("/add")
     public CartProduct addProductToCart(@RequestParam("cartId") Long cartId,
                                         @RequestParam("productId") Long productId,
