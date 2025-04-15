@@ -3,6 +3,7 @@ package tn.esprit.skillexchange.Entity.GestionFormation;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionQuiz.Quiz;
+import tn.esprit.skillexchange.Entity.GestionUser.User;
 
 @Entity
 @Getter
@@ -16,7 +17,8 @@ public class ParticipationCourses {
     private int idp;
     private int progress;
 
-    private int participant;
+    @ManyToOne
+    private User user;
 
     @ManyToOne
     private Courses course;

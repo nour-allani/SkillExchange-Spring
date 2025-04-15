@@ -1,6 +1,7 @@
 package tn.esprit.skillexchange.Entity.GestionQuiz;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionFormation.ParticipationCourses;
@@ -21,10 +22,10 @@ public class Quiz {
     @Column(columnDefinition = "LONGTEXT")
     private String image;
 
-    @OneToOne
-    private ParticipationCourses participationCourse;
+
 
     @OneToOne
+    @JsonIgnore
     private Certificat certificat;
 
     @OneToMany(mappedBy = "quiz",cascade = CascadeType.ALL)

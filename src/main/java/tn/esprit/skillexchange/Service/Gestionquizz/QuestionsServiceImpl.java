@@ -13,6 +13,10 @@ public class QuestionsServiceImpl implements IQuestionsService {
 
     @Autowired
     private QuestionRepo questionsRepository;
+    @Override
+    public List<Questions> getQuestionsByQuizId(Long quizId) {
+        return questionsRepository.findByQuizId(quizId);  // Make sure you have this query in your repository
+    }
 
     @Override
     public Questions saveQuestion(Questions question) {

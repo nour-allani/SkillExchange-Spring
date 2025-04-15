@@ -2,9 +2,9 @@ package tn.esprit.skillexchange.Entity.GestionQuiz;
 
 import jakarta.persistence.*;
 import lombok.*;
+import tn.esprit.skillexchange.Entity.GestionUser.User;
 
 import java.util.Date;
-
 
 @Entity
 @Getter
@@ -18,10 +18,17 @@ public class Certificat {
     private Long id;
 
     private String title;
-    private Date obtainedDate;
-    private String skill;
-    private long signedBy;
 
-    @OneToOne
+    @Temporal(TemporalType.DATE)
+    private Date dateCreation;
+
+    private String skill;
+
+    @ManyToOne
+    private User signedBy;
+
+    @OneToOne(fetch = FetchType.EAGER)
     private Quiz quiz;
+    private String image;
+
 }

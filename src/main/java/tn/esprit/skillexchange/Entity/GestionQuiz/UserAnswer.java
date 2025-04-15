@@ -16,7 +16,7 @@ public class UserAnswer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private ParticipationCourses participationCourse; // Link to ParticipationCourses (user participation in course)
 
     @ManyToOne

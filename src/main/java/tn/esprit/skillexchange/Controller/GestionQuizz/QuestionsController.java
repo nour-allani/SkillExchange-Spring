@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Service.Gestionquizz.QuizService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -35,6 +37,11 @@ public class QuestionsController {
 
         return ResponseEntity.badRequest().build();  // In case quizId is not found
     }
+    @GetMapping("/quiz/{quizId}")
+    public List<Questions> getQuestionsByQuizId(@PathVariable Long quizId) {
+        return questionsService.getQuestionsByQuizId(quizId); // Ensure the service handles this correctly
+    }
+
 
     @GetMapping
     public List<Questions> getAllQuestions() {
@@ -63,8 +70,12 @@ public class QuestionsController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteQuestion(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> deleteQuestion(@PathVariable Long id) {
         questionsService.deleteQuestion(id);
-        return "Question deleted successfully";
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Question deleted successfully");
+        return ResponseEntity.ok(response);  // Ensure it's a valid JSON response
     }
+
+
 }

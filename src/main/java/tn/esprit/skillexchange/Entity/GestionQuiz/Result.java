@@ -16,9 +16,13 @@ public class Result {
     private int id;
 
     @ManyToOne
-    private ParticipationCourses participationCourse; // Link to the ParticipationCourses
+    private ParticipationCourses participationCourse;
 
-    private int score; // The total score the user achieved in the quiz
-    private int totalQuestions; // Total number of questions in the quiz
-    private int correctAnswers; // Number of correct answers
+    private int score;
+    private int totalQuestions;
+    private int correctAnswers;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Certificat certificat; // Optional, if you want to attach the cert directly
 }
+

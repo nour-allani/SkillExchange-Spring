@@ -74,6 +74,11 @@ public class QuizController {
     // New method to submit the final result for the user's participation in the quiz
     @PostMapping("/{quizId}/results")
     public Result submitResult(@PathVariable Long quizId, @RequestParam("participationCourseId") int participationCourseId) {
+        if (participationCourseId <= 0) {
+            throw new IllegalArgumentException("Invalid participation course ID: " + participationCourseId);
+        }
+
+        // Continue with result calculation if participationCourseId is valid
         return resultService.calculateResult(participationCourseId);
     }
 
