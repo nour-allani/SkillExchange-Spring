@@ -45,7 +45,10 @@ public class User implements UserDetails {
     private String github;
     private String linkedin;
 
-    @OneToOne
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
+
+    @OneToOne(cascade = CascadeType.ALL)
     private Banned ban;
 
     @ManyToMany
@@ -70,6 +73,7 @@ public class User implements UserDetails {
     private Set<Events> events;
 
     @OneToMany(mappedBy = "postedBy", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Product> products;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)

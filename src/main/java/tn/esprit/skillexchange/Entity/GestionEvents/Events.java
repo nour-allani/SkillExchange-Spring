@@ -25,7 +25,7 @@ public class Events {
     private Date endDate;
     private String place;
     private int nbr_max;
-
+    private Status status;
     @ManyToOne
     private User user;
 

@@ -7,6 +7,8 @@ public interface ICommentPostService {
     List<CommentPost> retrieveCommentPosts();
     CommentPost add(CommentPost banned);
     CommentPost update(CommentPost banned);
-    CommentPost retrieveCommentPostById(Long id);
+   // CommentPost retrieveCommentPostById(Long id);
     void remove(Long id);
+    public List<CommentPost> retrieveCommentPostsByPostId(Long postId);
+
 }

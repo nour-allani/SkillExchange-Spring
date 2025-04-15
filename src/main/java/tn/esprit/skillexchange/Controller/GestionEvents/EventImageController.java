@@ -16,7 +16,7 @@ public class EventImageController {
     private IEventImageService imageService;
 
 
-    @RequestMapping("/retrieve-EventImage")
+    @GetMapping("/retrieve-EventImage")
     public List<EventImage> getAllEventImage() {
         return imageService.retrieveEventImage();
     }
@@ -31,7 +31,7 @@ public class EventImageController {
         return imageService.addEventImage(eventImage);
     }
 
-    @PutMapping("/modify-EventImage")
+    @PatchMapping("/modify-EventImage")
     public EventImage updatEventImage(@RequestBody EventImage eventImage) {
         return imageService.updateEventImage(eventImage);
     }

@@ -12,4 +12,8 @@ public interface IReviewProductService {
     public ReviewProduct addReviewProduct(ReviewProduct rev);
     public void removeReviewProduct(Long ReviewProductId);
     public ReviewProduct modifyReviewProduct(ReviewProduct ReviewProduct);
+
+    List<ReviewProduct> retrieveReviewsProductById(Long productId);
+
+
 }

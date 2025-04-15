@@ -2,7 +2,9 @@ package tn.esprit.skillexchange.Service.GestionUser;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import tn.esprit.skillexchange.Entity.GestionUser.Badge;
+import tn.esprit.skillexchange.Entity.GestionUser.HistoricTransactions;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
+import tn.esprit.skillexchange.Entity.GestionUser.UserStatus;
 
 import java.util.Date;
 import java.util.List;
@@ -36,4 +38,10 @@ public interface IUserService {
     void removeBadgeFromUser(Long userId, Long badgeId);
 
     Set<Badge> getUserBadges(Long userId);
+
+    HistoricTransactions addTransactionToUser(Long userId, HistoricTransactions transaction);
+
+    List<HistoricTransactions> getUserTransactions(Long userId);
+
+    void changeUserStatus(String email, UserStatus status);
 }

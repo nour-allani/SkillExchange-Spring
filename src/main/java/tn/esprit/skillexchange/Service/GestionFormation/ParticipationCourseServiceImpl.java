@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import tn.esprit.skillexchange.Entity.GestionFormation.ParticipationCourses;
 import tn.esprit.skillexchange.Repository.GestionFormation.ParticipationCourseRepo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -26,6 +27,8 @@ public class ParticipationCourseServiceImpl implements ParticipationCourseServic
 
     @Override
     public ParticipationCourses addParticipation(ParticipationCourses p) {
+        p.setDate_participation(java.sql.Date.valueOf(LocalDate.now()));
+
         return participationCourseRepo.save(p);
     }
 
@@ -37,5 +40,10 @@ public class ParticipationCourseServiceImpl implements ParticipationCourseServic
     @Override
     public ParticipationCourses modifyParticipation(ParticipationCourses p) {
         return participationCourseRepo.save(p);
+    }
+
+    @Override
+    public List<ParticipationCourses> getParticipationsByIdCourse(int id) {
+        return participationCourseRepo.getParticipationsByIdCourse(id) ;
     }
 }

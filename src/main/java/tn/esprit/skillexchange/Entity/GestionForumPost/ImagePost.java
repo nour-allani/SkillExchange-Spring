@@ -1,9 +1,8 @@
-package tn.esprit.skillexchange.Entity.GestionProduit;
+package tn.esprit.skillexchange.Entity.GestionForumPost;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-
 @Entity
 @Getter
 @Setter
@@ -11,15 +10,14 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 
-public class ImageProduct {
+public class ImagePost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idImage ;
-
+    private Long id ;
     @Column(columnDefinition = "LONGTEXT")
     private String Image ;
 
     @ManyToOne
     @JsonIgnore
-    private Product product;
+    private Posts post;
 }

@@ -5,6 +5,8 @@ import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionQuiz.Quiz;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 
+import java.sql.Date;
+
 @Entity
 @Getter
 @Setter
@@ -17,8 +19,10 @@ public class ParticipationCourses {
     private int idp;
     private int progress;
 
+
     @ManyToOne
     private User user;
+
 
     @ManyToOne
     private Courses course;

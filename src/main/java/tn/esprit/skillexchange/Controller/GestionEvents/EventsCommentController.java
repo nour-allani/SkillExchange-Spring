@@ -15,7 +15,7 @@ public class EventsCommentController {
     private IEventCommentService eventCommentService;
 
 
-    @RequestMapping("/retrieve-EventComment")
+    @GetMapping("/retrieve-EventComment")
     public List<EventComment> getAllEventComments() {
         return eventCommentService.retrieveEventComment();
     }
@@ -30,7 +30,7 @@ public class EventsCommentController {
         return eventCommentService.addEventComment(eventComment);
     }
 
-    @PutMapping("/modify-EventComment")
+    @PatchMapping("/modify-EventComment")
     public EventComment updatEventImage(@RequestBody EventComment eventComment) {
         return eventCommentService.updateEventComment(eventComment);
     }

@@ -10,4 +10,6 @@ public interface FormationService {
     public Courses addCourse(Courses c);
     public void removeCourse(Long courseId);
     public Courses modifyCourse(Courses course);
+    public List<Courses> getCoursesByUserId(int id) ;
+
 }

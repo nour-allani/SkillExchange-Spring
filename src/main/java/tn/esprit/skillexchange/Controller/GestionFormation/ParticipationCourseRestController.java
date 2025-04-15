@@ -47,5 +47,11 @@ public class ParticipationCourseRestController {
         return participation;
     }
 
+    @PostMapping("findById/")
+    public List<ParticipationCourses> getParticipationsByIdCourse(@RequestBody  int id) {
+        System.out.println("test user"+ id );
+        return participationCourseService.getParticipationsByIdCourse(id) ;	}
+
+
 
 }

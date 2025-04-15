@@ -7,12 +7,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import tn.esprit.skillexchange.Entity.GestionUser.Badge;
-import tn.esprit.skillexchange.Entity.GestionUser.Banned;
-import tn.esprit.skillexchange.Entity.GestionUser.Role;
-import tn.esprit.skillexchange.Entity.GestionUser.User;
+import tn.esprit.skillexchange.Entity.GestionUser.*;
 import tn.esprit.skillexchange.Repository.GestionUser.BadgeRepo;
 import tn.esprit.skillexchange.Repository.GestionUser.BannedRepo;
+import tn.esprit.skillexchange.Repository.GestionUser.HistoricTransictionRepo;
 import tn.esprit.skillexchange.Repository.GestionUser.UserRepo;
 
 import java.util.Date;
@@ -29,6 +27,9 @@ public class UserServiceImpl implements IUserService, UserDetailsService{
     private BannedRepo bannedRepository;
     @Autowired
     private BadgeRepo badgeRepo;
+
+    @Autowired
+    private HistoricTransictionRepo historicTransictionRepo;
 
 
     @Autowired
@@ -230,5 +231,33 @@ public class UserServiceImpl implements IUserService, UserDetailsService{
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepo.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    @Override
+    public HistoricTransactions addTransactionToUser(Long userId, HistoricTransactions transaction) {
+        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        transaction.setUser(user);
+        if (transaction.getDate() == null) {
+            transaction.setDate(new Date());
+        }
+        HistoricTransactions savedTransaction = historicTransictionRepo.save(transaction);
+
+        user.setBalance(user.getBalance() + savedTransaction.getAmount());
+        userRepo.save(user);
+
+        return savedTransaction;
+    }
+
+    @Override
+    public List<HistoricTransactions> getUserTransactions(Long userId) {
+        return historicTransictionRepo.findByUser_IdOrderByDateDesc(userId);
+    }
+
+    @Override
+    public void changeUserStatus(String email, UserStatus status) {
+        User user = retrieveUserByEmail(email);
+
+        user.setStatus(status);
+        userRepo.save(user);
     }
 }

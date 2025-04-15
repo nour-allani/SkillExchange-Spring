@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-//@CrossOrigin(origins = "http://localhost:4200")
+
 @RequestMapping("/cart")
 public class CartController {
     @Autowired
@@ -46,6 +46,7 @@ public class CartController {
     public  void affecterProductToCart(@PathVariable("productId")long productId,@PathVariable("cartId")long cartId){
         cartS.affecterProductToCart(productId, cartId);
     }*/
+
 
 
 }

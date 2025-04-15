@@ -14,7 +14,8 @@ import java.io.Serializable;
 @ToString
 //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 
-public class CartProduct {
+public class CartProduct  {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,11 +24,13 @@ public class CartProduct {
 
     @ManyToOne
     @JoinColumn(name = "cart_id")
+    @JsonIgnoreProperties({"cartProducts"})
 
     private Cart cart;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @JsonIgnoreProperties("cartProducts") // Empêche la boucle infinie
 
     private Product product;
 }
