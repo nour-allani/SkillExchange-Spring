@@ -12,4 +12,6 @@ public interface ParticipationCourseService {
     public ParticipationCourses addParticipation(ParticipationCourses p);
     public void removeParticipation(Long participationId);
     public ParticipationCourses modifyParticipation(ParticipationCourses p);
+    public List<ParticipationCourses> getParticipationsByIdCourse(int id) ;
+
 }

@@ -28,6 +28,9 @@ public class Category {
     private String description;
     private Date date_ajout ;
 
+    @Transient // important : ce champ ne sera pas stocké en base
+    private Long courseCount;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user ;
@@ -36,5 +39,12 @@ public class Category {
     @JsonIgnore
     private Set<Courses> courses ;
 
+    public Long getCourseCount() {
+        return courseCount;
+    }
+
+    public void setCourseCount(Long courseCount) {
+        this.courseCount = courseCount;
+    }
 
 }

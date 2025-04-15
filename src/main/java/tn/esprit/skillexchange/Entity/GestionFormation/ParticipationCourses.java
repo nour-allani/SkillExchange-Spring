@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionQuiz.Quiz;
 
+import java.sql.Date;
+
 @Entity
 @Getter
 @Setter
@@ -15,8 +17,8 @@ public class ParticipationCourses {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idp;
     private int progress;
-
     private int participant;
+    private Date date_participation;
 
     @ManyToOne
     private Courses course;
