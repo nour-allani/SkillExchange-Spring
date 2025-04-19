@@ -3,12 +3,15 @@ package tn.esprit.skillexchange.Service.GestionEvents;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import tn.esprit.skillexchange.Entity.GestionEvents.Events;
 import tn.esprit.skillexchange.Entity.GestionEvents.ParticipationEvents;
 import tn.esprit.skillexchange.Entity.GestionEvents.Status;
+import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Repository.GestionEvents.EventRepo;
 import tn.esprit.skillexchange.Repository.GestionEvents.ParticipationEventRepo;
+import tn.esprit.skillexchange.Repository.GestionUser.UserRepo;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,51 +21,114 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ParticipationEventServiceImpl implements IParticipationEventsService {
     @Autowired
-    ParticipationEventRepo participationEventRepo ;
+    private ParticipationEventRepo participationEventRepo;
     @Autowired
     private EventRepo eventsRepository;
+    @Autowired
+    private UserRepo userRepository;
 
     @Override
     public List<ParticipationEvents> retrieveParticipationEvents() {
-        return  participationEventRepo.findAll();
+        log.info("Retrieving all participation events");
+        return participationEventRepo.findAll();
     }
 
     @Override
     public ParticipationEvents addParticipationEvents(ParticipationEvents participationEvents) {
+        log.info("Adding participation: {}", participationEvents);
         return participationEventRepo.save(participationEvents);
     }
 
     @Override
     public ParticipationEvents updateParticipationEvents(ParticipationEvents participationEvents) {
+        log.info("Updating participation: {}", participationEvents);
         return participationEventRepo.save(participationEvents);
     }
 
     @Override
     public ParticipationEvents retrieveParticipationEventsById(Long id) {
-        return participationEventRepo.findById(id).get();
+        log.info("Retrieving participation by ID: {}", id);
+        return participationEventRepo.findById(id).orElseThrow(() -> {
+            log.error("Participation not found with ID: {}", id);
+            return new RuntimeException("Participation not found");
+        });
     }
 
     @Override
     public void removeParticipationEvents(Long id) {
+        log.info("Removing participation with ID: {}", id);
         participationEventRepo.deleteById(id);
-
     }
 
     @Override
     public ParticipationEvents participateInEvent(Long eventId, Status status) {
-        // Vérifier si l'événement existe
-        Optional<Events> eventOpt = eventsRepository.findById(eventId);
-        if (eventOpt.isEmpty()) {
-            throw new RuntimeException("Événement non trouvé avec l'ID : " + eventId);
+        try {
+            String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            log.info("Authenticated user email: {}", userEmail);
+            if (userEmail == null || userEmail.isEmpty()) {
+                log.error("No authenticated user found");
+                throw new RuntimeException("No authenticated user found");
+            }
+
+            User user = userRepository.findByEmail(userEmail)
+                    .orElseThrow(() -> {
+                        log.error("User not found with email: {}", userEmail);
+                        return new RuntimeException("User not found: " + userEmail);
+                    });
+            log.info("Found user: {}", user.getEmail());
+
+            Events event = eventsRepository.findById(eventId)
+                    .orElseThrow(() -> {
+                        log.error("Event not found with ID: {}", eventId);
+                        return new RuntimeException("Event not found with ID: " + eventId);
+                    });
+            log.info("Found event: {}", event.getEventName());
+
+            Optional<ParticipationEvents> existingParticipation = participationEventRepo.findByUserEmail(userEmail)
+                    .stream()
+                    .filter(p -> p.getEvent() != null && p.getEvent().getIdEvent().equals(eventId))
+                    .findFirst();
+            log.info("Existing participation: {}", existingParticipation.isPresent() ? "Found" : "Not found");
+
+            if (status == Status.NOT_ATTENDING && existingParticipation.isPresent()) {
+                // Delete the participation instead of updating to NOT_ATTENDING
+                participationEventRepo.delete(existingParticipation.get());
+                log.info("Deleted participation for event: {}", eventId);
+                return existingParticipation.get(); // Return the deleted participation for consistency
+            }
+
+            ParticipationEvents participation;
+            if (existingParticipation.isPresent()) {
+                participation = existingParticipation.get();
+                participation.setStatus(status);
+                log.info("Updating participation status to: {}", status);
+            } else {
+                participation = new ParticipationEvents();
+                participation.setEvent(event);
+                participation.setStatus(status);
+                participation.setUser(user);
+                log.info("Creating new participation with status: {}", status);
+            }
+
+            // Validate before saving
+            if (participation.getEvent() == null || participation.getUser() == null || participation.getStatus() == null) {
+                log.error("Invalid participation data: event={}, user={}, status={}",
+                        participation.getEvent(), participation.getUser(), participation.getStatus());
+                throw new RuntimeException("Invalid participation data");
+            }
+
+            ParticipationEvents savedParticipation = participationEventRepo.save(participation);
+            log.info("Saved participation: {}", savedParticipation);
+            return savedParticipation;
+        } catch (Exception e) {
+            log.error("Error in participateInEvent for eventId: {}, status: {}, message: {}", eventId, status, e.getMessage(), e);
+            throw new RuntimeException("Failed to participate in event: " + e.getMessage(), e);
         }
+    }
 
-        Events event = eventOpt.get();
-
-        // Créer une nouvelle participation
-        ParticipationEvents participation = new ParticipationEvents();
-        participation.setEvent(event);
-        participation.setStatus(status);
-
-        return participationEventRepo.save(participation);
+    @Override
+    public List<ParticipationEvents> findByUserEmail(String userEmail) {
+        log.info("Finding participations for user: {}", userEmail);
+        return participationEventRepo.findByUserEmail(userEmail);
     }
 }

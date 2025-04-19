@@ -16,5 +16,7 @@ public interface IEventCommentService {
     void removeEventComment(Long id);
 
 
-    List<EventComment> getCommentsByEvent(Long eventId);
+
+
+
 }

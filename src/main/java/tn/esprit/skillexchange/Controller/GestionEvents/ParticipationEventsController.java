@@ -1,60 +1,110 @@
 package tn.esprit.skillexchange.Controller.GestionEvents;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionEvents.ParticipationEvents;
 import tn.esprit.skillexchange.Entity.GestionEvents.Status;
 import tn.esprit.skillexchange.Service.GestionEvents.IParticipationEventsService;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/participationEvents")
+@Slf4j
 public class ParticipationEventsController {
     @Autowired
-    private IParticipationEventsService  participationEventsService;
-
+    private IParticipationEventsService participationEventsService;
 
     @GetMapping("/retrieve-ParticipationEvents")
     public List<ParticipationEvents> getAllParticipationEvents() {
+        log.info("Retrieving all participation events");
         return participationEventsService.retrieveParticipationEvents();
     }
 
-    @GetMapping("/retrieveParticipationEvents/{ParticipationEvents-id}")
-    public ParticipationEvents getParticipationEventsById(@PathVariable("ParticipationEvents-id") Long id) {
+    @GetMapping("/retrieveParticipationEvents/{id}")
+    public ParticipationEvents getParticipationEventsById(@PathVariable("id") Long id) {
+        log.info("Retrieving participation event with ID: {}", id);
         return participationEventsService.retrieveParticipationEventsById(id);
     }
 
     @PostMapping("/add-ParticipationEvents")
     public ParticipationEvents addParticipationEvents(@RequestBody ParticipationEvents participationEvents) {
         try {
-            // Vérifiez si participationEvents est bien reçu
-            System.out.println("Participation Event: " + participationEvents);
+            log.info("Adding participation event: {}", participationEvents);
             return participationEventsService.addParticipationEvents(participationEvents);
         } catch (Exception e) {
-            // Log d'erreur pour mieux comprendre la cause du problème
-            System.err.println("Erreur lors de l'ajout de la participation : " + e.getMessage());
-            throw e;  // Relancer l'exception pour générer une erreur HTTP 500
+            log.error("Error adding participation event: {}", e.getMessage(), e);
+            throw e;
         }
     }
 
-    @PatchMapping("/modify-ParticipationEvents")
-    public ParticipationEvents updatParticipationEvents(@RequestBody ParticipationEvents participationEvents) {
-        return participationEventsService.updateParticipationEvents(participationEvents);
+    @PutMapping("/modify-ParticipationEvents")
+    public ParticipationEvents updateParticipationEvents(@RequestBody ParticipationEvents participationEvents) {
+        try {
+            log.info("Updating participation event: {}", participationEvents);
+            return participationEventsService.updateParticipationEvents(participationEvents);
+        } catch (Exception e) {
+            log.error("Error updating participation event: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
-
-    @DeleteMapping("/removeParticipationEvents/{ParticipationEvents-id}")
-    public void deleteParticipationEvents(@PathVariable("ParticipationEvents-id") Long id) {
-        participationEventsService.removeParticipationEvents(id);
+    @DeleteMapping("/removeParticipationEvents/{id}")
+    public ResponseEntity<Void> deleteParticipationEvents(@PathVariable("id") Long id) {
+        try {
+            log.info("Deleting participation event with ID: {}", id);
+            participationEventsService.removeParticipationEvents(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("Error deleting participation event with ID: {}", id, e);
+            throw e;
+        }
     }
 
-
-    // ✅ Nouveau endpoint pour participer à un événement
     @PostMapping("/participate/{eventId}/{status}")
-    public ParticipationEvents participateInEvent(
+    public ResponseEntity<ParticipationEvents> participateInEvent(
             @PathVariable Long eventId,
             @PathVariable Status status) {
-        return participationEventsService.participateInEvent(eventId, status);
+        try {
+            log.info("Participating in event {} with status {}", eventId, status);
+            ParticipationEvents participation = participationEventsService.participateInEvent(eventId, status);
+            return ResponseEntity.ok(participation);
+        } catch (RuntimeException e) {
+            log.error("Error participating in event {} with status {}: {}", eventId, status, e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (Exception e) {
+            log.error("Unexpected error participating in event {} with status {}: {}", eventId, status, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/user/{userEmail}")
+    public List<ParticipationEvents> getParticipationsByUserEmail(@PathVariable String userEmail) {
+        log.info("Fetching participations for user: {}", userEmail);
+        return participationEventsService.findByUserEmail(userEmail);
+    }
+
+
+}
+
+@RestControllerAdvice
+@Slf4j
+class GlobalExceptionHandler {
+    @ExceptionHandler(AuthorizationServiceException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<String> handleAuthorizationException(AuthorizationServiceException ex) {
+        log.error("Authorization error: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: " + ex.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<String> handleGenericException(Exception ex) {
+        log.error("Unexpected error: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
     }
 }

@@ -1,6 +1,9 @@
 package tn.esprit.skillexchange.Entity.GestionEvents;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionForumPost.EmojiComments;
@@ -38,12 +41,10 @@ public class Events {
     @OneToMany(mappedBy = "event",cascade = CascadeType.ALL)
     private Set<RateEvent> rateEvents;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("event") // Évite la sérialisation circulaire
+    @OneToMany(mappedBy = "event",cascade = CascadeType.ALL)
     private Set<EventComment> eventComments;
 
     @OneToMany(mappedBy = "event",cascade = CascadeType.ALL)
-    @JsonManagedReference
     private Set<EventImage> images;
 
 }
