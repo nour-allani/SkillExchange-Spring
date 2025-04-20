@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
+import java.text.SimpleDateFormat;
 
 @Service
 public class GmailService {
@@ -26,6 +26,9 @@ public class GmailService {
 
     @Value("${spring.mail.username}")
     private String fromEmail;
+
+    @Value("${frontend.base.url:http://localhost:4200}")
+    private String frontendBaseUrl;
 
     public void sendSimpleEmail(String to, String subject, String text) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
@@ -63,10 +66,26 @@ public class GmailService {
         sendHtmlEmail(to, "Account Verification", htmlContent);
     }
 
+    public void sendEventConfirmationEmail(String to, String userName, String eventName, String startDate, String endDate, String place, String status, Long eventId) throws MessagingException, IOException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String htmlContent = loadEmailTemplate("/templates/email/event.html")
+                .replace("{{userName}}", userName != null ? userName : "User")
+                .replace("{{eventName}}", eventName)
+                .replace("{{startDate}}", dateFormat.format(java.util.Date.from(java.time.Instant.parse(startDate))))
+                .replace("{{endDate}}", dateFormat.format(java.util.Date.from(java.time.Instant.parse(endDate))))
+                .replace("{{place}}", place)
+                .replace("{{status}}", status)
+                .replace("{{eventUrl}}", frontendBaseUrl + "/events/" + eventId);
+        sendHtmlEmail(to, "Event Participation Confirmation", htmlContent);
+    }
+
     private String loadEmailTemplate(String path) throws IOException {
         ClassPathResource resource = new ClassPathResource(path);
         try (Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
             return FileCopyUtils.copyToString(reader);
         }
     }
+
+
+
 }

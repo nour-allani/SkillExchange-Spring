@@ -30,4 +30,13 @@ public class ParticipationEvents {
     private User user;
 
 
+    @Override
+    public String toString() {
+        return "ParticipationEvents{" +
+                "idparticipant=" + idparticipant +
+                ", status=" + status +
+                ", eventId=" + (event != null ? event.getIdEvent() : null) +
+                ", userEmail=" + (user != null ? user.getEmail() : null) +
+                '}';
+    }
 }

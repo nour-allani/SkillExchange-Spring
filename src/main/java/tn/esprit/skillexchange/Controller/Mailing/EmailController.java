@@ -44,4 +44,8 @@ public class EmailController {
             return ResponseEntity.badRequest().body("Failed to send verification code: " + e.getMessage());
         }
     }
+
+
+
+
 }

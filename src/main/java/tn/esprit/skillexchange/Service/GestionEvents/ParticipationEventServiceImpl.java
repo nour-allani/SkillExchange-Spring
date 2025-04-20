@@ -12,6 +12,7 @@ import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Repository.GestionEvents.EventRepo;
 import tn.esprit.skillexchange.Repository.GestionEvents.ParticipationEventRepo;
 import tn.esprit.skillexchange.Repository.GestionUser.UserRepo;
+import tn.esprit.skillexchange.Service.Mailing.GmailService;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,8 @@ public class ParticipationEventServiceImpl implements IParticipationEventsServic
     private EventRepo eventsRepository;
     @Autowired
     private UserRepo userRepository;
+    @Autowired
+    private GmailService gmailService;
 
     @Override
     public List<ParticipationEvents> retrieveParticipationEvents() {
@@ -119,6 +122,27 @@ public class ParticipationEventServiceImpl implements IParticipationEventsServic
 
             ParticipationEvents savedParticipation = participationEventRepo.save(participation);
             log.info("Saved participation: {}", savedParticipation);
+
+            // Send confirmation email if status is GOING or INTERESTED
+            if (status == Status.GOING || status == Status.INTERESTED) {
+                try {
+                    gmailService.sendEventConfirmationEmail(
+                            user.getEmail(),
+                            user.getName(),
+                            event.getEventName(),
+                            event.getStartDate().toInstant().toString(),
+                            event.getEndDate().toInstant().toString(),
+                            event.getPlace(),
+                            status.toString(),
+                            event.getIdEvent()
+                    );
+                    log.info("Sent confirmation email to {} for event {}", user.getEmail(), event.getEventName());
+                } catch (Exception e) {
+                    log.error("Failed to send confirmation email to {}: {}", user.getEmail(), e.getMessage(), e);
+                    // Don't throw exception to avoid failing the participation
+                }
+            }
+
             return savedParticipation;
         } catch (Exception e) {
             log.error("Error in participateInEvent for eventId: {}, status: {}, message: {}", eventId, status, e.getMessage(), e);

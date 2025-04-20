@@ -8,8 +8,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/eventRate")
-public class RateEventControler {
-   @Autowired
+public class RateEventController {
+    @Autowired
     private IRateEventService rateEventService;
 
 
