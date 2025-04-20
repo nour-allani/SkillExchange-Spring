@@ -49,11 +49,11 @@ public class ProductServiceImpl implements  IProductService{
     @Override
     public Product modifyProduct(Product p) {
 
-        if (p.getImageProducts() != null) {
+       /* if (p.getImageProducts() != null) {
             for (ImageProduct img : p.getImageProducts()) {
-                img.setProduct(p); // 🔗 Très important pour la relation bidirectionnelle
+                img.setProduct(p);
             }
-        }
+        }*/
         return pRepo.save(p);
     }
 

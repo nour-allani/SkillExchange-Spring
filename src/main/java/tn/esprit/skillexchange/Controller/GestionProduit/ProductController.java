@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import tn.esprit.skillexchange.Entity.GestionProduit.ImageProduct;
 import tn.esprit.skillexchange.Entity.GestionProduit.Product;
 import tn.esprit.skillexchange.Entity.GestionProduit.ReviewProduct;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
@@ -72,12 +73,17 @@ public class ProductController {
        }
    }
 
-  /*  @PatchMapping("/modify-product")
+   @PatchMapping("/modify-product/{id}")
     public Product modifyImageProduct(@RequestBody Product p) {
+       if (p.getImageProducts() != null) {
+           for (ImageProduct img : p.getImageProducts()) {
+               img.setProduct(p); // Ensure images are linked during update
+           }
+       }
         return pS.modifyProduct(p);
 
-    }*/
-  @PatchMapping("/update/{id}")
+    }
+  /*@PatchMapping("/update/{id}")
   public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product updatedProduct) {
       Product existing = pS.retrieveProductById(id);
 
@@ -94,7 +100,7 @@ public class ProductController {
           return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
       }
   }
-
+*/
 
     @PostMapping("/{productId}/reviews")
     public ReviewProduct addProductReview(@PathVariable Long productId, @RequestBody ReviewProduct review) {
