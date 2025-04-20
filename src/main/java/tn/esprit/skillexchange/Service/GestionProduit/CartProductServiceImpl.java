@@ -27,7 +27,7 @@ public class CartProductServiceImpl implements  ICartProductService{
 
     @Override
     public CartProduct retrieveCartProductById(Long cartpId) {
-        return cartProductRepo.findById(cartpId).get();
+        return cartProductRepo.findById(cartpId).orElse(null);
     }
 
 

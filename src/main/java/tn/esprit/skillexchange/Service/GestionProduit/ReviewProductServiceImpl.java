@@ -37,26 +37,26 @@ public class ReviewProductServiceImpl implements  IReviewProductService{
 
     @Override
     public ReviewProduct modifyReviewProduct(ReviewProduct reviewProduct) {
-        // Vérifier si la revue existe déjà dans la base de données
+
         ReviewProduct existingReview = rpRepo.findById(reviewProduct.getIdReview()).orElse(null);
 
         if (existingReview == null) {
-            // Retourner null ou gérer l'erreur de manière appropriée si la revue n'existe pas
-            return null;  // Par exemple, tu peux retourner une valeur par défaut ou une erreur spécifique
+
+            return null;
         }
 
         // Mise à jour des informations de la revue
         if (reviewProduct.getContent() != null) {
-            existingReview.setContent(reviewProduct.getContent());  // Mise à jour du contenu si fourni
+            existingReview.setContent(reviewProduct.getContent());
         }
 
         if (reviewProduct.getRating()  != 0) {
-            existingReview.setRating(reviewProduct.getRating());  // Mise à jour du rating si fourni
+            existingReview.setRating(reviewProduct.getRating());
         }
 
         existingReview.setUpdatedAt(new Date());
 
-        // Sauvegarde de la revue modifiée
+
         return rpRepo.save(existingReview);
     }
 

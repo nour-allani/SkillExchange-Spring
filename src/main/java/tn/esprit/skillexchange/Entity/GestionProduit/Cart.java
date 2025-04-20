@@ -33,4 +33,6 @@ public class Cart {
 
     private Set<CartProduct>  cartProducts= new HashSet<>();
 
+    private boolean isActive = true; // panier actif par défaut
+
 }
