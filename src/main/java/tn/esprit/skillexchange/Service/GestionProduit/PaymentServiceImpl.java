@@ -20,14 +20,51 @@ import java.util.Optional;
 
 public class PaymentServiceImpl implements  IPaymentService {
    @Autowired
-    private final PaymentRepo paymentRepository;
+    private  PaymentRepo paymentRepository;
    @Autowired
-    private final UserRepo userRepository;
+    private  UserRepo userRepository;
     @Autowired
     private CartRepo cartRepo;
 
     @Transactional
-   /* public Payment processPayment(Payment payment) {
+
+    public Payment processPayment(Payment payment) {
+
+        String email = payment.getUserEmail();
+        Optional<User> optionalUser = (email != null) ? userRepository.findByEmail(email) : Optional.empty();
+
+        Optional<Cart> optionalCart = (payment.getCart() != null && payment.getCart().getId() != 0)
+                ? cartRepo.findById(payment.getCart().getId())
+                : Optional.empty();
+
+        payment.setDatePaiement(new Date());
+
+        if (optionalUser.isEmpty() || optionalCart.isEmpty()) {
+            payment.setStatutPaiement(Payment.PaymentStatus.FAILED);
+            return paymentRepository.save(payment);
+        }
+
+        User user = optionalUser.get();
+        Cart cart = optionalCart.get();
+
+        // Lier le vrai objet Cart récupéré
+        payment.setCart(cart);
+
+        if (payment.getMethodePaiement() == Payment.PaymentMethod.BALANCE) {
+            if (user.getBalance() >= payment.getMontant()) {
+                user.setBalance(user.getBalance() - payment.getMontant());
+                userRepository.save(user);
+                payment.setStatutPaiement(Payment.PaymentStatus.COMPLETED);
+            } else {
+                payment.setStatutPaiement(Payment.PaymentStatus.FAILED);
+            }
+        } else {
+            payment.setStatutPaiement(Payment.PaymentStatus.COMPLETED);
+        }
+
+        return paymentRepository.save(payment);
+    }
+ /* public Payment processPayment(Payment payment) {
 
         // Vérifie que l'utilisateur est bien défini
         if (payment.getUser() == null || payment.getUser().getId() == 0) {
@@ -89,42 +126,6 @@ public class PaymentServiceImpl implements  IPaymentService {
 
         return paymentRepository.save(payment);
     }*/
-    public Payment processPayment(Payment payment) {
-        String email = payment.getUserEmail();
-        Optional<User> optionalUser = (email != null) ? userRepository.findByEmail(email) : Optional.empty();
-
-        Optional<Cart> optionalCart = (payment.getCart() != null && payment.getCart().getId() != 0)
-                ? cartRepo.findById(payment.getCart().getId())
-                : Optional.empty();
-
-        payment.setDatePaiement(new Date());
-
-        if (optionalUser.isEmpty() || optionalCart.isEmpty()) {
-            payment.setStatutPaiement(Payment.PaymentStatus.FAILED);
-            return paymentRepository.save(payment);
-        }
-
-        User user = optionalUser.get();
-        Cart cart = optionalCart.get();
-
-        // Lier le vrai objet Cart récupéré
-        payment.setCart(cart);
-
-        if (payment.getMethodePaiement() == Payment.PaymentMethod.BALANCE) {
-            if (user.getBalance() >= payment.getMontant()) {
-                user.setBalance(user.getBalance() - payment.getMontant());
-                userRepository.save(user);
-                payment.setStatutPaiement(Payment.PaymentStatus.COMPLETED);
-            } else {
-                payment.setStatutPaiement(Payment.PaymentStatus.FAILED);
-            }
-        } else {
-            payment.setStatutPaiement(Payment.PaymentStatus.COMPLETED);
-        }
-
-        return paymentRepository.save(payment);
-    }
-
 
 }
 

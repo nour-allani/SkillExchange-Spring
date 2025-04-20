@@ -29,7 +29,8 @@ public class Product  {
     private int stock;
     @Enumerated(EnumType.STRING)
     private CurrencyType currencyType;
-
+    @Column(name = "is_approved")
+    private boolean isApproved = false;
 
     @ManyToOne
     private User postedBy;

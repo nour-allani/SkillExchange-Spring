@@ -12,5 +12,6 @@ public interface IProductService {
     public void removeProduct(Long ProductId);
     public Product modifyProduct(Product p);
     public ReviewProduct addReviewToProduct(Long productId, ReviewProduct review);
-
+    public void approveProduct(Long productId);
+    public void rejectProduct(Long productId);
 }

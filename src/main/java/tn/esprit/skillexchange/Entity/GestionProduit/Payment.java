@@ -34,7 +34,7 @@ public class Payment {
    /* @Enumerated(EnumType.STRING)
     private ProductType productType;*/
    @ManyToOne
-
+   @JoinColumn(name = "cart_id", referencedColumnName = "id")
    private Cart cart;
 
     @Enumerated(EnumType.STRING)

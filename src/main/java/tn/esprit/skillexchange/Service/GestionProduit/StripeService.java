@@ -8,8 +8,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.stereotype.Service;
 import tn.esprit.skillexchange.Entity.GestionProduit.Cart;
+import tn.esprit.skillexchange.Entity.GestionProduit.CurrencyType;
+import tn.esprit.skillexchange.Entity.GestionProduit.Payment;
 import tn.esprit.skillexchange.Repository.GestionProduit.CartRepo;
+import tn.esprit.skillexchange.Repository.GestionProduit.PaymentRepo;
 
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +28,8 @@ public class StripeService {
     private String cancelUrl;
     @Autowired
     private CartRepo cartRepo;
+    @Autowired
+    private  PaymentRepo paymentRepo;
     /*public String createCheckoutSessionSafe(float amount, String productName) {
         try {
             Stripe.apiKey = stripeSecretKey;
@@ -73,6 +79,9 @@ public class StripeService {
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl(successUrl)
                 .setCancelUrl(cancelUrl)
+                .putMetadata("cartId", String.valueOf(cartId))
+                .putMetadata("userEmail", cart.getUser().getEmail()) // ✅ si Cart contient bien un user
+                .putMetadata("currencyType", "TND")
                 .addLineItem(
                         SessionCreateParams.LineItem.builder()
                                 .setQuantity(1L)
@@ -99,4 +108,14 @@ public class StripeService {
             return null;
         }
     }
+
+    public Session retrieveSession(String sessionId) {
+        try {
+            Stripe.apiKey = stripeSecretKey;
+            return Session.retrieve(sessionId);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la récupération de la session Stripe", e);
+        }
+    }
+
 }

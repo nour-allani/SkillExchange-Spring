@@ -45,7 +45,16 @@ public class ProductController {
         return pS.addProduct(p);
 
     }*/
-
+    @PutMapping("/approve/{id}")
+    public ResponseEntity<String> approveProduct(@PathVariable("id") Long id) {
+        pS.approveProduct(id);
+        return ResponseEntity.ok("✅ Product approved and email sent.");
+    }
+    @PutMapping("/reject/{id}")
+    public ResponseEntity<String> rejectProduct(@PathVariable("id") Long id) {
+        pS.rejectProduct(id);
+        return ResponseEntity.ok("✅ Product approved and email sent.");
+    }
     @PostMapping("/add")
     public ResponseEntity<Product> addProduct(@RequestBody Product product) {
 
@@ -56,6 +65,7 @@ public class ProductController {
         }
 
         product.setPostedBy(existingUser); // Associer un vrai utilisateur persisté
+
         Product addedProduct = pS.addProduct(product);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(addedProduct);
