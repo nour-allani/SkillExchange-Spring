@@ -46,4 +46,10 @@ public class ParticipationCourseServiceImpl implements ParticipationCourseServic
     public List<ParticipationCourses> getParticipationsByIdCourse(int id) {
         return participationCourseRepo.getParticipationsByIdCourse(id) ;
     }
+
+    @Override
+    public boolean checkParticipation(long userId, int courseId) {
+        return participationCourseRepo.existsParticipation(userId, courseId);
+    }
+
 }

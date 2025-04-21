@@ -13,4 +13,8 @@ import java.util.List;
 public interface ParticipationCourseRepo extends JpaRepository<ParticipationCourses,Long> {
     @Query("SELECT p FROM ParticipationCourses p WHERE p.course.id =:id")
     List<ParticipationCourses> getParticipationsByIdCourse(@Param("id") int id);
+
+    @Query("SELECT COUNT(p) > 0 FROM ParticipationCourses p WHERE p.participant = :participantId AND p.course.id = :courseId")
+    boolean existsParticipation(@Param("participantId") long participantId, @Param("courseId") int courseId);
+
 }

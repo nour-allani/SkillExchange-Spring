@@ -2,6 +2,7 @@ package tn.esprit.skillexchange.Controller.GestionFormation;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionFormation.Category;
 import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
@@ -9,6 +10,7 @@ import tn.esprit.skillexchange.Service.GestionFormation.CategoryService;
 import tn.esprit.skillexchange.Service.GestionFormation.FormationService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -54,5 +56,14 @@ public class CourseRestController {
         System.out.println("test user"+ id );
         return courseService.getCoursesByUserId(id) ;	}
 
+    @PutMapping("approoveDiapproove/")
+    public void approoveDisapprooveCourse (@RequestBody  long id) {
+         courseService.approoveDisapprooveCourse(id);
+    }
+
+    @GetMapping("/stats/season")
+    public ResponseEntity<Map<String, Long>> getCoursesBySeason() {
+        return ResponseEntity.ok(courseService.getCoursesCountBySeason());
+    }
 
 }
