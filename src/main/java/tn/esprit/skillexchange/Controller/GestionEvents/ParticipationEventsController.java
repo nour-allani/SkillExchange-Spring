@@ -89,10 +89,17 @@ public class ParticipationEventsController {
         }
     }
 
-    @GetMapping("/user/{userEmail}")
-    public List<ParticipationEvents> getParticipationsByUserEmail(@PathVariable String userEmail) {
-        log.info("Fetching participations for user: {}", userEmail);
-        return participationEventsService.findByUserEmail(userEmail);
+    // New endpoint to count participations by event and status
+    @GetMapping("/countByEventAndStatus/{eventId}/{status}")
+    public ResponseEntity<Long> countByEventAndStatus(@PathVariable Long eventId, @PathVariable Status status) {
+        try {
+            log.info("Fetching participation count for eventId: {} with status: {}", eventId, status);
+            long count = participationEventsService.countByEventIdAndStatus(eventId, status);
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            log.error("Error fetching participation count for eventId: {}, status: {}", eventId, status, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 }
 

@@ -13,4 +13,7 @@ public interface IParticipationEventsService {
     void removeParticipationEvents(Long id);
     ParticipationEvents participateInEvent(Long eventId, String userEmail, Status status);
     List<ParticipationEvents> findByUserEmail(String userEmail);
+
+    // New method to count participations by event and status
+    long countByEventIdAndStatus(Long eventId, Status status);
 }

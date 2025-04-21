@@ -30,6 +30,9 @@ public class Events {
     private String place;
     private int nbr_max;
 
+    private Double latitude; // Nouvelle propriété pour la latitude
+    private Double longitude; // Nouvelle propriété pour la longitude
+
     @ManyToOne
     @JsonIgnore
     private User user;

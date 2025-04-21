@@ -14,7 +14,7 @@ public class BannedController {
 
     @Autowired
     private IBannedService bannedService;
-    
+
     @GetMapping
     public List<Banned> getAll() {
         return bannedService.retrieveAllBanned();
