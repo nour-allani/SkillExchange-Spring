@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AuthorizationServiceException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionEvents.ParticipationEvents;
 import tn.esprit.skillexchange.Entity.GestionEvents.Status;
@@ -68,13 +69,19 @@ public class ParticipationEventsController {
     @PostMapping("/participate/{eventId}/{status}")
     public ResponseEntity<ParticipationEvents> participateInEvent(
             @PathVariable Long eventId,
-            @PathVariable Status status) {
+            @PathVariable Status status,
+            Authentication authentication) {
         try {
-            log.info("Participating in event {} with status {}", eventId, status);
-            ParticipationEvents participation = participationEventsService.participateInEvent(eventId, status);
+            if (authentication == null || authentication.getName() == null) {
+                log.error("No authenticated user found for event participation: eventId={}, status={}", eventId, status);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+            String userEmail = authentication.getName(); // e.g., zaiter.m4@gmail.com
+            log.info("User {} participating in event {} with status {}", userEmail, eventId, status);
+            ParticipationEvents participation = participationEventsService.participateInEvent(eventId, userEmail, status);
             return ResponseEntity.ok(participation);
-        } catch (RuntimeException e) {
-            log.error("Error participating in event {} with status {}: {}", eventId, status, e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid request for event {} with status {} for user: {}", eventId, status, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (Exception e) {
             log.error("Unexpected error participating in event {} with status {}: {}", eventId, status, e.getMessage(), e);
@@ -87,8 +94,6 @@ public class ParticipationEventsController {
         log.info("Fetching participations for user: {}", userEmail);
         return participationEventsService.findByUserEmail(userEmail);
     }
-
-
 }
 
 @RestControllerAdvice

@@ -48,7 +48,11 @@ public class User implements UserDetails {
 
     @OneToOne(cascade = CascadeType.ALL)
     private Banned ban;
-
+/// /////////////////////////////////////////////////////////////
+// for recommondation events
+    @ElementCollection
+    private List<String> interests;
+/// ////////////////////////////////////////////////////////////
     @ManyToMany
     @JoinTable(
             name = "user_badge",
