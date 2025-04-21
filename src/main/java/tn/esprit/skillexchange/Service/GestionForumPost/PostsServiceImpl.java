@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
 import org.springframework.stereotype.Service;
 import tn.esprit.skillexchange.Entity.GestionForumPost.ImagePost;
 import tn.esprit.skillexchange.Entity.GestionForumPost.Posts;
@@ -27,10 +28,10 @@ public class PostsServiceImpl implements IPostsService {
         return postRepo.findAll();
     }
 
-    @Override
-    public Page<Posts> retrievePostPageable(Pageable pageable) {
-        return postRepo.findAll(pageable);
+    public Page<Posts> retrieveApprovedPostPageable(Pageable pageable) {
+        return postRepo.findByApprovedTrue(pageable);  // Filtrer les posts approuvés
     }
+
 
     @Override
     public Posts add(Posts p) {
