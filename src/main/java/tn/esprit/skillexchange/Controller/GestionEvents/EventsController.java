@@ -2,6 +2,7 @@ package tn.esprit.skillexchange.Controller.GestionEvents;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.skillexchange.Entity.GestionEvents.EventImage;
 import tn.esprit.skillexchange.Entity.GestionEvents.Events;
 import tn.esprit.skillexchange.Service.GestionEvents.IEventsService;
 
@@ -29,14 +30,27 @@ public class EventsController {
 
     @PostMapping("/add-Event")
     public Events addEvent(@RequestBody Events events) {
+        // Vérification et liaison des images à l'événement avant de l'ajouter
+        if (events.getImages() != null) {
+            for (EventImage img : events.getImages()) {
+                img.setEvent(events); // Lier chaque image à l'événement
+            }
+        }
+        // Sauvegarder l'événement avec ses images
         return eventsService.addEvent(events);
     }
 
+
+
     @PatchMapping("/modify-Event")
-    public Events updatEvent(@RequestBody Events events) {
+    public Events updateEvent(@RequestBody Events events) {
+        if (events.getImages() != null) {
+            for (EventImage img : events.getImages()) {
+                img.setEvent(events); // Ensure images are linked during update
+            }
+        }
         return eventsService.updateEvent(events);
     }
-
 
     @DeleteMapping("/removeEvent/{Event-id}")
     public void deleteEvent(@PathVariable("Event-id") Long id) {
