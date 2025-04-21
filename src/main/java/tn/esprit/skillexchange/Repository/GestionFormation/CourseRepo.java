@@ -12,4 +12,16 @@ import java.util.List;
 public interface CourseRepo extends JpaRepository<Courses,Long> {
     @Query("SELECT c FROM Courses c WHERE c.author.id =:id")
     List<Courses> getCoursesByUserId(@Param("id") int id);
+
+//    @Query("SELECT CASE " +
+//            "WHEN MONTH(c.date_ajout) IN (3, 4, 5) THEN 'Printemps' " +
+//            "WHEN MONTH(c.date_ajout) IN (6, 7, 8) THEN 'Été' " +
+//            "WHEN MONTH(c.date_ajout) IN (9, 10, 11) THEN 'Automne' " +
+//            "ELSE 'Hiver' END AS saison, COUNT(c) " +
+//            "FROM Courses c GROUP BY saison")
+@Query("SELECT MONTHNAME(c.date_ajout) AS month, COUNT(c) " +
+        "FROM Courses c GROUP BY MONTH(c.date_ajout), MONTHNAME(c.date_ajout) " +
+        "ORDER BY MONTH(c.date_ajout)")
+    List<Object[]> countCoursesBySeason();
+
 }

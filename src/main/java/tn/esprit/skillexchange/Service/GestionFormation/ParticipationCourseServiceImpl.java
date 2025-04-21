@@ -70,4 +70,10 @@ public class ParticipationCourseServiceImpl implements ParticipationCourseServic
         participation.setQuiz(quiz);
         participationCourseRepo.save(participation);
     }
+
+    @Override
+    public boolean checkParticipation(long userId, int courseId) {
+        return participationCourseRepo.existsParticipation(userId, courseId);
+    }
+
 }

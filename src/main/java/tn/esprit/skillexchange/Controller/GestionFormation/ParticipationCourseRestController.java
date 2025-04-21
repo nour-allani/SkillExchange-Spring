@@ -2,6 +2,7 @@ package tn.esprit.skillexchange.Controller.GestionFormation;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionFormation.ParticipationCourses;
 import tn.esprit.skillexchange.Service.GestionFormation.ParticipationCourseService;
@@ -58,5 +59,12 @@ public class ParticipationCourseRestController {
         participationCourseService.assignQuizToParticipation(participationId, quizId);
     }
 
+    @GetMapping("/check")
+    public boolean checkParticipation(
+            @RequestParam int participantId,
+            @RequestParam int courseId
+    ) {
+        return participationCourseService.checkParticipation(participantId, courseId);
+    }
 
 }

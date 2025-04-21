@@ -14,10 +14,8 @@ public class RatingCourse {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idCourse;
+    private int id;
     private int idUser;
-    private String content;
-
     private int rating;
 
     @ManyToOne

@@ -9,7 +9,9 @@ import tn.esprit.skillexchange.Repository.GestionFormation.CourseRepo;
 import tn.esprit.skillexchange.Repository.GestionQuiz.QuizRepo;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -33,6 +35,7 @@ public class FormationServiceImpl implements FormationService {
     @Override
     public Courses addCourse(Courses c) {
         c.setDate_ajout(java.sql.Date.valueOf(LocalDate.now()));
+        c.setApprooved(0);
         return courseRepo.save(c);
     }
 
@@ -50,6 +53,7 @@ public class FormationServiceImpl implements FormationService {
     public List<Courses> getCoursesByUserId(int id) {
         return courseRepo.getCoursesByUserId(id) ;
     }
+    
     public void assignQuizToCourse(Long courseId, Long quizId) {
         Courses course = courseRepo.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Course not found"));
@@ -59,6 +63,30 @@ public class FormationServiceImpl implements FormationService {
 
         course.setQuiz(quiz);
         courseRepo.save(course);
+    }
+
+
+    @Override
+    public void approoveDisapprooveCourse(long id) {
+        Courses C = this.retrieveCourse(id);
+        int state = C.getApprooved();
+        if (state == 0) {
+            C.setApprooved(1);
+        } else if (state == 1) {
+            C.setApprooved(0);
+        }
+         courseRepo.save(C);
+    }
+
+
+    @Override
+    public Map<String, Long> getCoursesCountBySeason() {
+        List<Object[]> results = courseRepo.countCoursesBySeason();
+        Map<String, Long> data = new HashMap<>();
+        for (Object[] row : results) {
+            data.put((String) row[0], (Long) row[1]);
+        }
+        return data;
     }
 
 }

@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import tn.esprit.skillexchange.Entity.GestionEvents.Events;
+import tn.esprit.skillexchange.Entity.GestionEvents.ParticipationEvents;
 import tn.esprit.skillexchange.Entity.GestionFormation.Category;
 import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
 import tn.esprit.skillexchange.Entity.GestionForumPost.Posts;
@@ -50,7 +51,11 @@ public class User implements UserDetails {
 
     @OneToOne(cascade = CascadeType.ALL)
     private Banned ban;
-
+/// /////////////////////////////////////////////////////////////
+// for recommondation events
+    @ElementCollection
+    private List<String> interests;
+/// ////////////////////////////////////////////////////////////
     @ManyToMany
     @JoinTable(
             name = "user_badge",
@@ -84,8 +89,13 @@ public class User implements UserDetails {
     @JsonIgnore
     private Set<Category> Categories ;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<ParticipationEvents> participationEvents; // New relationship
 
     @Override
+    @JsonIgnore
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }

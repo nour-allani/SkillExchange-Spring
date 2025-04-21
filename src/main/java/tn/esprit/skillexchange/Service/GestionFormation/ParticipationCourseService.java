@@ -13,6 +13,8 @@ public interface ParticipationCourseService {
     public void removeParticipation(Integer  participationId);
     public ParticipationCourses modifyParticipation(ParticipationCourses p);
     public List<ParticipationCourses> getParticipationsByIdCourse(int id) ;
+
     void assignQuizToParticipation(int participationId, Long quizId);
+    public boolean checkParticipation(long userId, int courseId);
 
 }
