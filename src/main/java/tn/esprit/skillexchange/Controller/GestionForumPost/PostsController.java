@@ -17,6 +17,8 @@ import tn.esprit.skillexchange.Service.GestionForumPost.IEmojiPostsService;
 import tn.esprit.skillexchange.Service.GestionForumPost.IPostsService;
 
 import org.springframework.data.domain.Pageable;
+import tn.esprit.skillexchange.Service.Mailing.GmailService;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,30 +35,80 @@ public class PostsController {
     private UserRepo userRepo;
     @Autowired
     private IEmojiPostsService emojiPostsService;
+    @Autowired
+    private GmailService gmailService;
 
-   // @GetMapping("/retrieveBackPostss")
-    //public List<Posts> getAllPosts() {
-       // return postsService.retrievePost();
-    //}
+
+    @GetMapping("/retrieveBackPostss")
+    public List<Posts> getAllPosts() {
+        return postsService.retrievePost();
+    }
+
+
    @GetMapping("/retrievePostss")
    public Page<Posts> showPosts(@RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "6") int size) {
        Pageable pageable = PageRequest.of(page, size);
-       return postsService.retrievePostPageable(pageable);
+       //return postsService.retrievePostPageable(pageable);
+       return postsService.retrieveApprovedPostPageable(pageable);
    }
+
+    @PostMapping("/approvePost/{id}")
+    public ResponseEntity<String> approvePost(@PathVariable Long id) {
+        Posts post = postsService.retrievePostsById(id);
+        if (post == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found.");
+        }
+
+        post.setApproved(true);  // On approuve le post
+        postsService.update(post);  // Met à jour le post dans la base de données
+
+        try {
+            // Envoie un email de confirmation à l'utilisateur
+            gmailService.sendSimpleEmail(post.getUser().getEmail(), "Your post has been approved",
+                    "Congratulations! Your post has been approved and is now visible.");
+            return ResponseEntity.ok("Post approved successfully and email sent.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email: " + e.getMessage());
+        }
+    }
+
+
+    @PostMapping("/rejectPost/{id}")
+    public ResponseEntity<String> rejectPost(@PathVariable Long id) {
+        Posts post = postsService.retrievePostsById(id);
+        if (post == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found.");
+        }
+
+        postsService.remove(id);  // Supprime le post de la base de données
+
+        try {
+            // Envoie un email pour informer l'utilisateur que son post a été rejeté
+            gmailService.sendSimpleEmail(post.getUser().getEmail(), "Your post has been rejected",
+                    "Sorry, your post has been rejected. Please check the guidelines and try again.");
+            return ResponseEntity.ok("Post rejected successfully and email sent.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email: " + e.getMessage());
+        }
+    }
+
+
 
 
 
     @PostMapping("/addPosts")
-    public Posts addProduct(@RequestBody Posts posts) {
+    public Posts addPost(@RequestBody Posts posts) {
+        posts.setApproved(false);
 
         User existingUser = userRepo.findById(posts.getUser().getId()).orElse(null);
 
         if (existingUser == null) {
-            return null;  // Or return a default value, like an empty product if needed
+            return null;  //
         }
 
         posts.setUser(existingUser); // Associate a real persisted user
+        posts.setApproved(false);
         return postsService.add(posts);
    }
 

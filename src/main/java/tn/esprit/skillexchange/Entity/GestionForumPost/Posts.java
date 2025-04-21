@@ -36,6 +36,9 @@ public class Posts {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    @Column(nullable = false)
+    private boolean approved = false;
+
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private Set<EmojiPosts> emojiPosts;
