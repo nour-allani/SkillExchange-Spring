@@ -38,8 +38,7 @@ public class ImageProductController {
     public void removeImageProduct(@PathVariable("ImageProduct-id") Long impId) {
         impS.removeImageProduct(impId);
     }
-
-    @PutMapping("/modify-ImageProduct")
+    @PatchMapping("/modify-ImageProduct")
     public ImageProduct modifyImageProduct(@RequestBody ImageProduct imp) {
         return impS.modifyImageProduct(imp);
 

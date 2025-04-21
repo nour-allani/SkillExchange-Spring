@@ -1,41 +1,50 @@
 package tn.esprit.skillexchange.Controller.GestionForumPost;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.skillexchange.Entity.Emojis;
+import tn.esprit.skillexchange.Entity.GestionForumPost.DTO.EmojiReactionDTO;
 import tn.esprit.skillexchange.Entity.GestionForumPost.EmojiPosts;
+import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Service.GestionForumPost.IEmojiPostsService;
 
 import java.util.List;
+import java.util.Map;
+
+
+//@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/emojiPosts")
-
+@AllArgsConstructor
 public class EmojiPostsController {
-    @Autowired
-    private IEmojiPostsService emojiPostsService;
+
+    private final IEmojiPostsService emojiPostsService;
+
+   /* @PostMapping("/react")
+    public EmojiPosts reactToPost(@RequestBody EmojiReactionDTO reactionDTO) {
+        return emojiPostsService.reactToPost(reactionDTO.postId, reactionDTO.userId, reactionDTO.emoji);
+    }*/
 
 
-    @GetMapping("/retrieveEmojiPostss")
-    public List<EmojiPosts> getAllEmojiPostss() {
-        return emojiPostsService.retrieveEmojiPostss();
+    @GetMapping("/counts/{postId}")
+    public Map<String, Long> getEmojiCounts(@PathVariable Long postId) {
+        return emojiPostsService.countEmojisByPostId(postId);
+    }
+    @GetMapping("/users/{postId}/{emoji}")
+    public List<User> getUsersByEmojiAndPostId(@PathVariable Long postId, @PathVariable Emojis emoji) {
+        return emojiPostsService.getUsersByEmojiAndPostId(postId, emoji);
+    }
+    @GetMapping("/{postId}/users/{userEmail}/{emoji}")
+    public ResponseEntity<Boolean> hasUserReactedWithEmoji(@PathVariable Long postId, @PathVariable String userEmail, @PathVariable String emoji) {
+        boolean hasReacted = emojiPostsService.hasUserReactedWithEmoji(postId, userEmail, Emojis.valueOf(emoji));
+        return ResponseEntity.ok(hasReacted);
+    }
+    @DeleteMapping("/{postId}/users/{userEmail}/{emoji}")
+    public ResponseEntity<Void> removeReaction(@PathVariable Long postId, @PathVariable String userEmail, @PathVariable String emoji) {
+        emojiPostsService.removeReaction(postId, userEmail, Emojis.valueOf(emoji));
+        return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/addEmojiPosts")
-    public EmojiPosts addEmojiPosts(@RequestBody EmojiPosts emoP) {
-        return emojiPostsService.add(emoP);
-    }
 
-    @PutMapping("/updateEmojiPosts")
-    public EmojiPosts updateEmojiPosts(@RequestBody EmojiPosts emoP) {
-        return emojiPostsService.update(emoP);
-    }
-
-    @GetMapping("/retrieveEmojiPostsById/{EmojiPosts-id}")
-    public EmojiPosts getEmojiPostsById(@PathVariable("EmojiPosts-id") Long id) {
-        return emojiPostsService.retrieveEmojiPostsById(id);
-    }
-
-    @DeleteMapping("deleteEmojiPosts/{EmojiPostsid}")
-    public void deleteEmojiPosts(@PathVariable("EmojiPosts-id") Long id) {
-        emojiPostsService.remove(id);
-    }
 }

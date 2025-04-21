@@ -11,4 +11,6 @@ public interface RatingCourseService {
     public RatingCourse addRating(RatingCourse r);
     public void removeRating(Long ratingId);
     public RatingCourse modifyRating(RatingCourse rating);
+    double getAverageRatingForCourse(Long courseId); // New method
+    long getRatingCountForCourse(Long courseId); // New method
 }

@@ -1,5 +1,7 @@
 package tn.esprit.skillexchange.Entity.GestionUser;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,12 +19,16 @@ public class HistoricTransactions {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
     private float amount;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date date;
-    private String source;
+    private String description;
 
     @ManyToOne
+    @JsonIgnore
     private User user;
 
 }

@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.skillexchange.Entity.GestionProduit.Cart;
 import tn.esprit.skillexchange.Entity.GestionProduit.Product;
+import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Repository.GestionProduit.CartRepo;
 import tn.esprit.skillexchange.Repository.GestionProduit.ProductRepo;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,6 +35,20 @@ public class CartServiceImpl implements ICartService{
         return cartRepo.save(c);
     }
 
+   public Cart getOrCreateActiveCart(User user) {
+       Cart existingCart = cartRepo.findByUserAndIsActiveTrue(user);
+       if (existingCart != null) {
+           return existingCart;
+       }
+
+       Cart newCart = new Cart();
+       newCart.setUser(user);
+       newCart.setActive(true);
+       return cartRepo.save(newCart);
+   }
+
+
+
     @Override
     public void removeCart(Long CartId) {
         cartRepo.deleteById(CartId);
@@ -56,4 +72,5 @@ public class CartServiceImpl implements ICartService{
          cartRepo.save(c);
          return c;
      }*/
+
  }

@@ -21,24 +21,10 @@ public class HistoricTransactionsController {
         return historicTransactionsService.retrieveAllHistorique();
     }
 
-    @PostMapping
-    public HistoricTransactions addHistoricTransaction(@RequestBody HistoricTransactions historicTransactions) {
-        return historicTransactionsService.add(historicTransactions);
-    }
-
-    @PutMapping
-    public HistoricTransactions updateHistoricTransaction(@RequestBody HistoricTransactions historicTransactions) {
-        return historicTransactionsService.update(historicTransactions);
-    }
-
     @GetMapping("/{id}")
     public HistoricTransactions getHistoricTransactionById(@PathVariable Long id) {
         return historicTransactionsService.retrieveHistoriqueById(id);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteHistoricTransaction(@PathVariable Long id) {
-        historicTransactionsService.remove(id);
-    }
 
 }
