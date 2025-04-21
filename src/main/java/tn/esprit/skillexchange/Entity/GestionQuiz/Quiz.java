@@ -4,6 +4,7 @@ package tn.esprit.skillexchange.Entity.GestionQuiz;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
 import tn.esprit.skillexchange.Entity.GestionFormation.ParticipationCourses;
 
 import java.util.Set;
@@ -22,7 +23,9 @@ public class Quiz {
     @Column(columnDefinition = "LONGTEXT")
     private String image;
 
-
+    @OneToOne
+    @JoinColumn(name = "id")
+    private Courses courses;
 
     @OneToOne
     @JsonIgnore

@@ -18,7 +18,8 @@ public class UserAnswer {
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     private ParticipationCourses participationCourse; // Link to ParticipationCourses (user participation in course)
-
+    @ManyToOne
+    private ParticipationCourses participation;
     @ManyToOne
     private Quiz quiz; // The quiz related to this answer
 

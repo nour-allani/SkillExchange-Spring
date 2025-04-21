@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface UserAnswerRepository extends JpaRepository<UserAnswer, Integer> {
     List<UserAnswer> findByParticipationCourse(ParticipationCourses participationCourse);
+
 }

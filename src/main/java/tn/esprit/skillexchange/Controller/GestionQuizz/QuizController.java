@@ -3,9 +3,11 @@ package tn.esprit.skillexchange.Controller.GestionQuizz;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
 import tn.esprit.skillexchange.Entity.GestionQuiz.Quiz;
 import tn.esprit.skillexchange.Entity.GestionQuiz.Result;
 import tn.esprit.skillexchange.Entity.GestionQuiz.UserAnswer;
+import tn.esprit.skillexchange.Service.GestionFormation.FormationService;
 import tn.esprit.skillexchange.Service.Gestionquizz.QuizService;
 import tn.esprit.skillexchange.Service.Gestionquizz.ResultService;
 import tn.esprit.skillexchange.Service.Gestionquizz.UserAnswerService;
@@ -20,6 +22,8 @@ public class QuizController {
 
     @Autowired
     private QuizService quizService;
+    @Autowired
+    private FormationService formationService;
 
 
     @Autowired
@@ -72,14 +76,24 @@ public class QuizController {
     }
 
     // New method to submit the final result for the user's participation in the quiz
-    @PostMapping("/{quizId}/results")
-    public Result submitResult(@PathVariable Long quizId, @RequestParam("participationCourseId") int participationCourseId) {
-        if (participationCourseId <= 0) {
-            throw new IllegalArgumentException("Invalid participation course ID: " + participationCourseId);
-        }
 
-        // Continue with result calculation if participationCourseId is valid
+    @PostMapping("/{quizId}/results")
+    public Result submitResult(
+            @PathVariable Long quizId,
+            @RequestParam("participationCourseId") int participationCourseId,
+            @RequestBody List<UserAnswer> userAnswers
+    ) {
+        // Save all user answers
+        userAnswers.forEach(answer -> {
+            answer.setQuiz(quizService.getQuizById(quizId));
+            userAnswerService.saveUserAnswer(answer);
+        });
+
+        // Calculate and return result
         return resultService.calculateResult(participationCourseId);
     }
-
+    @PostMapping("/{quizId}/course/{courseid}")
+    public Courses affectCourse(@PathVariable Long quizId, @PathVariable Long courseid) {
+        return quizService.assignQuizCourse(quizId,courseid);
+    }
 }

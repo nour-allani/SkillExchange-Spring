@@ -24,5 +24,7 @@ public class Result {
 
     @OneToOne(cascade = CascadeType.ALL)
     private Certificat certificat; // Optional, if you want to attach the cert directly
+    @OneToOne
+    private ParticipationCourses participation;
 }
 

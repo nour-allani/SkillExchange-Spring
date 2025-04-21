@@ -10,7 +10,9 @@ import java.util.List;
 
 @Repository
 
-public interface ParticipationCourseRepo extends JpaRepository<ParticipationCourses,Long> {
+    public interface ParticipationCourseRepo extends JpaRepository<ParticipationCourses,Integer> {
     @Query("SELECT p FROM ParticipationCourses p WHERE p.course.id =:id")
     List<ParticipationCourses> getParticipationsByIdCourse(@Param("id") int id);
+
+
 }

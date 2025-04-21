@@ -13,6 +13,7 @@ import tn.esprit.skillexchange.Repository.GestionQuiz.CertificatRepo;
 import tn.esprit.skillexchange.Repository.GestionQuiz.ResultRepository;
 import tn.esprit.skillexchange.Repository.GestionQuiz.UserAnswerRepository;
 import tn.esprit.skillexchange.Entity.Mailing.EmailRequest;
+import tn.esprit.skillexchange.Repository.GestionUser.UserRepo;
 import tn.esprit.skillexchange.Service.Mailing.GmailService;
 
 import javax.imageio.ImageIO;
@@ -30,6 +31,8 @@ import java.util.List;
 public class ResultService {
 
     @Autowired
+    private UserRepo userRepository;
+    @Autowired
     private UserAnswerRepository userAnswerRepository;
 
     @Autowired
@@ -45,14 +48,14 @@ public class ResultService {
     private GmailService gmailService; // Inject GmailService for sending emails
     LocalDate localDate = LocalDate.now();
     Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-    public Result calculateResult(long participationCourseId) {
+    public Result calculateResult(Integer  participationCourseId) {
         // Fetching the participation course using the ID
         ParticipationCourses participation = participationCourseRepository.findById(participationCourseId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid participation course ID"));
 
         // Getting the associated quiz and user
         Quiz quiz = participation.getQuiz();
-        User user = participation.getUser();
+        User user = userRepository.findById(Long.valueOf(participation.getParticipant())).orElse(null); //participant (id)
 
         // Fetching the user's answers for the quiz
         List<UserAnswer> userAnswers = userAnswerRepository.findByParticipationCourse(participation);
@@ -80,7 +83,7 @@ public class ResultService {
             certificatRepository.save(cert);
             result.setCertificat(cert);
 
-            // Create an email request to send the certificate
+            // Create an email request to send the certificate template fil source html fi blasit text
             String emailText = "Congratulations! You have successfully completed the quiz \"" + quiz.getTitle() + "\" with a score of " + score + "%.\n\n" +
                     "Attached is your certificate of completion.";
             EmailRequest emailRequest = new EmailRequest();
@@ -89,7 +92,7 @@ public class ResultService {
             emailRequest.setText(emailText);
 
             // Send the email with the certificate details
-            gmailService.sendSimpleEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getText());
+            //gmailService.sendSimpleEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getText());
         }
 
         // Save the result object to the repository

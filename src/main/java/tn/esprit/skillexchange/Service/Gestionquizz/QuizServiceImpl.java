@@ -2,7 +2,9 @@ package tn.esprit.skillexchange.Service.Gestionquizz;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
 import tn.esprit.skillexchange.Entity.GestionQuiz.Quiz;
+import tn.esprit.skillexchange.Repository.GestionFormation.CourseRepo;
 import tn.esprit.skillexchange.Repository.GestionQuiz.QuizRepo;
 import tn.esprit.skillexchange.Service.Gestionquizz.QuizService;
 
@@ -14,6 +16,8 @@ public class QuizServiceImpl implements QuizService {
 
     @Autowired
     private QuizRepo quizRepository;
+    @Autowired
+    private CourseRepo courseRepo;
 
 
     @Override
@@ -53,6 +57,18 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public void deleteQuiz(Long id) {
         quizRepository.deleteById(id);
+    }
+
+    @Override
+    public Courses assignQuizCourse(Long quizId, Long courseid)
+    {
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+        Courses course = courseRepo.findById(courseid)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+        course.setQuiz(quiz);
+
+        return courseRepo.save(course);
     }
 
 }

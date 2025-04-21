@@ -18,16 +18,14 @@ public class ParticipationCourses {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idp;
     private int progress;
-
-
-    @ManyToOne
-    private User user;
-
+    private int participant;
+    private Date date_participation;
 
     @ManyToOne
     private Courses course;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.MERGE)  // Add cascade if needed
+    @JoinColumn(name = "quiz_id")  // Explicit column mapping
     private Quiz quiz;
 
 }
