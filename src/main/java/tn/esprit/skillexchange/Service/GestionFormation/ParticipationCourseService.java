@@ -13,5 +13,6 @@ public interface ParticipationCourseService {
     public void removeParticipation(Long participationId);
     public ParticipationCourses modifyParticipation(ParticipationCourses p);
     public List<ParticipationCourses> getParticipationsByIdCourse(int id) ;
+    public boolean checkParticipation(long userId, int courseId);
 
 }

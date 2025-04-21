@@ -30,6 +30,8 @@ public class Courses {
     private int state;
     private Date date_ajout ;
     private float price;
+    private int approoved;
+    //private int paid;
 
     @ManyToOne
     @JoinColumn(name = "author_id")
