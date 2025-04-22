@@ -3,6 +3,7 @@ package tn.esprit.skillexchange.Controller.GestionProduit;
 import lombok.AllArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionProduit.Cart;
@@ -32,16 +33,31 @@ public class CartProductController {
         return cartpS.retrieveCartProductById(cartPId);
     }
     @GetMapping("/cart/{cartId}/products")
-    public List<CartProduct> getCartProducts(@PathVariable Long cartId) {
-        return cartpS.getProductsInCart(cartId);
+    public ResponseEntity<List<CartProduct>> getProductsInCart(@PathVariable Long cartId) {
+        List<CartProduct> cartProducts = cartpS.getProductsInCart(cartId);
+
+        if (cartProducts.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Aucun produit trouvé
+        }
+
+        return ResponseEntity.ok(cartProducts); // Retourne la liste des produits du panier
     }
 
-
-    @PostMapping("/add")
+    /*@PostMapping("/add")
     public CartProduct addProductToCart(@RequestParam("cartId") Long cartId,
                                         @RequestParam("productId") Long productId,
                                         @RequestParam("quantity") int quantity) {
         return cartpS.addProductToCart(cartId, productId, quantity);
+    }*/
+    @PostMapping("/add-to-user-cart")
+    public ResponseEntity<CartProduct> addProductToUserCart(@RequestParam Long userId,
+                                                            @RequestParam Long productId,
+                                                            @RequestParam int quantity) {
+        CartProduct addedProduct = cartpS.addProductToCart(userId, productId, quantity);
+        if (addedProduct == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // stock insuffisant ou user/product inexistant
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(addedProduct);
     }
 
 

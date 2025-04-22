@@ -35,22 +35,22 @@ public class ProductController {
         return pS.retrieveProducts();
 
     }
+    @GetMapping("/Allapproved")
+    public List<Product> getApprovedProducts() {
+        return pS.getAllApprovedProducts();
+    }
     @GetMapping("/retrieve-products/{product-id}")
     public Product retrieveProduct(@PathVariable("product-id")Long pId){
         return pS.retrieveProductById(pId);
 
     }
-    /*@PostMapping("/add-product")
-    public Product addProduct(@RequestBody Product p) {
-        return pS.addProduct(p);
 
-    }*/
     @PutMapping("/approve/{id}")
     public ResponseEntity<String> approveProduct(@PathVariable("id") Long id) {
         pS.approveProduct(id);
         return ResponseEntity.ok("✅ Product approved and email sent.");
     }
-    @PutMapping("/reject/{id}")
+    @DeleteMapping("/reject/{id}")
     public ResponseEntity<String> rejectProduct(@PathVariable("id") Long id) {
         pS.rejectProduct(id);
         return ResponseEntity.ok("✅ Product approved and email sent.");

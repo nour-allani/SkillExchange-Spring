@@ -34,7 +34,7 @@ public class CartServiceImpl implements ICartService{
     public Cart addCart(Cart c) {
         return cartRepo.save(c);
     }
-
+@Override
    public Cart getOrCreateActiveCart(User user) {
        Cart existingCart = cartRepo.findByUserAndIsActiveTrue(user);
        if (existingCart != null) {
@@ -46,6 +46,13 @@ public class CartServiceImpl implements ICartService{
        newCart.setActive(true);
        return cartRepo.save(newCart);
    }
+    @Override
+    public void deactivateCartIfNeeded(Cart cart) {
+        if (cart.getCartProducts().isEmpty()) {
+            cart.setActive(false);
+            cartRepo.save(cart);
+        }
+    }
 
 
 

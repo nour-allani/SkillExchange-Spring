@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -11,10 +12,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -69,4 +67,69 @@ public class GmailService {
             return FileCopyUtils.copyToString(reader);
         }
     }
+    ///////////////////////////////Gestion Produit /////////////////////////////////////////////////
+    public void sendEmailWithAttachment(String to, String subject, String text, byte[] pdfContent, String filename)
+            throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        helper.setFrom(fromEmail);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(text);
+
+        helper.addAttachment(filename, new ByteArrayResource(pdfContent));
+
+        mailSender.send(message);
+    }
+    public void sendInvoiceHtmlEmail(String to, String subject, String htmlContent, byte[] pdfBytes, String filename)
+            throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setFrom(fromEmail); // assure-toi que fromEmail est bien injecté
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(htmlContent, true); // ✅ true pour HTML
+
+        helper.addAttachment(filename, new ByteArrayResource(pdfBytes));
+
+        mailSender.send(message);
+        System.out.println("📧 Invoice HTML email sent to: " + to);
+    }
+    public void sendProductApprovalHtmlEmail(String to, String productName) throws Exception {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(to);
+        helper.setSubject("✅ Your product was approved");
+
+        String html = loadHtmlTemplateWithProduct("templates/email/product-approved-template.html", productName);
+        helper.setText(html, true);
+        helper.addInline("logo25", new ClassPathResource("static/logo25.png").getFile());
+
+        mailSender.send(message);
+    }
+    public void sendProductRejectionHtmlEmail(String to, String productName) throws Exception {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(to);
+        helper.setSubject("❌ Your product was rejected");
+
+        String html = loadHtmlTemplateWithProduct("templates/email/product-rejected-template.html", productName);
+        helper.setText(html, true);
+        helper.addInline("logo25", new ClassPathResource("static/logo25.png").getFile());
+
+        mailSender.send(message);
+    }
+    private String loadHtmlTemplateWithProduct(String path, String productName) throws IOException {
+        InputStream input = new ClassPathResource(path).getInputStream();
+        String html = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+        return html.replace("{{productName}}", productName);
+    }
+
+
+
+
 }

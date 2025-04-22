@@ -31,6 +31,9 @@ public class Product  {
     private CurrencyType currencyType;
     @Column(name = "is_approved")
     private boolean isApproved = false;
+    @JsonProperty("isApproved")
+    public boolean getIsApproved() {
+        return isApproved;}
 
     @ManyToOne
     private User postedBy;

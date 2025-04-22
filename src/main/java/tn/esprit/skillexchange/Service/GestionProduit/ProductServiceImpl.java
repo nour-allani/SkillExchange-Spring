@@ -26,7 +26,11 @@ public class ProductServiceImpl implements  IProductService{
     public List<Product> retrieveProducts() {
         return pRepo.findAll();
     }
+    @Override
+    public List<Product> getAllApprovedProducts() {
 
+        return pRepo.findByIsApprovedTrue();
+    }
     @Override
     public Product retrieveProductById(Long ProductId) {
         return pRepo.findById(ProductId).get();
@@ -70,15 +74,11 @@ public class ProductServiceImpl implements  IProductService{
 
         try {
             String userEmail = product.getPostedBy().getEmail();
-            String subject = "✅ Your product was approved";
-            String content = "Hello,\n\nYour product '" + product.getProductName() + "' has been approved and published on the marketplace.\n\nThank you!";
-
-            gmailService.sendSimpleEmail(userEmail, subject, content);
-
+            gmailService.sendProductApprovalHtmlEmail(userEmail, product.getProductName());
         } catch (Exception e) {
             System.err.println("❌ Failed to send approval email: " + e.getMessage());
-            // Tu peux aussi logger ou relancer une exception custom si nécessaire
         }
+
     }
     @Override
     public void rejectProduct(Long productId) {
@@ -87,15 +87,11 @@ public class ProductServiceImpl implements  IProductService{
 
         try {
             String userEmail = product.getPostedBy().getEmail();
-            String subject = "❌ Your product was rejected";
-            String content = "Hello,\n\nWe regret to inform you that your product '" + product.getProductName() +
-                    "' was rejected by the admin and will not be published on the marketplace.\n\n" +
-                    "Please make sure your submission follows our guidelines.";
-
-            gmailService.sendSimpleEmail(userEmail, subject, content);
+            gmailService.sendProductRejectionHtmlEmail(userEmail, product.getProductName());
         } catch (Exception e) {
             System.err.println("❌ Failed to send rejection email: " + e.getMessage());
         }
+
 
         // Supprimer le produit après l'envoi de l'email
         pRepo.delete(product);
