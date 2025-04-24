@@ -12,6 +12,7 @@ import tn.esprit.skillexchange.Service.GestionEvents.IParticipationEventsService
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/participationEvents")
@@ -76,12 +77,12 @@ public class ParticipationEventsController {
                 log.error("No authenticated user found for event participation: eventId={}, status={}", eventId, status);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
-            String userEmail = authentication.getName(); // e.g., zaiter.m4@gmail.com
+            String userEmail = authentication.getName();
             log.info("User {} participating in event {} with status {}", userEmail, eventId, status);
             ParticipationEvents participation = participationEventsService.participateInEvent(eventId, userEmail, status);
             return ResponseEntity.ok(participation);
         } catch (IllegalArgumentException e) {
-            log.error("Invalid request for event {} with status {} for user: {}", eventId, status, e.getMessage());
+            log.error("Invalid request for event {} with status {}: {}", eventId, status, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (Exception e) {
             log.error("Unexpected error participating in event {} with status {}: {}", eventId, status, e.getMessage(), e);
@@ -89,7 +90,6 @@ public class ParticipationEventsController {
         }
     }
 
-    // New endpoint to count participations by event and status
     @GetMapping("/countByEventAndStatus/{eventId}/{status}")
     public ResponseEntity<Long> countByEventAndStatus(@PathVariable Long eventId, @PathVariable Status status) {
         try {
@@ -98,6 +98,69 @@ public class ParticipationEventsController {
             return ResponseEntity.ok(count);
         } catch (Exception e) {
             log.error("Error fetching participation count for eventId: {}, status: {}", eventId, status, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    /*@GetMapping("/user/{email}")
+    public ResponseEntity<List<ParticipationEvents>> getParticipationsByUserEmail(
+            @PathVariable String email,
+            Authentication authentication) {
+        try {
+            log.info("Fetching participations for user: {}", email);
+            if (authentication == null || !authentication.getName().equals(email)) {
+                log.error("User {} is not authorized to access participations for {}",
+                        authentication != null ? authentication.getName() : "null", email);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+            List<ParticipationEvents> participations = participationEventsService.findByUserEmail(email);
+            log.info("Participations found for user {}: {} entries", email, participations.size());
+            return ResponseEntity.ok(participations);
+        } catch (Exception e) {
+            log.error("Error fetching participations for user: {}", email, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }*/
+
+    @GetMapping("/user/{email}/event/{eventId}")
+    public ResponseEntity<ParticipationEvents> getParticipationByUserAndEvent(
+            @PathVariable String email,
+            @PathVariable Long eventId,
+            Authentication authentication) {
+        try {
+            log.info("Fetching participation for user: {}, eventId: {}", email, eventId);
+            if (authentication == null || !authentication.getName().equals(email)) {
+                log.error("User {} is not authorized to access participation for {}",
+                        authentication != null ? authentication.getName() : "null", email);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+            Optional<ParticipationEvents> participation = participationEventsService.findByEventIdAndUserEmail(eventId, email);
+            log.info("Participation for user {} and event {}: {}", email, eventId, participation.isPresent() ? participation.get() : "none");
+            return participation.map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.ok(null));
+        } catch (Exception e) {
+            log.error("Error fetching participation for user: {}, eventId: {}", email, eventId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+
+    @GetMapping("/user/{email}")
+    public ResponseEntity<List<ParticipationEvents>> getParticipationsByUserEmail(
+            @PathVariable String email,
+            Authentication authentication) {
+        try {
+            log.info("Fetching participations for user: {}", email);
+            if (authentication == null || !authentication.getName().equals(email)) {
+                log.error("User {} is not authorized to access participations for {}",
+                        authentication != null ? authentication.getName() : "null", email);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+            List<ParticipationEvents> participations = participationEventsService.findByUserEmail(email);
+            log.info("Participations found for user {}: {} entries", email, participations.size());
+            return ResponseEntity.ok(participations);
+        } catch (Exception e) {
+            log.error("Error fetching participations for user: {}", email, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

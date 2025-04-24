@@ -4,6 +4,7 @@ import tn.esprit.skillexchange.Entity.GestionEvents.ParticipationEvents;
 import tn.esprit.skillexchange.Entity.GestionEvents.Status;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IParticipationEventsService {
     List<ParticipationEvents> retrieveParticipationEvents();
@@ -13,7 +14,6 @@ public interface IParticipationEventsService {
     void removeParticipationEvents(Long id);
     ParticipationEvents participateInEvent(Long eventId, String userEmail, Status status);
     List<ParticipationEvents> findByUserEmail(String userEmail);
-
-    // New method to count participations by event and status
     long countByEventIdAndStatus(Long eventId, Status status);
+    Optional<ParticipationEvents> findByEventIdAndUserEmail(Long eventId, String userEmail);
 }

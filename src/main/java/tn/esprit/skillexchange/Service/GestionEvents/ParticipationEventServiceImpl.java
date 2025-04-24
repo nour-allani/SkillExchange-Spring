@@ -147,4 +147,14 @@ public class ParticipationEventServiceImpl implements IParticipationEventsServic
         log.info("Counting participations for eventId: {} with status: {}", eventId, status);
         return participationEventsRepository.countByEventIdEventAndStatus(eventId, status);
     }
+
+
+    @Override
+    public Optional<ParticipationEvents> findByEventIdAndUserEmail(Long eventId, String userEmail) {
+        log.info("Fetching participation for eventId: {}, userEmail: {}", eventId, userEmail);
+        return participationEventsRepository.findByEventIdEventAndUserEmail(eventId, userEmail);
+    }
+
+
+
 }
