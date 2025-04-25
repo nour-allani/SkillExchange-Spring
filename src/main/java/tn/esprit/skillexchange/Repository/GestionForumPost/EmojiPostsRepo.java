@@ -21,4 +21,5 @@ public interface EmojiPostsRepo extends JpaRepository<EmojiPosts, Long> {
     @Query("SELECT e.user FROM EmojiPosts e WHERE e.post.idPost = :postId AND e.emoji = :emoji")
     List<User> findUsersByEmojiAndPostId(@Param("postId") Long postId, @Param("emoji") Emojis emoji);
 
-}
+    }
+
