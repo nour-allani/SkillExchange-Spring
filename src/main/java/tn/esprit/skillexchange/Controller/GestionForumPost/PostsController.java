@@ -54,44 +54,50 @@ public class PostsController {
    }
 
     @PostMapping("/approvePost/{id}")
-    public ResponseEntity<String> approvePost(@PathVariable Long id) {
+    public ResponseEntity<Posts> approvePost(@PathVariable Long id) {
         Posts post = postsService.retrievePostsById(id);
         if (post == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        post.setApproved(true);  // On approuve le post
-        postsService.update(post);  // Met à jour le post dans la base de données
+        post.setApproved(true);
+        postsService.update(post);
 
         try {
-            // Envoie un email de confirmation à l'utilisateur
-            gmailService.sendSimpleEmail(post.getUser().getEmail(), "Your post has been approved",
-                    "Congratulations! Your post has been approved and is now visible.");
-            return ResponseEntity.ok("Post approved successfully and email sent.");
+            gmailService.sendSimpleEmail(
+                    post.getUser().getEmail(),
+                    "Your post has been approved",
+                    "Congratulations! Your post has been approved and is now visible."
+            );
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email: " + e.getMessage());
+            // Continue même si l'email échoue
         }
-    }
 
+        return ResponseEntity.ok(post); // ✅ Retourne le post mis à jour
+    }
 
     @PostMapping("/rejectPost/{id}")
-    public ResponseEntity<String> rejectPost(@PathVariable Long id) {
+    public ResponseEntity<Posts> rejectPost(@PathVariable Long id) {
         Posts post = postsService.retrievePostsById(id);
         if (post == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        postsService.remove(id);  // Supprime le post de la base de données
+        postsService.remove(id);
 
         try {
-            // Envoie un email pour informer l'utilisateur que son post a été rejeté
-            gmailService.sendSimpleEmail(post.getUser().getEmail(), "Your post has been rejected",
-                    "Sorry, your post has been rejected. Please check the guidelines and try again.");
-            return ResponseEntity.ok("Post rejected successfully and email sent.");
+            gmailService.sendSimpleEmail(
+                    post.getUser().getEmail(),
+                    "Your post has been rejected",
+                    "Sorry, your post has been rejected. Please check the guidelines and try again."
+            );
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email: " + e.getMessage());
+            // Continue même si l'email échoue
         }
+
+        return ResponseEntity.ok(post); // ✅ Retourne l'objet supprimé pour référence
     }
+
 
 
 
@@ -107,7 +113,7 @@ public class PostsController {
             return null;  //
         }
 
-        posts.setUser(existingUser); // Associate a real persisted user
+        posts.setUser(existingUser);
         posts.setApproved(false);
         return postsService.add(posts);
    }
@@ -132,9 +138,9 @@ public class PostsController {
 
         if (post != null) {
             postsService.remove(id);
-            return ResponseEntity.noContent().build(); // 204 No Content
+            return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404 Not Found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
     @Autowired

@@ -3,6 +3,7 @@ package tn.esprit.skillexchange.Entity.GestionForumPost;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import tn.esprit.skillexchange.Entity.GestionUser.User;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -19,7 +20,6 @@ public class CommentPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idComment;  // Utilisation de Long pour l'ID (plus flexible que int)
-
     private String content;  // Contenu du commentaire
 
     private Date createdAt;  // Date de création du commentaire
@@ -27,6 +27,14 @@ public class CommentPost {
     private Date updatedAt;  // Date de mise à jour du commentaire
 
     private String email;  // Email de l'utilisateur ayant écrit le commentaire
+    @ManyToMany
+    @JoinTable(
+            name = "comment_mentions",
+            joinColumns = @JoinColumn(name = "comment_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> mentions = new HashSet<>();
+
 
     @ManyToOne
     @JoinColumn(name = "post_id_post")
