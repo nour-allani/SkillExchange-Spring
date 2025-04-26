@@ -16,17 +16,29 @@ import java.util.Set;
 public class Posts {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPost ;
-    private String content ;
-    private String ImageP ;
-    private String title ;
-    private Date createdAt ;
-    private Date updatedAt ;
+    private Long idPost;
+
+    private String content;
+    /*Lob
+    private byte[] imageP;
+    private String imageType;*/
+    private String title;
+
+  //  @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+   // @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+
     private int upVote;
     private int downVote;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
+    @Column(nullable = false)
+    private boolean approved = false;
+
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private Set<EmojiPosts> emojiPosts;
@@ -34,5 +46,6 @@ public class Posts {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private Set<CommentPost> commentPosts;
 
-
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private Set<ImagePost> imagePost;
 }

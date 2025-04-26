@@ -7,6 +7,7 @@ import tn.esprit.skillexchange.Entity.GestionFormation.RatingCourse;
 import tn.esprit.skillexchange.Repository.GestionFormation.RatingCourseRepo;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -37,5 +38,16 @@ public class RatingCourseImpl implements RatingCourseService {
     @Override
     public RatingCourse modifyRating(RatingCourse rating) {
         return ratingCourseRepo.save(rating);
+    }
+
+    @Override
+    public double getAverageRatingForCourse(Long courseId) {
+        Double average = ratingCourseRepo.findAverageRatingByCourseId(courseId.intValue());
+        return average != null ? average : 0.0;
+    }
+
+    @Override
+    public long getRatingCountForCourse(Long courseId) {
+        return ratingCourseRepo.countByCourseId(courseId.intValue());
     }
 }
