@@ -41,8 +41,10 @@ public class Events {
     @JsonManagedReference
     private Set<ParticipationEvents> participationEvents;
 
-    @OneToMany(mappedBy = "event",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "event")
+    @JsonIgnore
     private Set<RateEvent> rateEvents;
+
 
     @OneToMany(mappedBy = "event",cascade = CascadeType.ALL)
     private Set<EventComment> eventComments;

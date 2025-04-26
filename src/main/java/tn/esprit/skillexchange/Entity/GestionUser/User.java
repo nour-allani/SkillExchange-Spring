@@ -1,6 +1,8 @@
 package tn.esprit.skillexchange.Entity.GestionUser;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import tn.esprit.skillexchange.Entity.GestionEvents.Events;
 import tn.esprit.skillexchange.Entity.GestionEvents.ParticipationEvents;
+import tn.esprit.skillexchange.Entity.GestionEvents.RateEvent;
 import tn.esprit.skillexchange.Entity.GestionFormation.Category;
 import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
 import tn.esprit.skillexchange.Entity.GestionForumPost.Posts;
@@ -92,6 +95,10 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<ParticipationEvents> participationEvents; // New relationship
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private Set<RateEvent> rateEvents;
 
     @Override
     @JsonIgnore
