@@ -55,8 +55,19 @@ public class PostsServiceImpl implements IPostsService {
 
     @Override
     public Posts update(Posts p) {
-        p.setUpdatedAt(new Date());
-        return postRepo.save(p);
+       /* p.setUpdatedAt(new Date());
+        return postRepo.save(p);*/
+
+            if (p.getImagePost() != null) {
+                for (ImagePost img : p.getImagePost()) {
+                    img.setPost(p);  // Associer chaque image au post
+                }
+            }
+
+            // Sauvegarder et renvoyer le post mis à jour
+            return postRepo.save(p);
+
+
     }
 
     @Override
