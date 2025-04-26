@@ -1,5 +1,6 @@
 package tn.esprit.skillexchange.Service.GestionProduit;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,10 +28,8 @@ public class CartProductServiceImpl implements  ICartProductService{
     @Autowired
     private UserRepo userRepo;
     @Override
-    public List<CartProduct> retrieveCartProducts(/*long cartId*/) {
+    public List<CartProduct> retrieveCartProducts() {
        return cartProductRepo.findAll();
-       // return cartProductRepo.findById(cartId);
-
     }
 
     @Override
@@ -264,5 +263,41 @@ public class CartProductServiceImpl implements  ICartProductService{
         cartProduct.setQuantity(newQuantity);
         return cartProductRepo.save(cartProduct);
     }
+    @Transactional
+    @Override
+    public void validateCart(Long cartId) {
+        Cart cart = cartRepo.findById(cartId).orElse(null);
+
+        if (cart == null) {
+            System.err.println("❌ Cart not found for ID: " + cartId);
+            return;
+        }
+
+        if (!cart.isActive()) {
+            System.out.println("⚠️ Cart already validated.");
+            return;
+        }
+
+        List<CartProduct> cartProducts = cartProductRepo.findByCart(cart);
+
+        for (CartProduct cp : cartProducts) {
+            Product product = cp.getProduct();
+            int quantityPurchased = cp.getQuantity();
+
+            if (product.getStock() >= quantityPurchased) {
+                product.setStock(product.getStock() - quantityPurchased);
+                productRepo.save(product);
+            } else {
+                System.err.println("⚠️ Not enough stock for product: " + product.getProductName());
+                // Ne rien faire si pas assez de stock
+            }
+        }
+
+        cart.setActive(false); // Désactiver le panier
+        cartRepo.save(cart);
+
+        System.out.println("✅ Cart validated successfully.");
+    }
 
 }
+

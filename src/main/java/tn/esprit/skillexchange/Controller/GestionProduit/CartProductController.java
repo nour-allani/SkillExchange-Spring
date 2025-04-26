@@ -12,6 +12,7 @@ import tn.esprit.skillexchange.Service.GestionProduit.ICartProductService;
 
 
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @RestController
@@ -32,7 +33,7 @@ public class CartProductController {
     public CartProduct getCartProductById(@PathVariable("cartPId") Long cartPId) {
         return cartpS.retrieveCartProductById(cartPId);
     }
-    @GetMapping("/cart/{cartId}/products")
+   /* @GetMapping("/cart/{cartId}/products")
     public ResponseEntity<List<CartProduct>> getProductsInCart(@PathVariable Long cartId) {
         List<CartProduct> cartProducts = cartpS.getProductsInCart(cartId);
 
@@ -41,7 +42,14 @@ public class CartProductController {
         }
 
         return ResponseEntity.ok(cartProducts); // Retourne la liste des produits du panier
-    }
+    }*/
+   @GetMapping("/cart/{cartId}/products")
+   public ResponseEntity<List<CartProduct>> getProductsInCart(@PathVariable Long cartId) {
+       List<CartProduct> cartProducts = cartpS.getProductsInCart(cartId);
+
+       return ResponseEntity.ok(cartProducts); // Même si c'est vide, retourne 200 OK
+   }
+
 
     /*@PostMapping("/add")
     public CartProduct addProductToCart(@RequestParam("cartId") Long cartId,
@@ -60,6 +68,15 @@ public class CartProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(addedProduct);
     }
 
+    @PostMapping("/validate-cart")
+    public ResponseEntity<String> validateCart(@RequestBody Map<String, Long> payload) {
+        Long cartId = payload.get("cartId");
+
+        cartpS.validateCart(cartId);
+
+
+        return ResponseEntity.ok("✅ Cart validation process completed.");
+    }
 
 
     @DeleteMapping("/delete")

@@ -66,18 +66,6 @@ public class CartServiceImpl implements ICartService{
     public Cart modifyCart(Cart Cart) {
         return cartRepo.save(Cart);
     }
-    /* @Override
-     public Cart affecterProductToCart(long cartId, long productId) {
-         Cart c=cartRepo.findById(cartId).get();
-         Product pr=productRepo.findById(productId).get();
-         Set<Product> productMisesAjour=new HashSet<>();
-         if(c.getProducts()!=null){
-             productMisesAjour.addAll(c.getProducts());
-         }
-         productMisesAjour.add(pr);
-         c.setProducts(productMisesAjour);
-         cartRepo.save(c);
-         return c;
-     }*/
+
 
  }

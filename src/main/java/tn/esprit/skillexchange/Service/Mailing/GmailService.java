@@ -104,7 +104,7 @@ public class GmailService {
         helper.setTo(to);
         helper.setSubject("✅ Your product was approved");
 
-        String html = loadHtmlTemplateWithProduct("templates/email/product-approved-template.html", productName);
+        String html = loadHtmlTemplateWithProduct("templates/email/product-approve-template.html", productName);
         helper.setText(html, true);
         helper.addInline("logo25", new ClassPathResource("static/logo25.png").getFile());
 
@@ -117,7 +117,7 @@ public class GmailService {
         helper.setTo(to);
         helper.setSubject("❌ Your product was rejected");
 
-        String html = loadHtmlTemplateWithProduct("templates/email/product-rejected-template.html", productName);
+        String html = loadHtmlTemplateWithProduct("templates/email/product-reject-template.html", productName);
         helper.setText(html, true);
         helper.addInline("logo25", new ClassPathResource("static/logo25.png").getFile());
 

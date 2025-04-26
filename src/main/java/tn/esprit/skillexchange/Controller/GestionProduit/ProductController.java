@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
 import tn.esprit.skillexchange.Entity.GestionProduit.ImageProduct;
 import tn.esprit.skillexchange.Entity.GestionProduit.Product;
 import tn.esprit.skillexchange.Entity.GestionProduit.ReviewProduct;
@@ -14,9 +14,6 @@ import tn.esprit.skillexchange.Repository.GestionUser.UserRepo;
 import tn.esprit.skillexchange.Service.GestionProduit.IProductService;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 
 @RestController
 @AllArgsConstructor
@@ -93,24 +90,7 @@ public class ProductController {
         return pS.modifyProduct(p);
 
     }
-  /*@PatchMapping("/update/{id}")
-  public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product updatedProduct) {
-      Product existing = pS.retrieveProductById(id);
 
-      if (existing != null) {
-          existing.setProductName(updatedProduct.getProductName());
-          existing.setType(updatedProduct.getType());
-          existing.setPrice(updatedProduct.getPrice());
-          existing.setStock(updatedProduct.getStock());
-          existing.setImageProducts(updatedProduct.getImageProducts());
-
-          Product saved = pS.addProduct(existing); // ou save(existing)
-          return ResponseEntity.ok(saved);
-      } else {
-          return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-      }
-  }
-*/
 
     @PostMapping("/{productId}/reviews")
     public ReviewProduct addProductReview(@PathVariable Long productId, @RequestBody ReviewProduct review) {
