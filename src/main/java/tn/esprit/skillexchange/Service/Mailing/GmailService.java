@@ -18,10 +18,14 @@ import org.springframework.util.FileCopyUtils;
 import lombok.extern.slf4j.Slf4j;
 import tn.esprit.skillexchange.Entity.Mailing.EmailRequest;
 
+
+import java.io.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -141,6 +145,71 @@ public class GmailService {
         }
     }
 
+    ///////////////////////////////Gestion Produit /////////////////////////////////////////////////
+    public void sendEmailWithAttachment(String to, String subject, String text, byte[] pdfContent, String filename)
+            throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        helper.setFrom(fromEmail);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(text);
+
+        helper.addAttachment(filename, new ByteArrayResource(pdfContent));
+
+        mailSender.send(message);
+    }
+    public void sendInvoiceHtmlEmail(String to, String subject, String htmlContent, byte[] pdfBytes, String filename)
+            throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setFrom(fromEmail); 
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(htmlContent, true); 
+
+        helper.addAttachment(filename, new ByteArrayResource(pdfBytes));
+
+        mailSender.send(message);
+        System.out.println("📧 Invoice HTML email sent to: " + to);
+    }
+    public void sendProductApprovalHtmlEmail(String to, String productName) throws Exception {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(to);
+        helper.setSubject("✅ Your product was approved");
+
+        String html = loadHtmlTemplateWithProduct("templates/email/product-approve-template.html", productName);
+        helper.setText(html, true);
+        helper.addInline("logo25", new ClassPathResource("static/logo25.png").getFile());
+
+        mailSender.send(message);
+    }
+    public void sendProductRejectionHtmlEmail(String to, String productName) throws Exception {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(to);
+        helper.setSubject("❌ Your product was rejected");
+
+        String html = loadHtmlTemplateWithProduct("templates/email/product-reject-template.html", productName);
+        helper.setText(html, true);
+        helper.addInline("logo25", new ClassPathResource("static/logo25.png").getFile());
+
+        mailSender.send(message);
+    }
+    private String loadHtmlTemplateWithProduct(String path, String productName) throws IOException {
+        InputStream input = new ClassPathResource(path).getInputStream();
+        String html = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+        return html.replace("{{productName}}", productName);
+    }
+
+
+
+
     private byte[] generateQRCode(String text, int width, int height) throws WriterException, IOException {
         log.info("Generating QR code with text: {}, width: {}, height: {}", text, width, height);
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
@@ -159,6 +228,7 @@ public class GmailService {
         MatrixToImageWriter.writeToPath(bitMatrix, "PNG", java.nio.file.Paths.get(filePath));
         log.info("QR code saved to: {}", filePath);
     }
+
     public void sendMail(EmailRequest emailRequest) throws MessagingException {
         if (emailRequest.getText().contains("<html>")) {
             sendHtmlEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getText());
@@ -167,3 +237,7 @@ public class GmailService {
         }
     }
 }
+
+
+
+

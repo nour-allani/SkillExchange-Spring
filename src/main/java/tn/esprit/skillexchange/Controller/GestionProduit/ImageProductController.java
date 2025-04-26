@@ -3,6 +3,8 @@ package tn.esprit.skillexchange.Controller.GestionProduit;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionProduit.ImageProduct;
 import tn.esprit.skillexchange.Service.GestionProduit.IImageProductService;
@@ -34,10 +36,11 @@ public class ImageProductController {
 
     }
 
-    @DeleteMapping("/remove-ImageProduct/{ImageProduct-id}")
-    public void removeImageProduct(@PathVariable("ImageProduct-id") Long impId) {
-        impS.removeImageProduct(impId);
+    @DeleteMapping("/{id}")
+    public void removeImageProduct(@PathVariable("id") Long id) {
+        impS.removeImageProduct(id);
     }
+
     @PatchMapping("/modify-ImageProduct")
     public ImageProduct modifyImageProduct(@RequestBody ImageProduct imp) {
         return impS.modifyImageProduct(imp);
