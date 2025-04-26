@@ -11,20 +11,19 @@ import tn.esprit.skillexchange.Entity.GestionFormation.ParticipationCourses;
 @NoArgsConstructor
 @ToString
 public class Result {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne
-    private ParticipationCourses participationCourse;
+    @JoinColumn(name = "participation_id")
+    private ParticipationCourses participation;
 
     private int score;
     private int totalQuestions;
     private int correctAnswers;
+    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "certificat_id")
+    private Certificat certificat;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private Certificat certificat; // Optional, if you want to attach the cert directly
-    @OneToOne
-    private ParticipationCourses participation;
 }
 

@@ -23,4 +23,6 @@ public interface QuizService {
     // Update the image for an existing quiz (only image)
     Quiz updateQuizImage(Long id, String base64Image);
     public Courses assignQuizCourse(Long quizId, Long courseid);
+
+    Quiz getquizbycourseid(Long courseid);
 }

@@ -16,6 +16,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import lombok.extern.slf4j.Slf4j;
+import tn.esprit.skillexchange.Entity.Mailing.EmailRequest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -157,5 +158,12 @@ public class GmailService {
         BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 250, 250);
         MatrixToImageWriter.writeToPath(bitMatrix, "PNG", java.nio.file.Paths.get(filePath));
         log.info("QR code saved to: {}", filePath);
+    }
+    public void sendMail(EmailRequest emailRequest) throws MessagingException {
+        if (emailRequest.getText().contains("<html>")) {
+            sendHtmlEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getText());
+        } else {
+            sendSimpleEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getText());
+        }
     }
 }

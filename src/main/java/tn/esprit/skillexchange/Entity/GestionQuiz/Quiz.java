@@ -23,12 +23,11 @@ public class Quiz {
     @Column(columnDefinition = "LONGTEXT")
     private String image;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    private Courses courses;
 
-    @OneToOne
+
+    @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
+
     private Certificat certificat;
 
     @OneToMany(mappedBy = "quiz",cascade = CascadeType.ALL)

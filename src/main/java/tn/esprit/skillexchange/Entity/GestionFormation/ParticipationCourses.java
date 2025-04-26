@@ -24,8 +24,7 @@ public class ParticipationCourses {
     @ManyToOne
     private Courses course;
 
-    @OneToOne(cascade = CascadeType.MERGE)  // Add cascade if needed
-    @JoinColumn(name = "quiz_id")  // Explicit column mapping
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quiz_id")
     private Quiz quiz;
-
 }

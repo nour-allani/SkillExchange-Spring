@@ -67,6 +67,12 @@ public class ParticipationCourseServiceImpl implements ParticipationCourseServic
         Quiz quiz = quizRepo.findById(quizId)
                 .orElseThrow(() -> new RuntimeException("Quiz not found"));
 
+        // Validate: Ensure the course associated with participation has this quiz
+        Courses course = participation.getCourse();
+        if (course.getQuiz() == null || !course.getQuiz().getId().equals(quizId)) {
+            throw new IllegalStateException("Quiz does not belong to the course");
+        }
+
         participation.setQuiz(quiz);
         participationCourseRepo.save(participation);
     }

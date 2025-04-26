@@ -54,6 +54,6 @@ public class Courses {
     Category category ;
     @OneToOne
     @JoinColumn(name = "quiz_id")
-    @JsonIgnore // Critical to prevent serialization loop
+    @JsonIgnore
     private Quiz quiz;
 }
