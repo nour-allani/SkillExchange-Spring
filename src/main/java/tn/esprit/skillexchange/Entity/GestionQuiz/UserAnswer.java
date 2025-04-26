@@ -12,19 +12,21 @@ import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
 @NoArgsConstructor
 @ToString
 public class UserAnswer {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne
-    private ParticipationCourses participationCourse; // Link to ParticipationCourses (user participation in course)
+    @JoinColumn(name = "participation_id")
+    private ParticipationCourses participation;
 
     @ManyToOne
-    private Quiz quiz; // The quiz related to this answer
+    @JoinColumn(name = "question_id")
+    private Questions question;
 
-    @ManyToOne
-    private Questions question; // The question that the user answered
+    private String userAnswer;
+    @Column(nullable = false)
+    private Boolean isCorrect = false;
 
-    private String userAnswer; // The answer given by the user
-    private boolean isCorrect; // Whether the user's answer is correct or not
+    public void setQuiz(Quiz quizById) {
+    }
 }

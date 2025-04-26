@@ -26,7 +26,11 @@ public class ProductServiceImpl implements  IProductService{
     public List<Product> retrieveProducts() {
         return pRepo.findAll();
     }
+    @Override
+    public List<Product> getAllApprovedProducts() {
 
+        return pRepo.findByIsApprovedTrue();
+    }
     @Override
     public Product retrieveProductById(Long ProductId) {
         return pRepo.findById(ProductId).get();
@@ -36,7 +40,7 @@ public class ProductServiceImpl implements  IProductService{
     public Product addProduct(Product p) {
         if (p.getImageProducts() != null) {
             for (ImageProduct img : p.getImageProducts()) {
-                img.setProduct(p); // 🔗 Lier l'image au produit
+                img.setProduct(p);
             }
         }
         p.setApproved(false);
@@ -51,67 +55,57 @@ public class ProductServiceImpl implements  IProductService{
     @Override
     public Product modifyProduct(Product p) {
 
-       /* if (p.getImageProducts() != null) {
+        if (p.getImageProducts() != null) {
             for (ImageProduct img : p.getImageProducts()) {
                 img.setProduct(p);
             }
-        }*/
-        p.setApproved(false);
+        }
+
+       // p.setApproved(false);
         return pRepo.save(p);
     }
+
     private final GmailService gmailService;
 
     public void approveProduct(Long productId) {
         Product product = pRepo.findById(productId).orElse(null);
         if (product == null) return;
 
-        product.setApproved(true); // ✅ et non setIsApproved
+        product.setApproved(true);
         pRepo.save(product);
-
         try {
             String userEmail = product.getPostedBy().getEmail();
-            String subject = "✅ Your product was approved";
-            String content = "Hello,\n\nYour product '" + product.getProductName() + "' has been approved and published on the marketplace.\n\nThank you!";
-
-            gmailService.sendSimpleEmail(userEmail, subject, content);
-
+            gmailService.sendProductApprovalHtmlEmail(userEmail, product.getProductName());
         } catch (Exception e) {
             System.err.println("❌ Failed to send approval email: " + e.getMessage());
-            // Tu peux aussi logger ou relancer une exception custom si nécessaire
         }
+
     }
     @Override
     public void rejectProduct(Long productId) {
         Product product = pRepo.findById(productId).orElse(null);
         if (product == null) return;
-
         try {
             String userEmail = product.getPostedBy().getEmail();
-            String subject = "❌ Your product was rejected";
-            String content = "Hello,\n\nWe regret to inform you that your product '" + product.getProductName() +
-                    "' was rejected by the admin and will not be published on the marketplace.\n\n" +
-                    "Please make sure your submission follows our guidelines.";
-
-            gmailService.sendSimpleEmail(userEmail, subject, content);
+            gmailService.sendProductRejectionHtmlEmail(userEmail, product.getProductName());
         } catch (Exception e) {
             System.err.println("❌ Failed to send rejection email: " + e.getMessage());
         }
 
-        // Supprimer le produit après l'envoi de l'email
         pRepo.delete(product);
     }
 
 
-    // Ajouter une revue à un produit sans lancer d'exception si le produit n'est pas trouvé
+
     public ReviewProduct addReviewToProduct(Long productId, ReviewProduct review) {
-        Product product = pRepo.findById(productId).orElse(null); // Retourne null si produit non trouvé
+        Product product = pRepo.findById(productId).orElse(null);
 
         if (product != null) {
-            // Ajouter la revue au produit
+
             review.setProduct(product);
             return reviewRepo.save(review);
         } else {
-            return null;  // Retourner null ou vous pouvez retourner un message ou un objet de type erreur
+            return null;
         }
     }
 

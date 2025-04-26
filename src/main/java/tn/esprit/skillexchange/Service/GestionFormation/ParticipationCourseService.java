@@ -8,11 +8,13 @@ import java.util.List;
 
 public interface ParticipationCourseService {
     public List<ParticipationCourses> retrieveAllParticipations();
-    public ParticipationCourses retrieveParticipation(Long participationId);
+    public ParticipationCourses retrieveParticipation(Integer  participationId);
     public ParticipationCourses addParticipation(ParticipationCourses p);
-    public void removeParticipation(Long participationId);
+    public void removeParticipation(Integer  participationId);
     public ParticipationCourses modifyParticipation(ParticipationCourses p);
     public List<ParticipationCourses> getParticipationsByIdCourse(int id) ;
+
+    void assignQuizToParticipation(int participationId, Long quizId);
     public boolean checkParticipation(long userId, int courseId);
 
 }
