@@ -3,7 +3,6 @@ package tn.esprit.skillexchange.Entity.GestionFormation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import tn.esprit.skillexchange.Entity.GestionEvents.ParticipationEvents;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 
 import java.util.Date;
@@ -51,4 +50,8 @@ public class Courses {
 
     @ManyToOne
     Category category ;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="course")
+    @JsonIgnore
+    private Set<CourseContent> coursesFormation;
 }

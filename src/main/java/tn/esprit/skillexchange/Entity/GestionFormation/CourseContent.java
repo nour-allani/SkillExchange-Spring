@@ -9,8 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-
-public class CoursFormation {
+public class CourseContent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -19,10 +18,11 @@ public class CoursFormation {
     private String description;
 
     private String contentType; // video, pdf, word, text, etc.
-    private String fileUrl;
+    private String lnk_vid;
+    private int order_affichage;
 
-    @Lob
-    private String textContent; // utilisé uniquement si contentType = text
+//    @Lob
+//    private String textContent; // utilisé uniquement si contentType = text
 
     @ManyToOne
     Courses course;
