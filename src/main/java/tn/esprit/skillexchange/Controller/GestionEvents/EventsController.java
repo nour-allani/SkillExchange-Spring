@@ -12,11 +12,8 @@ import java.util.List;
 @RequestMapping("/events")
 public class EventsController {
 
-
-
     @Autowired
     private IEventsService eventsService;
-
 
     @GetMapping("/retrieve-Events")
     public List<Events> getAllEvents() {
@@ -30,23 +27,19 @@ public class EventsController {
 
     @PostMapping("/add-Event")
     public Events addEvent(@RequestBody Events events) {
-        // Vérification et liaison des images à l'événement avant de l'ajouter
         if (events.getImages() != null) {
             for (EventImage img : events.getImages()) {
-                img.setEvent(events); // Lier chaque image à l'événement
+                img.setEvent(events);
             }
         }
-        // Sauvegarder l'événement avec ses images
         return eventsService.addEvent(events);
     }
-
-
 
     @PatchMapping("/modify-Event")
     public Events updateEvent(@RequestBody Events events) {
         if (events.getImages() != null) {
             for (EventImage img : events.getImages()) {
-                img.setEvent(events); // Ensure images are linked during update
+                img.setEvent(events);
             }
         }
         return eventsService.updateEvent(events);

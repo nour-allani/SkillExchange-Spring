@@ -1,5 +1,6 @@
 package tn.esprit.skillexchange.Service.GestionEvents;
 
+import tn.esprit.skillexchange.Entity.GestionEvents.Events;
 import tn.esprit.skillexchange.Entity.GestionEvents.ParticipationEvents;
 import tn.esprit.skillexchange.Entity.GestionEvents.Status;
 
@@ -16,4 +17,7 @@ public interface IParticipationEventsService {
     List<ParticipationEvents> findByUserEmail(String userEmail);
     long countByEventIdAndStatus(Long eventId, Status status);
     Optional<ParticipationEvents> findByEventIdAndUserEmail(Long eventId, String userEmail);
+
+    // pour l AI
+    List<Events> findEventsByUserEmail(String userEmail);
 }

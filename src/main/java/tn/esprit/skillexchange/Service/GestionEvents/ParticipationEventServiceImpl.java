@@ -155,6 +155,17 @@ public class ParticipationEventServiceImpl implements IParticipationEventsServic
         return participationEventsRepository.findByEventIdEventAndUserEmail(eventId, userEmail);
     }
 
+// pour l AI
+@Override
+public List<Events> findEventsByUserEmail(String userEmail) {
+        List<ParticipationEvents> participations = participationEventsRepository.findByUserEmail(userEmail);
+        return participations.stream()
+                .filter(p -> p.getStatus() == Status.GOING || p.getStatus() == Status.INTERESTED)
+                .map(ParticipationEvents::getEvent)
+                .distinct()
+                .toList();
+    }
+
 
 
 }
