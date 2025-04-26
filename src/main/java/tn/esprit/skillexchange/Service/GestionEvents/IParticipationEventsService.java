@@ -20,4 +20,6 @@ public interface IParticipationEventsService {
 
     // pour l AI
     List<Events> findEventsByUserEmail(String userEmail);
+    List<Events> getEventsByUserAndStatus(String userEmail, Status status);
+
 }

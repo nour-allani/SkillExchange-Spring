@@ -10,4 +10,5 @@ public interface ParticipationEventRepo extends JpaRepository<ParticipationEvent
     Optional<ParticipationEvents> findByEventIdEventAndUserEmail(Long eventId, String userEmail);
     List<ParticipationEvents> findByUserEmail(String userEmail);
     long countByEventIdEventAndStatus(Long eventId, Status status);
+    List<ParticipationEvents> findByUserEmailAndStatus(String email, Status status);
 }

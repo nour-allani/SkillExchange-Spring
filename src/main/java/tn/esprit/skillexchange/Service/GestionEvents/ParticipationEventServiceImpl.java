@@ -14,6 +14,7 @@ import tn.esprit.skillexchange.Service.Mailing.GmailService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -166,6 +167,13 @@ public List<Events> findEventsByUserEmail(String userEmail) {
                 .toList();
     }
 
-
+// pour le profile
+    @Override
+    public List<Events> getEventsByUserAndStatus(String userEmail, Status status) {
+        List<ParticipationEvents> participations = participationEventsRepository.findByUserEmailAndStatus(userEmail, status);
+        return participations.stream()
+                .map(ParticipationEvents::getEvent)
+                .collect(Collectors.toList());
+    }
 
 }

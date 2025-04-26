@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AuthorizationServiceException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionEvents.Events;
@@ -163,6 +164,14 @@ public class ParticipationEventsController {
             log.error("Error fetching participation history for user: {}", email, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
         }
+    }
+
+
+
+    @GetMapping("/user/{email}/events")
+    @PreAuthorize("isAuthenticated()")
+    public List<Events> getUserEventsByStatus(@PathVariable String email, @RequestParam Status status) {
+        return participationEventsService.getEventsByUserAndStatus(email, status);
     }
 }
 
