@@ -3,6 +3,7 @@ package tn.esprit.skillexchange.Entity.GestionFormation;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionQuiz.Quiz;
+import tn.esprit.skillexchange.Entity.GestionUser.User;
 
 import java.sql.Date;
 
@@ -23,7 +24,7 @@ public class ParticipationCourses {
     @ManyToOne
     private Courses course;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quiz_id")
     private Quiz quiz;
-
 }
