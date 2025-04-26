@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Product Approved</title>
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            background-color: #00c47c;
+            color: white;
+            padding: 20px;
+        }
+        .logo {
+            height: 40px;
+            margin-right: 15px;
+        }
+        .header-text {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .content {
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .button {
+            display: inline-block;
+            background-color: #ff6600;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .footer {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin: 30px 0;
+            padding: 0 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="cid:logo25" alt="SkillExchange Logo" class="logo">
+        <div class="header-text">✅ Product Approved</div>
+    </div>
+    <div class="content">
+        <p>Hello,</p>
+        <p>Your product <strong>{{productName}}</strong> has been approved and published on the marketplace.</p>
+        <a href="https://skillxchange.tn/products" class="button">View on Marketplace</a>
+        <p>Thank you for your contribution to SkillExchange!</p>
+    </div>
+    <div class="footer">
+        © 2025 SkillExchange. All rights reserved. • support@skillxchange.tn
+    </div>
+</div>
+</body>
+</html>

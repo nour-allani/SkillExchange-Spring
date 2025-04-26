@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionEvents.ParticipationEvents;
+import tn.esprit.skillexchange.Entity.GestionQuiz.Quiz;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 
 import java.util.Date;
@@ -51,4 +52,8 @@ public class Courses {
 
     @ManyToOne
     Category category ;
+    @OneToOne
+    @JoinColumn(name = "quiz_id")
+    @JsonIgnore
+    private Quiz quiz;
 }
