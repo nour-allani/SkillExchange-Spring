@@ -289,20 +289,53 @@ public class ResultService {
             helper.setTo(user.getEmail());
             helper.setSubject("Quiz Results - " + courseName);
 
-            String emailBody = "<h2>Quiz Results</h2>" +
-                    "<p>Score: " + score + "%</p>" +
-                    (score >= 70 ? "<p>Certificate attached</p>" : "<p>Better luck next time!</p>");
+            String emailBody = "<!DOCTYPE html>\n" +
+                    "<html>\n" +
+                    "<head>\n" +
+                    "    <meta charset=\"UTF-8\">\n" +
+                    "    <title>Quiz Results</title>\n" +
+                    "    <style>\n" +
+                    "        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n" +
+                    "        .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n" +
+                    "        .header { background-color: #f28c38; color: white; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }\n" +
+                    "        .content { background-color: #f9f9f9; padding: 20px; border: 1px solid #ddd; border-top: none; border-radius: 0 0 5px 5px; }\n" +
+                    "        .button { display: inline-block; padding: 10px 20px; background-color: #f28c38; color: white; text-decoration: none; border-radius: 5px; margin-top: 10px; }\n" +
+                    "        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #777; }\n" +
+                    "    </style>\n" +
+                    "</head>\n" +
+                    "<body>\n" +
+                    "<div class=\"container\">\n" +
+                    "    <div class=\"header\">\n" +
+                    "        <h2>Quiz Results</h2>\n" +
+                    "    </div>\n" +
+                    "    <div class=\"content\">\n" +
+                    "        <p>Dear " + user.getName() + ",</p>\n" +
+                    "        <p>Thank you for completing the quiz for <strong>" + courseName + "</strong>!</p>\n" +
+                    "        <p><strong>Your Score:</strong> " + score + "%</p>\n" +
+                    (score >= 70
+                            ? "<p>🎉 Congratulations! You have passed the quiz. Your certificate is attached to this email.</p>\n"
+                            : "<p>Unfortunately, you did not achieve the passing score. Keep practicing and success will follow!</p>\n") +
+                    "        <p>Keep learning and exploring new skills on our platform!</p>\n" +
+                    "        <a href=\"http://localhost:4200/courses\" class=\"button\">Explore More Courses</a>\n" +
+                    "        <p>Best regards,<br>The SkillExchange Team</p>\n" +
+                    "    </div>\n" +
+                    "    <div class=\"footer\">\n" +
+                    "        <p>© 2025 SkillExchange. All rights reserved.</p>\n" +
+                    "    </div>\n" +
+                    "</div>\n" +
+                    "</body>\n" +
+                    "</html>";
 
             helper.setText(emailBody, true);
 
             if (score >= 70) {
-                // Attach PDF
+                // Attach the PDF certificate
                 byte[] pdfBytes = Base64.getDecoder().decode(cert.getPdfContent());
                 helper.addAttachment("certificate.pdf", new ByteArrayResource(pdfBytes));
             }
 
             mailSender.send(message);
-        } catch (MessagingException e) {  // Removed IOException
+        } catch (MessagingException e) {
             throw new RuntimeException("Failed to send email", e);
         }
     }
