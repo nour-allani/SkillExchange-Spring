@@ -19,6 +19,7 @@ import tn.esprit.skillexchange.Service.GestionForumPost.IPostsService;
 import org.springframework.data.domain.Pageable;
 import tn.esprit.skillexchange.Service.Mailing.GmailService;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,10 +65,8 @@ public class PostsController {
         postsService.update(post);
 
         try {
-            gmailService.sendSimpleEmail(
-                    post.getUser().getEmail(),
-                    "Your post has been approved",
-                    "Congratulations! Your post has been approved and is now visible."
+            gmailService.sendPostApprovalHtmlEmail(
+                    post.getUser().getEmail(), post.getTitle()
             );
         } catch (Exception e) {
             // Continue même si l'email échoue
@@ -86,10 +85,8 @@ public class PostsController {
         postsService.remove(id);
 
         try {
-            gmailService.sendSimpleEmail(
-                    post.getUser().getEmail(),
-                    "Your post has been rejected",
-                    "Sorry, your post has been rejected. Please check the guidelines and try again."
+            gmailService.sendPostRejectionHtmlEmail(
+                    post.getUser().getEmail(), post.getTitle()
             );
         } catch (Exception e) {
             // Continue même si l'email échoue
@@ -118,10 +115,36 @@ public class PostsController {
         return postsService.add(posts);
    }
 
-    @PutMapping("/updatePosts")
+    /*@PatchMapping("/updatePosts")
     public Posts updatePosts(@RequestBody Posts posts) {
         return postsService.update(posts);
+    }*/
+    @PatchMapping("/update-post/{id}")
+    public ResponseEntity<Posts> updatePost(@PathVariable Long id, @RequestBody Posts p) {
+        Posts existingPost = postsService.retrievePostsById(id);
+
+        if (existingPost == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        // Mise à jour des champs
+        existingPost.setTitle(p.getTitle());
+        existingPost.setContent(p.getContent());
+        existingPost.setUpdatedAt(new Date());
+
+        // Gestion des images
+        if (p.getImagePost() != null) {
+            for (ImagePost img : p.getImagePost()) {
+                img.setPost(existingPost);
+            }
+            existingPost.setImagePost(p.getImagePost());
+        }
+
+        Posts updatedPost = postsService.update(existingPost);
+
+        return ResponseEntity.ok(updatedPost);
     }
+
 
     @GetMapping("/retrievePostsById/{post-id}")
     public Posts getPostsById(@PathVariable("post-id") Long id) {
@@ -144,7 +167,7 @@ public class PostsController {
         }
     }
     @Autowired
-private EmojiPostsRepo emojiPostsRepository;
+public EmojiPostsRepo emojiPostsRepository;
 
     @PostMapping("/react")
 
