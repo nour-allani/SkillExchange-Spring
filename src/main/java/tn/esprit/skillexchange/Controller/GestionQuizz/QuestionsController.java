@@ -211,5 +211,108 @@ public class QuestionsController {
             return "Focus on the core concepts mentioned in option " + (char) ('A' + longestOptionIndex) + ".";
         }
     }
+    @PostMapping("/generate-options")
+    public ResponseEntity<Map<String, String>> generateQuestionOptions(@RequestBody Map<String, String> request) {
+        String questionText = request.get("question");
+        String correctAnswer = request.get("correctAnswer");
 
+        try {
+            Map<String, String> generatedOptions = generateAiOptions(questionText, correctAnswer);
+            return ResponseEntity.ok(generatedOptions);
+        } catch (Exception e) {
+            logger.error("Failed to generate options", e);
+            Map<String, String> fallbackOptions = generateFallbackOptions(correctAnswer);
+            return ResponseEntity.ok(fallbackOptions);
+        }
+    }
+
+    private Map<String, String> generateAiOptions(String question, String correctAnswer) {
+        String prompt = String.format(
+                "Generate 3 plausible but incorrect multiple choice options for this question, " +
+                        "plus the correct answer. Return ONLY a JSON object with these fields: " +
+                        "{ \"option1\": \"...\", \"option2\": \"...\", \"option3\": \"...\", \"correctAnswer\": \"...\" } " +
+                        "Question: %s. Correct answer: %s",
+                question,
+                correctAnswer
+        );
+
+        String apiKey = "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";
+        String model = "mistralai/mistral-7b-instruct";
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(apiKey);
+        headers.add("HTTP-Referer", "yourdomain.com");
+        headers.add("X-Title", "Quiz Options Generator");
+
+        Map<String, Object> requestBody = Map.of(
+                "model", model,
+                "messages", List.of(
+                        Map.of("role", "user", "content", prompt)
+                ),
+                "response_format", Map.of("type", "json_object")
+        );
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<Map> response = restTemplate.postForEntity(
+                "https://openrouter.ai/api/v1/chat/completions",
+                request,
+                Map.class
+        );
+
+        // Parse the response
+        if (response.getBody() == null) {
+            return generateFallbackOptions(correctAnswer);
+        }
+
+        try {
+            Object choicesObj = response.getBody().get("choices");
+            if (!(choicesObj instanceof List) || ((List<?>) choicesObj).isEmpty()) {
+                return generateFallbackOptions(correctAnswer);
+            }
+
+            Object firstChoice = ((List<?>) choicesObj).get(0);
+            if (!(firstChoice instanceof Map)) {
+                return generateFallbackOptions(correctAnswer);
+            }
+
+            Object messageObj = ((Map<?, ?>) firstChoice).get("message");
+            if (!(messageObj instanceof Map)) {
+                return generateFallbackOptions(correctAnswer);
+            }
+
+            Object contentObj = ((Map<?, ?>) messageObj).get("content");
+            if (!(contentObj instanceof String)) {
+                return generateFallbackOptions(correctAnswer);
+            }
+
+            // Parse the JSON content
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree((String) contentObj);
+
+            Map<String, String> options = new HashMap<>();
+            options.put("option1", jsonNode.path("option1").asText());
+            options.put("option2", jsonNode.path("option2").asText());
+            options.put("option3", jsonNode.path("option3").asText());
+            options.put("correctAnswer", jsonNode.path("correctAnswer").asText());
+
+            return options;
+
+        } catch (Exception e) {
+            logger.error("Error parsing AI response", e);
+            return generateFallbackOptions(correctAnswer);
+        }
+    }
+
+    private Map<String, String> generateFallbackOptions(String correctAnswer) {
+        Map<String, String> options = new HashMap<>();
+        options.put("option1", "One possible option");
+        options.put("option2", "Another possible option");
+        options.put("option3", "Yet another option");
+        options.put("correctAnswer", correctAnswer);
+        return options;
+    }
 }
+
