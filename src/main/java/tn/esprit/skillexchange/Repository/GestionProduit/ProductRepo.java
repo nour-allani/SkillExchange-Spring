@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ProductRepo extends JpaRepository<Product,Long> {
     List<Product> findByIsApprovedTrue();
+    List<Product> findByPostedById(Long userId);
 }

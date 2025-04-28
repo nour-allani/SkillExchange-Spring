@@ -97,4 +97,10 @@ public class ProductController {
         return pS.addReviewToProduct(productId, review);
     }
 
+    @GetMapping("/user/{userId}/products")
+    public ResponseEntity<List<Product>> getUserProducts(@PathVariable Long userId) {
+        List<Product> products = pS.getProductsByUserId(userId);
+        return ResponseEntity.ok(products);
+    }
+
 }
