@@ -12,6 +12,7 @@ import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Repository.GestionProduit.CartProductRepo;
 import tn.esprit.skillexchange.Repository.GestionProduit.CartRepo;
 import tn.esprit.skillexchange.Repository.GestionProduit.PaymentRepo;
+import tn.esprit.skillexchange.Repository.GestionProduit.ProductRepo;
 import tn.esprit.skillexchange.Repository.GestionUser.HistoricTransictionRepo;
 import tn.esprit.skillexchange.Repository.GestionUser.UserRepo;
 
@@ -31,7 +32,8 @@ public class PaymentServiceImpl implements  IPaymentService {
     private CartRepo cartRepo;
     @Autowired
     private CartProductRepo cartProductRepo;
-
+    @Autowired
+    private ProductRepo productRepo;
     @Autowired
     private HistoricTransictionRepo transactionRepo;
     @Transactional
@@ -75,52 +77,7 @@ public class PaymentServiceImpl implements  IPaymentService {
     }
 
 
-   /* @Override
-    public void saveStripePayment(String email, float amount, String sessionId, String stripeCurrency) {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
 
-        if (optionalUser.isEmpty()) {
-            System.err.println("❌ Utilisateur introuvable pour l’email : " + email);
-            return;
-        }
-
-        User user = optionalUser.get();
-        Cart cart = cartRepo.findByUserAndIsActiveTrue(user);
-
-        if (cart == null) {
-            System.err.println("❌ Aucun panier actif trouvé pour l’utilisateur : " + user.getEmail());
-            return;
-        }
-
-
-        CurrencyType currencyType;
-        try {
-            if (stripeCurrency.equalsIgnoreCase("USD")) {
-                currencyType = CurrencyType.TND; // ou CurrencyType.USD si tu veux l'ajouter
-            } else {
-                currencyType = CurrencyType.valueOf(stripeCurrency.toUpperCase());
-            }
-        } catch (IllegalArgumentException e) {
-            System.err.println("❌ Devise inconnue : " + stripeCurrency + " → Utilisation de TND par défaut.");
-            currencyType = CurrencyType.TND;
-        }
-
-        Payment payment = new Payment();
-        payment.setUserEmail(email);
-        payment.setCart(cart);
-        payment.setMontant(amount);
-        payment.setMethodePaiement(Payment.PaymentMethod.STRIPE);
-        payment.setCurrencyType(currencyType);
-        payment.setDatePaiement(new Date());
-        payment.setStatutPaiement(Payment.PaymentStatus.COMPLETED);
-
-        paymentRepository.save(payment);
-
-
-
-        System.out.println("✅ Paiement Stripe enregistré avec succès pour " + email);
-    }
-*/
    @Override
    @Transactional
    public void saveStripePayment(String email, float amount, String sessionId, String stripeCurrency) {
@@ -193,6 +150,7 @@ public class PaymentServiceImpl implements  IPaymentService {
                System.out.println("✅ " + tokens + " tokens ajoutés au solde de " + user.getEmail());
            }
        }
+       validateCart(cart.getId());
    }
 
 
@@ -204,7 +162,43 @@ public class PaymentServiceImpl implements  IPaymentService {
             return 0;
         }
     }
+    @Transactional
+    @Override
+    public void validateCart(Long cartId) {
+        Cart cart = cartRepo.findById(cartId).orElse(null);
 
+        if (cart == null) {
+            System.err.println("❌ Cart not found for ID: " + cartId);
+            return;
+        }
+
+        if (!cart.isActive()) {
+            System.out.println("⚠️ Cart already validated.");
+            return;
+        }
+
+        List<CartProduct> cartProducts = cartProductRepo.findByCart(cart);
+
+        for (CartProduct cp : cartProducts) {
+            Product product = cp.getProduct();
+            int quantityPurchased = cp.getQuantity();
+
+            if (product.getStock() >= quantityPurchased) {
+                product.setStock(product.getStock() - quantityPurchased);
+                productRepo.save(product);
+            } else {
+                System.err.println("⚠️ Not enough stock for product: " + product.getProductName());
+            }
+        }
+
+        cart.setActive(false);
+        cartRepo.save(cart);
+
+
+        cartProductRepo.deleteByCart(cart);
+
+        System.out.println("✅ Cart validated and cleared successfully.");
+    }
 
 }
 

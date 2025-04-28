@@ -206,7 +206,7 @@ public class GmailService {
         return html.replace("{{productName}}", productName);
     }
 
-}
+
 
 
     private byte[] generateQRCode(String text, int width, int height) throws WriterException, IOException {
@@ -226,6 +226,45 @@ public class GmailService {
         BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 250, 250);
         MatrixToImageWriter.writeToPath(bitMatrix, "PNG", java.nio.file.Paths.get(filePath));
         log.info("QR code saved to: {}", filePath);
+    }
+    ///////////////////////////////Gestion Post /////////////////////////////////////////////////
+    public void sendMentionNotification(String to, String mentionedBy, String postContent) throws MessagingException {
+        String subject = "Vous avez été mentionné dans un commentaire";
+        String text = "Bonjour,\n\nVous avez été mentionné par " + mentionedBy +
+                " dans un commentaire :\n\n\"" + postContent + "\"\n\nConnectez-vous pour répondre.";
+
+        sendSimpleEmail(to, subject, text);
+    }
+    public void sendPostApprovalHtmlEmail(String to, String title) throws Exception {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(to);
+        helper.setSubject("✅ Your post was approved");
+
+        String html = loadHtmlTemplateWithPost("templates/email/approve-post.html", title);
+        helper.setText(html, true);
+        helper.addInline("logo25", new ClassPathResource("static/logo25.jpg").getFile());
+
+        mailSender.send(message);
+    }
+    private String loadHtmlTemplateWithPost(String path, String title) throws IOException {
+        InputStream input = new ClassPathResource(path).getInputStream();
+        String html = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+        return html.replace("{{title}}", title);
+    }
+    public void sendPostRejectionHtmlEmail(String to, String title) throws Exception {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(to);
+        helper.setSubject("❌ Your post was rejected");
+
+        String html = loadHtmlTemplateWithPost("templates/email/reject-post.html", title);
+        helper.setText(html, true);
+        helper.addInline("logo25", new ClassPathResource("static/logo25.jpg").getFile());
+
+        mailSender.send(message);
     }
 }
 

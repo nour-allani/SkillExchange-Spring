@@ -12,7 +12,7 @@ import java.util.Map;
 @Service
 public class AiReviewService implements IAiReviewService {
 
-    @Value("${clarifai.api.key.review}")
+  /*  @Value("${clarifai.api.key.review}")
     private String clarifaiReviewApiKey; // ✅ Correct ici
 
     private static final String CLARIFAI_TEXT_API_URL = "https://api.clarifai.com/v2/models/text-sentiment-classification/outputs";
@@ -47,5 +47,5 @@ public class AiReviewService implements IAiReviewService {
 
         String sentiment = (String) concepts.get(0).get("name"); // positive, negative, neutral
         return sentiment.toUpperCase(); // ex: "POSITIVE"
-    }
+    }*/
 }
