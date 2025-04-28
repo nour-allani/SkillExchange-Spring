@@ -47,7 +47,6 @@ public class CommentPostController {
         return commentPostService.retrieveCommentPosts();
     }
 
-
 //original
   /* @PostMapping("addComPosts")
     public  CommentPost addComPosts(@RequestBody CommentPost com,
@@ -103,48 +102,8 @@ public ResponseEntity<CommentPost> addComPosts(@RequestBody CommentPost com, @Re
         return ResponseEntity.badRequest().body(null);
     }
 
-    /*@PostMapping("addComPosts")
-    public CommentPost addComPosts(@RequestBody CommentPost commentPost) {
-        return commentPostService.add(commentPost);
-    }
-*/
-    //@PostMapping("addComPosts/{postId}")
-    //public ResponseEntity<CommentPost> addComPosts(@PathVariable Long postId, @RequestBody CommentPost commentPost) {
-    // Ajouter l'ID du post au commentaire
-    //  commentPost.getPost().setIdPost(postId);
-
-    // Appeler le service pour ajouter le commentaire
-    //CommentPost addedComment = commentPostService.add(commentPost);
-
-    //if (addedComment == null) {
-    // Retourner une réponse indiquant que le commentaire n'a pas pu être ajouté
-    //  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-    //   }
-
-    // Retourner la réponse avec le commentaire ajouté
-    //return ResponseEntity.status(HttpStatus.CREATED).body(addedComment);
-    // }
-   // @PostMapping("addComPosts")
-    //public  CommentPost addComPosts(@RequestBody CommentPost com,
-     //                               @RequestParam Long postId) {
-     //   System.out.println("Comment reçu: " + com);
-     //   Posts post = pRepo.findById(postId).orElse(null);
-
-      //  if (post == null) {
-      //      // Retourne null ou une Review vide ou un message d'erreur custom si besoin
-       //     return null;
-      //  }
-
-       // com.setPost(post); // associer le produit
-       // com.setCreatedAt(new Date());
-        //com.setUpdatedAt(new Date());
-
-       // return commentPostService.add(com);
-   // }
-
-
     // Associer le commentaire au post
-  /*  com.setPost(post);
+    com.setPost(post);
     com.setCreatedAt(new Date());
     com.setUpdatedAt(new Date());
 
@@ -271,7 +230,10 @@ public ResponseEntity<CommentPost> addComPosts(@RequestBody CommentPost com, @Re
         return commentPostService.update(commentPost);
     }
 
-    
+    /*  @GetMapping("/retrieveCommentPostById/{commentPost-id}")
+      public CommentPost getComPostsById(@PathVariable ("commentPost-id") Long id) {
+          return commentPostService.retrieveCommentPostById(id);
+      }*/
     @GetMapping("/retrieveCommentPostsByPost/{postId}")
     public List<CommentPost> getCommentsByPostId(@PathVariable Long postId) {
         return commentPostService.retrieveCommentPostsByPostId(postId);
@@ -286,5 +248,14 @@ public ResponseEntity<CommentPost> addComPosts(@RequestBody CommentPost com, @Re
 
     public EmojiComments reactToComment(@RequestBody EmojiReactionForCommentDTO reactionDTO) {
         return emojiCommentService.reactToComment(reactionDTO.commentId, reactionDTO.email, reactionDTO.emoji);
+    }
+    @PatchMapping("/{id}")
+    public CommentPost update(@PathVariable("id") Long id, @RequestBody CommentPost commentP) {
+        commentP.setIdComment(id);
+
+        CommentPost updatedReview = commentPostService.update(commentP);
+
+
+        return updatedReview;
     }
 }
