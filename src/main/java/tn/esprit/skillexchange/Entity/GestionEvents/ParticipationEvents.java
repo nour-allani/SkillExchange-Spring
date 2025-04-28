@@ -20,7 +20,10 @@ public class ParticipationEvents {
 
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
     private Status status;
+
+
     @ManyToOne
     @JsonBackReference
     private Events event;
@@ -40,3 +43,5 @@ public class ParticipationEvents {
                 '}';
     }
 }
+
+

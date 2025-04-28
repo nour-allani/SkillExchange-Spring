@@ -3,7 +3,6 @@ package tn.esprit.skillexchange.Entity.GestionEvents;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity

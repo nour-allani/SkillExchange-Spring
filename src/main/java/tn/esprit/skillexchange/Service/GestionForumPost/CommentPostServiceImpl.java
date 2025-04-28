@@ -11,6 +11,7 @@ import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Repository.GestionUser.UserRepo;
 import tn.esprit.skillexchange.Service.Mailing.GmailService;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,32 +35,6 @@ public class CommentPostServiceImpl implements ICommentPostService {
         return comPost.findAll();
     }
 
-  /*  @Override
-    public CommentPost add(CommentPost comP) {
-        // Extraire les usernames mentionnés avec @
-        Set<String> mentionedUsernames = extractMentionedUsernames(comP.getContent());
-
-        for (String username : mentionedUsernames) {
-            User mentionedUser = userRepo.findByName(username); // Assure-toi que cette méthode existe dans UserRepo
-            if (mentionedUser != null) {
-                log.info("Mention detected: " + mentionedUser.getName());
-                try {
-                    gmailService.sendMentionNotification(
-                            mentionedUser.getEmail(),
-                            comP.getEmail(), // Email de l'auteur du commentaire (ajuste selon ta structure)
-                            comP.getContent()
-                    );
-                } catch (Exception e) {
-                    log.error("Failed to send mention notification to " + mentionedUser.getEmail(), e);
-                }
-            } else {
-                log.warn("Mentioned user not found: " + username);
-            }
-        }
-
-        return comPost.save(comP);
-    }
-*/
     private Set<String> extractMentionedUsernames(String content) {
         Set<String> usernames = new HashSet<>();
         Pattern pattern = Pattern.compile("@(\\w+)");
@@ -70,86 +45,69 @@ public class CommentPostServiceImpl implements ICommentPostService {
         return usernames;
     }
 
-
     @Override
     public CommentPost add(CommentPost comP) {
         // Récupérer le contenu du post associé au commentaire
         Posts post = postRepo.findById(comP.getPost().getIdPost()).orElse(null);
 
-        if (post != null && post.getContent() != null && !post.getContent().trim().isEmpty()) {
-            // Générer un commentaire basé sur le contenu du post
-            huggingFaceService.generateComment(post.getContent())
-                    .doOnSuccess(generatedComment -> {
-                        if (generatedComment != null && !generatedComment.trim().isEmpty()) {
-                            // Créer un commentaire avec le texte généré
-                            comP.setContent(generatedComment);
-                            log.info("Generated comment: " + generatedComment);
-                        } else {
-                            log.warn("No comment generated.");
-                        }
-                    })
-                    .subscribe();  // Exécuter de manière asynchrone, en attendant la génération
-
+        if (post != null && (comP.getContent() == null || comP.getContent().trim().isEmpty())) {
+            // Générer un commentaire basé sur le contenu du post uniquement si le commentaire est vide
+            String generatedComment = huggingFaceService.generateComment(post.getContent()).block(); // <<< BLOCK ici pour attendre
+            if (generatedComment != null && !generatedComment.trim().isEmpty()) {
+                comP.setContent(generatedComment);
+                log.info("Generated comment: " + generatedComment);
+            } else {
+                log.warn("No comment generated.");
+            }
         } else {
-            log.warn("Post content is empty or null.");
+            log.warn("Post content is empty, or comment already provided.");
         }
-
-
-    @Override
-    public CommentPost add(CommentPost comP) {
 
         // Extraire les usernames mentionnés avec @
-    Set<String> mentionedUsernames = extractMentionedUsernames(comP.getContent());
+        Set<String> mentionedUsernames = extractMentionedUsernames(comP.getContent());
 
-     if (mentionedUsernames.contains("everyone")) {  // Vérifier si @everyone est mentionné
-      log.info("@everyone mention detected, sending email to all users.");
+        if (mentionedUsernames.contains("everyone")) {
+            log.info("@everyone mention detected, sending email to all users.");
 
-    //// Récupérer tous les utilisateurs
-     List<User> allUsers = userRepo.findAll(); // Assure-toi que la méthode findAll existe dans ton UserRepo
-
-            // Envoyer un email à chaque utilisateur
-     for (User user : allUsers) {
-     try {
-      gmailService.sendMentionNotification(
-               user.getEmail(),
-                                                comP.getEmail(),  // Email de l'auteur du commentaire
-              comP.getContent()
-       );
-      log.info("Notification sent successfully to: " + user.getEmail());
-    } catch (Exception e) {
-         log.error("Failed to send mention notification to " + user.getEmail(), e);
-       }
+            List<User> allUsers = userRepo.findAll();
+            for (User user : allUsers) {
+                try {
+                    gmailService.sendMentionNotification(
+                            user.getEmail(),
+                            comP.getEmail(),
+                            comP.getContent()
+                    );
+                    log.info("Notification sent successfully to: " + user.getEmail());
+                } catch (Exception e) {
+                    log.error("Failed to send mention notification to " + user.getEmail(), e);
+                }
+            }
+        } else {
+            for (String username : mentionedUsernames) {
+                User mentionedUser = userRepo.findByName(username);
+                if (mentionedUser != null) {
+                    log.info("Mention detected: " + mentionedUser.getName());
+                    try {
+                        gmailService.sendMentionNotification(
+                                mentionedUser.getEmail(),
+                                comP.getEmail(),
+                                comP.getContent()
+                        );
+                        log.info("Notification sent successfully to: " + mentionedUser.getEmail());
+                    } catch (Exception e) {
+                        log.error("Failed to send mention notification to " + mentionedUser.getEmail(), e);
+                    }
+                } else {
+                    log.warn("Mentioned user not found: " + username);
+                }
+            }
         }
-    }  else {
-            // Si @everyone n'est pas mentionné, envoyer des emails aux utilisateurs mentionnés individuellement
-              for (String username : mentionedUsernames) {
-     User mentionedUser = userRepo.findByName(username);
-      if (mentionedUser != null) {
-      log.info("Mention detected: " + mentionedUser.getName());
-       try {
-      gmailService.sendMentionNotification(
-              mentionedUser.getEmail(),
-            comP.getEmail(),
-           comP.getContent()
-      );
-      log.info("Notification sent successfully to: " + mentionedUser.getEmail());
-      } catch (Exception e) {
-            log.error("Failed to send mention notification to " + mentionedUser.getEmail(), e);
-         }
-      } else {
-           log.warn("Mentioned user not found: " + username);
-       }
-       }
-     }
 
-      return comPost.save(comP);
-     }
-
-
-    @Override
-    public CommentPost update(CommentPost comP) {
         return comPost.save(comP);
     }
+
+
+
 
     @Override
     public List<CommentPost> retrieveCommentPostsByPostId(Long postId) {
@@ -159,5 +117,29 @@ public class CommentPostServiceImpl implements ICommentPostService {
     @Override
     public void remove(Long id) {
         comPost.deleteById(id);
+    }
+
+
+    @Override
+    public CommentPost update(CommentPost comP) {
+
+        CommentPost existingReview = comPost.findById(comP.getIdComment()).orElse(null);
+
+        if (existingReview == null) {
+
+            return null;
+        }
+
+        // Mise à jour des informations de la revue
+        if (comP.getContent() != null) {
+            existingReview.setContent(comP.getContent());
+        }
+
+
+
+        existingReview.setUpdatedAt(new Date());
+
+
+        return comPost.save(existingReview);
     }
 }

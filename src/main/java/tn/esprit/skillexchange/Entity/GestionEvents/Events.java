@@ -1,12 +1,9 @@
 package tn.esprit.skillexchange.Entity.GestionEvents;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-import tn.esprit.skillexchange.Entity.GestionForumPost.EmojiComments;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 
 import java.util.Date;
@@ -30,6 +27,9 @@ public class Events {
     private String place;
     private int nbr_max;
 
+    private Double latitude; // Nouvelle propriété pour la latitude
+    private Double longitude; // Nouvelle propriété pour la longitude
+
     @ManyToOne
     @JsonIgnore
     private User user;
@@ -38,8 +38,10 @@ public class Events {
     @JsonManagedReference
     private Set<ParticipationEvents> participationEvents;
 
-    @OneToMany(mappedBy = "event",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "event")
+    @JsonIgnore
     private Set<RateEvent> rateEvents;
+
 
     @OneToMany(mappedBy = "event",cascade = CascadeType.ALL)
     private Set<EventComment> eventComments;
