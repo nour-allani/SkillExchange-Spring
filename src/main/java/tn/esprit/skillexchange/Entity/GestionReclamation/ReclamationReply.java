@@ -16,7 +16,7 @@ public class ReclamationReply {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long idReply;
-
+    private Long idReclamation;
     private Long idAdmin;
     private Date date;
     private String title;
