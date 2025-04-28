@@ -60,23 +60,23 @@ public class CommentPostController {
     // Retourner la réponse avec le commentaire ajouté
     //return ResponseEntity.status(HttpStatus.CREATED).body(addedComment);
     // }
-    @PostMapping("addComPosts")
-    public  CommentPost addComPosts(@RequestBody CommentPost com,
-                                    @RequestParam Long postId) {
-        System.out.println("Comment reçu: " + com);
-        Posts post = pRepo.findById(postId).orElse(null);
+   // @PostMapping("addComPosts")
+    //public  CommentPost addComPosts(@RequestBody CommentPost com,
+     //                               @RequestParam Long postId) {
+     //   System.out.println("Comment reçu: " + com);
+     //   Posts post = pRepo.findById(postId).orElse(null);
 
-        if (post == null) {
-            // Retourne null ou une Review vide ou un message d'erreur custom si besoin
-            return null;
-        }
+      //  if (post == null) {
+      //      // Retourne null ou une Review vide ou un message d'erreur custom si besoin
+       //     return null;
+      //  }
 
-        com.setPost(post); // associer le produit
-        com.setCreatedAt(new Date());
-        com.setUpdatedAt(new Date());
+       // com.setPost(post); // associer le produit
+       // com.setCreatedAt(new Date());
+        //com.setUpdatedAt(new Date());
 
-        return commentPostService.add(com);
-    }
+       // return commentPostService.add(com);
+   // }
 
 
     @PutMapping("updateComPosts")

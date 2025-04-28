@@ -5,8 +5,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
+import tn.esprit.skillexchange.Entity.GestionQuiz.Quiz;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CourseRepo extends JpaRepository<Courses,Long> {
@@ -23,5 +25,6 @@ public interface CourseRepo extends JpaRepository<Courses,Long> {
         "FROM Courses c GROUP BY MONTH(c.date_ajout), MONTHNAME(c.date_ajout) " +
         "ORDER BY MONTH(c.date_ajout)")
     List<Object[]> countCoursesBySeason();
+    Optional<Courses> findByQuiz(Quiz quiz);
 
 }

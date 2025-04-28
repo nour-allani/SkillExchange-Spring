@@ -11,14 +11,19 @@ import tn.esprit.skillexchange.Entity.GestionFormation.ParticipationCourses;
 @NoArgsConstructor
 @ToString
 public class Result {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne
-    private ParticipationCourses participationCourse; // Link to the ParticipationCourses
+    @JoinColumn(name = "participation_id")
+    private ParticipationCourses participation;
 
-    private int score; // The total score the user achieved in the quiz
-    private int totalQuestions; // Total number of questions in the quiz
-    private int correctAnswers; // Number of correct answers
+    private int score;
+    private int totalQuestions;
+    private int correctAnswers;
+    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "certificat_id")
+    private Certificat certificat;
+
 }
+

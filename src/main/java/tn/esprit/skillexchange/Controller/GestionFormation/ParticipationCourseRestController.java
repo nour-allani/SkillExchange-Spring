@@ -24,19 +24,18 @@ public class ParticipationCourseRestController {
     }
 
     @GetMapping("/retrieve-participation/{participation-id}")
-    public ParticipationCourses retrieveParticipations(@PathVariable("participation-id") Long partId) {
+    public ParticipationCourses retrieveParticipations(@PathVariable("participation-id") Integer  partId) {
         ParticipationCourses participations = participationCourseService.retrieveParticipation(partId);
         return participations;
     }
 
     @PostMapping("/add-participation")
-    public ParticipationCourses addParticipation(@RequestBody ParticipationCourses g) {
-        ParticipationCourses participation = participationCourseService.addParticipation(g);
-        return participation;
+    public ParticipationCourses addParticipation(@RequestBody ParticipationCourses p) {
+        return participationCourseService.addParticipation(p);
     }
 
     @DeleteMapping("/remove-participation/{participation-id}")
-    public void removeParticipation(@PathVariable("participation-id") Long partId) {
+    public void removeParticipation(@PathVariable("participation-id") Integer  partId) {
         participationCourseService.removeParticipation(partId);
     }
 
@@ -48,11 +47,17 @@ public class ParticipationCourseRestController {
         return participation;
     }
 
-    @PostMapping("findById/")
+    @PostMapping("/findById/")
     public List<ParticipationCourses> getParticipationsByIdCourse(@RequestBody  int id) {
         System.out.println("test user"+ id );
         return participationCourseService.getParticipationsByIdCourse(id) ;	}
-
+    @PostMapping("/{participationId}/assign-quiz/{quizId}")
+    public void assignQuizToParticipation(
+            @PathVariable int participationId,
+            @PathVariable Long quizId
+    ) {
+        participationCourseService.assignQuizToParticipation(participationId, quizId);
+    }
 
     @GetMapping("/check")
     public boolean checkParticipation(

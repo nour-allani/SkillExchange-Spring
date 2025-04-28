@@ -36,4 +36,5 @@ public class CertificatServiceImpl implements ICertificatService {
     public void deleteCertificat(Long id) {
         certificatRepository.deleteById(id);
     }
+
 }
