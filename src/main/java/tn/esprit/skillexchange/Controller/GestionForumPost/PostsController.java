@@ -75,25 +75,7 @@ public class PostsController {
         return ResponseEntity.ok(post); // ✅ Retourne le post mis à jour
     }
 
-    @PostMapping("/rejectPost/{id}")
-    public ResponseEntity<Posts> rejectPost(@PathVariable Long id) {
-        Posts post = postsService.retrievePostsById(id);
-        if (post == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        postsService.remove(id);
-
-        try {
-            gmailService.sendPostRejectionHtmlEmail(
-                    post.getUser().getEmail(), post.getTitle()
-            );
-        } catch (Exception e) {
-            // Continue même si l'email échoue
-        }
-
-        return ResponseEntity.ok(post); // ✅ Retourne l'objet supprimé pour référence
-    }
+   
 
 
 

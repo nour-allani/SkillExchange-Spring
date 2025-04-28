@@ -7,10 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.skillexchange.Service.GestionProduit.ProductIA.AiProductService;
-import tn.esprit.skillexchange.Service.GestionProduit.ProductIA.AiReviewService;
-import tn.esprit.skillexchange.Service.GestionProduit.ProductIA.IAiProductService;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
