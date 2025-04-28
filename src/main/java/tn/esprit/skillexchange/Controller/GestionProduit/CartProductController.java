@@ -3,6 +3,7 @@ package tn.esprit.skillexchange.Controller.GestionProduit;
 import lombok.AllArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Entity.GestionProduit.Cart;
@@ -11,10 +12,11 @@ import tn.esprit.skillexchange.Service.GestionProduit.ICartProductService;
 
 
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/cart-products") // URL plus claire
+@RequestMapping("/cart-products")
 public class CartProductController {
 
     @Autowired
@@ -31,19 +33,56 @@ public class CartProductController {
     public CartProduct getCartProductById(@PathVariable("cartPId") Long cartPId) {
         return cartpS.retrieveCartProductById(cartPId);
     }
+   /* @GetMapping("/cart/{cartId}/products")
+    public ResponseEntity<List<CartProduct>> getProductsInCart(@PathVariable Long cartId) {
+        List<CartProduct> cartProducts = cartpS.getProductsInCart(cartId);
 
-    // Ajouter un produit au panier
-   /* @PostMapping("/add")
-    public CartProduct addCartProduct(@RequestBody CartProduct cp) {
-        return cartpS.addCartProduct(cp);
+        if (cartProducts.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Aucun produit trouvé
+        }
+
+        return ResponseEntity.ok(cartProducts); // Retourne la liste des produits du panier
     }*/
-    @PostMapping("/add")
+   @GetMapping("/cart/{cartId}/products")
+   public ResponseEntity<List<CartProduct>> getProductsInCart(@PathVariable Long cartId) {
+       List<CartProduct> cartProducts = cartpS.getProductsInCart(cartId);
+
+       return ResponseEntity.ok(cartProducts); // Même si c'est vide, retourne 200 OK
+   }
+
+
+    /*@PostMapping("/add")
     public CartProduct addProductToCart(@RequestParam("cartId") Long cartId,
                                         @RequestParam("productId") Long productId,
                                         @RequestParam("quantity") int quantity) {
         return cartpS.addProductToCart(cartId, productId, quantity);
+    }*/
+    @PostMapping("/add-to-user-cart")
+    public ResponseEntity<CartProduct> addProductToUserCart(@RequestParam Long userId,
+                                                            @RequestParam Long productId,
+                                                            @RequestParam int quantity) {
+        CartProduct addedProduct = cartpS.addProductToCart(userId, productId, quantity);
+        if (addedProduct == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // stock insuffisant ou user/product inexistant
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(addedProduct);
     }
 
+   /* @PostMapping("/validate-cart")
+    public ResponseEntity<String> validateCart(@RequestBody Map<String, Long> payload) {
+        Long cartId = payload.get("cartId");
+
+        cartpS.validateCart(cartId);
+
+
+        return ResponseEntity.ok("✅ Cart validation process completed.");
+    }*/
+  ///2
+   @PostMapping("/validate-cart")
+   public ResponseEntity<String> validateCart(@RequestParam Long cartId) {
+       cartpS.validateCart(cartId);
+       return ResponseEntity.ok("Cart validated successfully");
+   }
 
 
     @DeleteMapping("/delete")

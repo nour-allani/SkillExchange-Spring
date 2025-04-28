@@ -1,8 +1,11 @@
 package tn.esprit.skillexchange.Repository.GestionEvents;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import tn.esprit.skillexchange.Entity.GestionEvents.EventImage;
- @Repository
-public interface EventImageRepo extends JpaRepository<EventImage,Long> {
+
+import java.util.List;
+
+public interface EventImageRepo extends JpaRepository<EventImage, Long> {
+    List<EventImage> findByEventIdEvent(Long eventId);
+    void deleteByEventIdEvent(Long eventId);
 }

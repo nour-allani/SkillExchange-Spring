@@ -1,5 +1,10 @@
 package tn.esprit.skillexchange.Entity;
 
 public enum Emojis {
-    LOVE,SAD,LIKE,HAHA
+    LIKE,
+    LOVE,
+    LAUGH,
+    WOW,
+    SAD,
+    ANGRY
 }

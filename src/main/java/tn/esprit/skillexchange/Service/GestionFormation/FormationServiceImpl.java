@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
+import tn.esprit.skillexchange.Entity.GestionQuiz.Quiz;
 import tn.esprit.skillexchange.Repository.GestionFormation.CourseRepo;
+import tn.esprit.skillexchange.Repository.GestionQuiz.QuizRepo;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -17,6 +19,9 @@ public class FormationServiceImpl implements FormationService {
 
     @Autowired
     CourseRepo courseRepo;
+    @Autowired
+    QuizRepo quizRepo;
+
     @Override
     public List<Courses> retrieveAllCourses() {
         return courseRepo.findAll();
@@ -48,6 +53,18 @@ public class FormationServiceImpl implements FormationService {
     public List<Courses> getCoursesByUserId(int id) {
         return courseRepo.getCoursesByUserId(id) ;
     }
+    
+    public void assignQuizToCourse(Long courseId, Long quizId) {
+        Courses course = courseRepo.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+
+        Quiz quiz = quizRepo.findById(quizId)
+                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+
+        course.setQuiz(quiz);
+        courseRepo.save(course);
+    }
+
 
     @Override
     public void approoveDisapprooveCourse(long id) {
@@ -71,6 +88,5 @@ public class FormationServiceImpl implements FormationService {
         }
         return data;
     }
-
 
 }

@@ -1,23 +1,33 @@
 package tn.esprit.skillexchange.Controller.GestionQuizz;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import tn.esprit.skillexchange.Entity.GestionQuiz.DTO.QuestionRequest;
 import tn.esprit.skillexchange.Entity.GestionQuiz.Questions;
 import tn.esprit.skillexchange.Entity.GestionQuiz.Quiz;
 import tn.esprit.skillexchange.Service.Gestionquizz.IQuestionsService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import tn.esprit.skillexchange.Service.Gestionquizz.QuizService;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/questions")
 public class QuestionsController {
 
+    private static final Logger logger = LoggerFactory.getLogger(QuestionsController.class);
+
     @Autowired
     private IQuestionsService questionsService;
+
     @Autowired
     private QuizService quizService;
 
@@ -31,40 +41,278 @@ public class QuestionsController {
             question.setQuiz(quiz);
             Questions savedQuestion = questionsService.saveQuestion(question);
             return ResponseEntity.ok(savedQuestion);
+        } else {
+            return ResponseEntity.badRequest().build(); // Quiz not found
         }
+    }
 
-        return ResponseEntity.badRequest().build();  // In case quizId is not found
+    @GetMapping("/quiz/{quizId}")
+    public ResponseEntity<List<Questions>> getQuestionsByQuizId(@PathVariable Long quizId) {
+        List<Questions> questions = questionsService.getQuestionsByQuizId(quizId);
+        return ResponseEntity.ok(questions);
     }
 
     @GetMapping
-    public List<Questions> getAllQuestions() {
-        return questionsService.getAllQuestions();
+    public ResponseEntity<List<Questions>> getAllQuestions() {
+        List<Questions> questions = questionsService.getAllQuestions();
+        return ResponseEntity.ok(questions);
     }
 
     @GetMapping("/{id}")
-    public Optional<Questions> getQuestionById(@PathVariable Long id) {
-        return questionsService.getQuestionById(id);
+    public ResponseEntity<Questions> getQuestionById(@PathVariable Long id) {
+        Optional<Questions> question = questionsService.getQuestionById(id);
+        return question.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public Questions updateQuestion(@PathVariable Long id, @RequestBody Questions questionDetails) {
-        Optional<Questions> question = questionsService.getQuestionById(id);
-        if (question.isPresent()) {
-            Questions existingQuestion = question.get();
+    public ResponseEntity<Questions> updateQuestion(@PathVariable Long id, @RequestBody Questions questionDetails) {
+        Optional<Questions> existingQuestionOptional = questionsService.getQuestionById(id);
+        if (existingQuestionOptional.isPresent()) {
+            Questions existingQuestion = existingQuestionOptional.get();
             existingQuestion.setQuestion(questionDetails.getQuestion());
             existingQuestion.setReponse(questionDetails.getReponse());
             existingQuestion.setOption1(questionDetails.getOption1());
             existingQuestion.setOption2(questionDetails.getOption2());
             existingQuestion.setOption3(questionDetails.getOption3());
             existingQuestion.setOption4(questionDetails.getOption4());
-            return questionsService.saveQuestion(existingQuestion);
+            Questions updatedQuestion = questionsService.saveQuestion(existingQuestion);
+            return ResponseEntity.ok(updatedQuestion);
+        } else {
+            return ResponseEntity.notFound().build();
         }
-        return null;
     }
 
     @DeleteMapping("/{id}")
-    public String deleteQuestion(@PathVariable Long id) {
-        questionsService.deleteQuestion(id);
-        return "Question deleted successfully";
+    public ResponseEntity<Map<String, String>> deleteQuestion(@PathVariable Long id) {
+        if (questionsService.getQuestionById(id).isPresent()) {
+            questionsService.deleteQuestion(id);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Question deleted successfully");
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/hint/{questionId}")
+    public ResponseEntity<Map<String, String>> getQuestionHint(@PathVariable Long questionId) {
+        Optional<Questions> questionOpt = questionsService.getQuestionById(questionId);
+
+        if (questionOpt.isPresent()) {
+            Questions question = questionOpt.get();
+            String hint = generateAiHint(
+                    question.getQuestion(),
+                    question.getReponse(), // Correct answer for validation
+                    question.getOption1(),
+                    question.getOption2(),
+                    question.getOption3(),
+                    question.getOption4()
+            );
+
+            Map<String, String> response = new HashMap<>();
+            response.put("hint", hint);
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    private String generateAiHint(String question, String... options) {
+        String prompt = String.format(
+                "Provide ONLY a subtle one-sentence hint for this multiple choice question. " +
+                        "DO NOT reveal the correct answer directly. " +
+                        "DO NOT mention any specific options. " +
+                        "DO NOT say 'the answer is' or similar. " +
+                        "Just give a general clue to help think about the question. " +
+                        "Question: %s. Options: %s",
+                question,
+                String.join(", ", options)
+        );
+
+        String apiKey = "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";
+        String model = "mistralai/mistral-7b-instruct";
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(apiKey);
+        headers.add("HTTP-Referer", "yourdomain.com");
+        headers.add("X-Title", "Quiz Hint Generator");
+
+        Map<String, Object> requestBody = Map.of(
+                "model", model,
+                "messages", List.of(
+                        Map.of("role", "user", "content", prompt)
+                )
+        );
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.postForEntity(
+                    "https://openrouter.ai/api/v1/chat/completions",
+                    request,
+                    Map.class
+            );
+
+            // Add null checks for the response structure
+            if (response.getBody() == null) {
+                return generateSmartFallbackHint(question, options);
+            }
+
+            Object choicesObj = response.getBody().get("choices");
+            if (!(choicesObj instanceof List) || ((List<?>) choicesObj).isEmpty()) {
+                return generateSmartFallbackHint(question, options);
+            }
+
+            Object firstChoice = ((List<?>) choicesObj).get(0);
+            if (!(firstChoice instanceof Map)) {
+                return generateSmartFallbackHint(question, options);
+            }
+
+            Object messageObj = ((Map<?, ?>) firstChoice).get("message");
+            if (!(messageObj instanceof Map)) {
+                return generateSmartFallbackHint(question, options);
+            }
+
+            Object contentObj = ((Map<?, ?>) messageObj).get("content");
+            if (contentObj instanceof String) {
+                return (String) contentObj;
+            }
+
+            return generateSmartFallbackHint(question, options);
+
+        } catch (Exception e) {
+            logger.error("Failed to generate AI hint", e);
+            return generateSmartFallbackHint(question, options);
+        }
+    }
+    private String generateSmartFallbackHint(String question, String... options) {
+        int longestOptionIndex = 0;
+        int negativeKeywordCount = 0;
+        String[] negativeKeywords = {"not", "never", "except"};
+
+        for (int i = 0; i < options.length; i++) {
+            if (options[i].length() > options[longestOptionIndex].length()) {
+                longestOptionIndex = i;
+            }
+            for (String keyword : negativeKeywords) {
+                if (options[i].toLowerCase().contains(keyword)) {
+                    negativeKeywordCount++;
+                }
+            }
+        }
+
+        if (negativeKeywordCount > 0) {
+            return "Consider options carefully, especially those with negative terms.";
+        } else if (question.length() < 40) {
+            return "The answer might be the most detailed or specific option.";
+        } else {
+            return "Focus on the core concepts mentioned in option " + (char) ('A' + longestOptionIndex) + ".";
+        }
+    }
+    @PostMapping("/generate-options")
+    public ResponseEntity<Map<String, String>> generateQuestionOptions(@RequestBody Map<String, String> request) {
+        String questionText = request.get("question");
+        String correctAnswer = request.get("correctAnswer");
+
+        try {
+            Map<String, String> generatedOptions = generateAiOptions(questionText, correctAnswer);
+            return ResponseEntity.ok(generatedOptions);
+        } catch (Exception e) {
+            logger.error("Failed to generate options", e);
+            Map<String, String> fallbackOptions = generateFallbackOptions(correctAnswer);
+            return ResponseEntity.ok(fallbackOptions);
+        }
+    }
+
+    private Map<String, String> generateAiOptions(String question, String correctAnswer) {
+        String prompt = String.format(
+                "Generate 3 plausible but incorrect multiple choice options for this question, " +
+                        "plus the correct answer. Return ONLY a JSON object with these fields: " +
+                        "{ \"option1\": \"...\", \"option2\": \"...\", \"option3\": \"...\", \"correctAnswer\": \"...\" } " +
+                        "Question: %s. Correct answer: %s",
+                question,
+                correctAnswer
+        );
+
+        String apiKey = "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";
+        String model = "mistralai/mistral-7b-instruct";
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(apiKey);
+        headers.add("HTTP-Referer", "yourdomain.com");
+        headers.add("X-Title", "Quiz Options Generator");
+
+        Map<String, Object> requestBody = Map.of(
+                "model", model,
+                "messages", List.of(
+                        Map.of("role", "user", "content", prompt)
+                ),
+                "response_format", Map.of("type", "json_object")
+        );
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<Map> response = restTemplate.postForEntity(
+                "https://openrouter.ai/api/v1/chat/completions",
+                request,
+                Map.class
+        );
+
+        // Parse the response
+        if (response.getBody() == null) {
+            return generateFallbackOptions(correctAnswer);
+        }
+
+        try {
+            Object choicesObj = response.getBody().get("choices");
+            if (!(choicesObj instanceof List) || ((List<?>) choicesObj).isEmpty()) {
+                return generateFallbackOptions(correctAnswer);
+            }
+
+            Object firstChoice = ((List<?>) choicesObj).get(0);
+            if (!(firstChoice instanceof Map)) {
+                return generateFallbackOptions(correctAnswer);
+            }
+
+            Object messageObj = ((Map<?, ?>) firstChoice).get("message");
+            if (!(messageObj instanceof Map)) {
+                return generateFallbackOptions(correctAnswer);
+            }
+
+            Object contentObj = ((Map<?, ?>) messageObj).get("content");
+            if (!(contentObj instanceof String)) {
+                return generateFallbackOptions(correctAnswer);
+            }
+
+            // Parse the JSON content
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree((String) contentObj);
+
+            Map<String, String> options = new HashMap<>();
+            options.put("option1", jsonNode.path("option1").asText());
+            options.put("option2", jsonNode.path("option2").asText());
+            options.put("option3", jsonNode.path("option3").asText());
+            options.put("correctAnswer", jsonNode.path("correctAnswer").asText());
+
+            return options;
+
+        } catch (Exception e) {
+            logger.error("Error parsing AI response", e);
+            return generateFallbackOptions(correctAnswer);
+        }
+    }
+
+    private Map<String, String> generateFallbackOptions(String correctAnswer) {
+        Map<String, String> options = new HashMap<>();
+        options.put("option1", "One possible option");
+        options.put("option2", "Another possible option");
+        options.put("option3", "Yet another option");
+        options.put("correctAnswer", correctAnswer);
+        return options;
     }
 }
+

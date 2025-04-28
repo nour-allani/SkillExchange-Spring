@@ -1,14 +1,17 @@
 package tn.esprit.skillexchange.Service.GestionProduit;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.skillexchange.Entity.GestionProduit.Cart;
 import tn.esprit.skillexchange.Entity.GestionProduit.CartProduct;
 import tn.esprit.skillexchange.Entity.GestionProduit.Product;
+import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Repository.GestionProduit.CartProductRepo;
 import tn.esprit.skillexchange.Repository.GestionProduit.CartRepo;
 import tn.esprit.skillexchange.Repository.GestionProduit.ProductRepo;
+import tn.esprit.skillexchange.Repository.GestionUser.UserRepo;
 
 import java.util.List;
 @Service
@@ -16,18 +19,22 @@ import java.util.List;
 public class CartProductServiceImpl implements  ICartProductService{
     @Autowired
     private CartProductRepo cartProductRepo;
+    @Autowired
     private CartRepo cartRepo;
+    @Autowired
+    private CartServiceImpl cartService;
+    @Autowired
     private ProductRepo productRepo;
+    @Autowired
+    private UserRepo userRepo;
     @Override
-    public List<CartProduct> retrieveCartProducts(/*long cartId*/) {
+    public List<CartProduct> retrieveCartProducts() {
        return cartProductRepo.findAll();
-       // return cartProductRepo.findById(cartId);
-
     }
 
     @Override
     public CartProduct retrieveCartProductById(Long cartpId) {
-        return cartProductRepo.findById(cartpId).get();
+        return cartProductRepo.findById(cartpId).orElse(null);
     }
 
 
@@ -66,7 +73,7 @@ public class CartProductServiceImpl implements  ICartProductService{
             return cartProductRepo.save(cp);
         }
 */
-       @Override
+     /*  @Override
        public CartProduct addProductToCart(Long cartId, Long productId, int quantity) {
            Cart cart = cartRepo.findById(cartId).orElse(null);
            if (cart == null) return null;
@@ -91,6 +98,43 @@ public class CartProductServiceImpl implements  ICartProductService{
            cp.setProduct(product);
            cp.setQuantity(quantity);
            return cartProductRepo.save(cp);
+       }*/
+       @Override
+       public CartProduct addProductToCart(Long userId, Long productId, int quantity) {
+           User user = userRepo.findById(userId).orElse(null);
+           if (user == null) return null;
+
+           // 🔹 Récupérer ou créer un panier actif pour l'utilisateur
+           Cart cart = cartService.getOrCreateActiveCart(user);
+
+           Product product = productRepo.findById(productId).orElse(null);
+           if (product == null) return null;
+
+           // 🔸 Vérification du stock
+           if (product.getStock() < quantity) return null;
+
+           // 🔄 Vérifie si le produit est déjà dans le panier
+           CartProduct existingCartProduct = cartProductRepo.findByCartAndProduct(cart, product);
+           if (existingCartProduct != null) {
+               int newQuantity = existingCartProduct.getQuantity() + quantity;
+
+               // Vérifie que la quantité combinée ne dépasse pas le stock
+               if (newQuantity > product.getStock() + existingCartProduct.getQuantity()) return null;
+
+               existingCartProduct.setQuantity(newQuantity);
+               product.setStock(product.getStock() - quantity);
+               productRepo.save(product);
+               return cartProductRepo.save(existingCartProduct);
+           }
+
+           // ➕ Ajouter un nouveau CartProduct
+           CartProduct newCartProduct = new CartProduct();
+           newCartProduct.setCart(cart);
+           newCartProduct.setProduct(product);
+           newCartProduct.setQuantity(quantity);
+           product.setStock(product.getStock() - quantity);
+           productRepo.save(product);
+           return cartProductRepo.save(newCartProduct);
        }
 
     @Override
@@ -98,11 +142,8 @@ public class CartProductServiceImpl implements  ICartProductService{
         return cartProductRepo.findByCartId(cartId);
     }
 
-    /*@Override
-    public void removeCartProduct(Long cartpId) {
-  cartProductRepo.deleteById(cartpId);
-    }*/
-    @Override
+
+  /*  @Override
     public void removeCartProduct(Long cartPId) {
         CartProduct cartProduct = cartProductRepo.findById(cartPId).orElse(null);
         if (cartProduct == null) {
@@ -112,20 +153,39 @@ public class CartProductServiceImpl implements  ICartProductService{
         Product product = cartProduct.getProduct();
 
         // 🔹 Restaurer le stock du produit supprimé
-     /*   product.setStock(product.getStock() + cartProduct.getQuantity());
-        productRepo.save(product); */ // Mettre à jour le stock dans la base
+      product.setStock(product.getStock() + cartProduct.getQuantity());
+        productRepo.save(product);  // Mettre à jour le stock dans la base
 
         // 🔹 Supprimer le produit du panier
         cartProductRepo.delete(cartProduct);
-    }
-
-   /* @Override
-    public void clearCart(Long cartId) {
-        List<CartProduct> cartProducts = cartProductRepo.findByCartId(cartId);
-        if (!cartProducts.isEmpty()) { // Vérifie s'il y a des produits avant de supprimer
-            cartProductRepo.deleteAll(cartProducts);
-        }
     }*/
+  @Override
+  public void removeCartProduct(Long cartPId) {
+      // Trouver le produit dans le panier
+      CartProduct cartProduct = cartProductRepo.findById(cartPId).orElse(null);
+      if (cartProduct == null) {
+          return; // Si le produit n'existe pas, sortir de la méthode
+      }
+
+      Product product = cartProduct.getProduct();
+
+      // 🔹 Restaurer le stock du produit supprimé
+      product.setStock(product.getStock() + cartProduct.getQuantity()); // Mettre à jour le stock
+      productRepo.save(product); // Sauvegarder les changements du produit
+
+      // 🔹 Supprimer le produit du panier
+      cartProductRepo.delete(cartProduct);
+
+      // 🔹 Vérifier si le panier est vide
+      Cart cart = cartProduct.getCart();
+      if (cart.getCartProducts().isEmpty()) {
+          // Désactiver le panier si vide
+          cart.setActive(false);
+          cartRepo.save(cart); // Sauvegarder le panier désactivé
+      }
+  }
+
+
    @Override
    public void clearCart(Long cartId) {
        List<CartProduct> cartProducts = cartProductRepo.findByCartId(cartId);
@@ -203,5 +263,79 @@ public class CartProductServiceImpl implements  ICartProductService{
         cartProduct.setQuantity(newQuantity);
         return cartProductRepo.save(cartProduct);
     }
+    /*@Transactional
+    @Override
+    public void validateCart(Long cartId) {
+        Cart cart = cartRepo.findById(cartId).orElse(null);
+
+        if (cart == null) {
+            System.err.println("❌ Cart not found for ID: " + cartId);
+            return;
+        }
+
+        if (!cart.isActive()) {
+            System.out.println("⚠️ Cart already validated.");
+            return;
+        }
+
+        List<CartProduct> cartProducts = cartProductRepo.findByCart(cart);
+
+        for (CartProduct cp : cartProducts) {
+            Product product = cp.getProduct();
+            int quantityPurchased = cp.getQuantity();
+
+            if (product.getStock() >= quantityPurchased) {
+                product.setStock(product.getStock() - quantityPurchased);
+                productRepo.save(product);
+            } else {
+                System.err.println("⚠️ Not enough stock for product: " + product.getProductName());
+                // Ne rien faire si pas assez de stock
+            }
+        }
+
+        cart.setActive(false); // Désactiver le panier
+        cartRepo.save(cart);
+
+        System.out.println("✅ Cart validated successfully.");
+    }*/
+    @Transactional
+    @Override
+    public void validateCart(Long cartId) {
+        Cart cart = cartRepo.findById(cartId).orElse(null);
+
+        if (cart == null) {
+            System.err.println("❌ Cart not found for ID: " + cartId);
+            return;
+        }
+
+        if (!cart.isActive()) {
+            System.out.println("⚠️ Cart already validated.");
+            return;
+        }
+
+        List<CartProduct> cartProducts = cartProductRepo.findByCart(cart);
+
+        for (CartProduct cp : cartProducts) {
+            Product product = cp.getProduct();
+            int quantityPurchased = cp.getQuantity();
+
+            if (product.getStock() >= quantityPurchased) {
+                product.setStock(product.getStock() - quantityPurchased);
+                productRepo.save(product);
+            } else {
+                System.err.println("⚠️ Not enough stock for product: " + product.getProductName());
+            }
+        }
+
+        cart.setActive(false);
+        cartRepo.save(cart);
+
+        
+        cartProductRepo.deleteByCart(cart);
+
+        System.out.println("✅ Cart validated and cleared successfully.");
+    }
+
 
 }
+

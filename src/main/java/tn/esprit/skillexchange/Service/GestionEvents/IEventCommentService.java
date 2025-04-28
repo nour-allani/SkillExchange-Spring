@@ -1,7 +1,6 @@
 package tn.esprit.skillexchange.Service.GestionEvents;
 
 import tn.esprit.skillexchange.Entity.GestionEvents.EventComment;
-import tn.esprit.skillexchange.Entity.GestionEvents.Events;
 
 import java.util.List;
 

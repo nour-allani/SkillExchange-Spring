@@ -1,5 +1,6 @@
 package tn.esprit.skillexchange.Service.Gestionquizz;
 
+import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
 import tn.esprit.skillexchange.Entity.GestionQuiz.Quiz;
 import java.util.List;
 
@@ -21,4 +22,7 @@ public interface QuizService {
 
     // Update the image for an existing quiz (only image)
     Quiz updateQuizImage(Long id, String base64Image);
+    public Courses assignQuizCourse(Long quizId, Long courseid);
+
+    Quiz getquizbycourseid(Long courseid);
 }

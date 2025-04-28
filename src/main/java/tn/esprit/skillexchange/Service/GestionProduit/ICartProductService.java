@@ -13,4 +13,5 @@ public interface ICartProductService {
     public void clearCart(Long cartId);
     public CartProduct modifyCartProduct(Long cartPId, int newQuantity);
     public List<CartProduct> getProductsInCart(Long cartId);
+    public void validateCart(Long cartId);
 }

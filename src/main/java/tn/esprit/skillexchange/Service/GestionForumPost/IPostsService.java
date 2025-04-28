@@ -11,6 +11,6 @@ public interface IPostsService {
     Posts add(Posts p);
     Posts update(Posts p);
     Posts retrievePostsById(Long id);
-    Page<Posts> retrievePostPageable(Pageable pageable);
+    Page<Posts> retrieveApprovedPostPageable(Pageable pageable);
     void remove(Long id);
 }

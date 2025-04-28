@@ -160,4 +160,9 @@ public class UserController {
         return ResponseEntity.ok(transactions);
     }
 
+    @GetMapping("/everyone")
+    public List<User> getEveryone() {
+        return userService.retrieveUsers();
+    }
+
 }

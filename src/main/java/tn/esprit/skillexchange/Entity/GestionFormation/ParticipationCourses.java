@@ -1,8 +1,10 @@
 package tn.esprit.skillexchange.Entity.GestionFormation;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionQuiz.Quiz;
+import tn.esprit.skillexchange.Entity.GestionUser.User;
 
 import java.sql.Date;
 
@@ -12,6 +14,7 @@ import java.sql.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ParticipationCourses {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +26,7 @@ public class ParticipationCourses {
     @ManyToOne
     private Courses course;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Quiz quiz;
 
 }

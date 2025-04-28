@@ -22,7 +22,7 @@ public class Questions {
     private String option2;
     private String option3;
     private String option4;
-
+  
     @ManyToOne
     @JsonIgnore
     private Quiz quiz;
