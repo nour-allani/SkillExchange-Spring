@@ -61,7 +61,7 @@ public class ProductServiceImpl implements  IProductService{
             }
         }
 
-       // p.setApproved(false);
+       p.setApproved(false);
         return pRepo.save(p);
     }
 

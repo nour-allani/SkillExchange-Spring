@@ -2,6 +2,7 @@ package tn.esprit.skillexchange.Entity.GestionQuiz;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
@@ -15,6 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Quiz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

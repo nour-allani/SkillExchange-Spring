@@ -70,6 +70,7 @@ public class CommentPostServiceImpl implements ICommentPostService {
         return usernames;
     }
 
+
     @Override
     public CommentPost add(CommentPost comP) {
         // Récupérer le contenu du post associé au commentaire
@@ -93,52 +94,56 @@ public class CommentPostServiceImpl implements ICommentPostService {
             log.warn("Post content is empty or null.");
         }
 
+
+    @Override
+    public CommentPost add(CommentPost comP) {
+
         // Extraire les usernames mentionnés avec @
-        Set<String> mentionedUsernames = extractMentionedUsernames(comP.getContent());
+    Set<String> mentionedUsernames = extractMentionedUsernames(comP.getContent());
 
-        if (mentionedUsernames.contains("everyone")) {  // Vérifier si @everyone est mentionné
-            log.info("@everyone mention detected, sending email to all users.");
+     if (mentionedUsernames.contains("everyone")) {  // Vérifier si @everyone est mentionné
+      log.info("@everyone mention detected, sending email to all users.");
 
-            // Récupérer tous les utilisateurs
-            List<User> allUsers = userRepo.findAll(); // Assure-toi que la méthode findAll existe dans ton UserRepo
+    //// Récupérer tous les utilisateurs
+     List<User> allUsers = userRepo.findAll(); // Assure-toi que la méthode findAll existe dans ton UserRepo
 
             // Envoyer un email à chaque utilisateur
-            for (User user : allUsers) {
-                try {
-                    gmailService.sendMentionNotification(
-                            user.getEmail(),
-                            comP.getEmail(),  // Email de l'auteur du commentaire
-                            comP.getContent()
-                    );
-                    log.info("Notification sent successfully to: " + user.getEmail());
-                } catch (Exception e) {
-                    log.error("Failed to send mention notification to " + user.getEmail(), e);
-                }
-            }
-        } else {
-            // Si @everyone n'est pas mentionné, envoyer des emails aux utilisateurs mentionnés individuellement
-            for (String username : mentionedUsernames) {
-                User mentionedUser = userRepo.findByName(username);
-                if (mentionedUser != null) {
-                    log.info("Mention detected: " + mentionedUser.getName());
-                    try {
-                        gmailService.sendMentionNotification(
-                                mentionedUser.getEmail(),
-                                comP.getEmail(),
-                                comP.getContent()
-                        );
-                        log.info("Notification sent successfully to: " + mentionedUser.getEmail());
-                    } catch (Exception e) {
-                        log.error("Failed to send mention notification to " + mentionedUser.getEmail(), e);
-                    }
-                } else {
-                    log.warn("Mentioned user not found: " + username);
-                }
-            }
+     for (User user : allUsers) {
+     try {
+      gmailService.sendMentionNotification(
+               user.getEmail(),
+                                                comP.getEmail(),  // Email de l'auteur du commentaire
+              comP.getContent()
+       );
+      log.info("Notification sent successfully to: " + user.getEmail());
+    } catch (Exception e) {
+         log.error("Failed to send mention notification to " + user.getEmail(), e);
+       }
         }
+    }  else {
+            // Si @everyone n'est pas mentionné, envoyer des emails aux utilisateurs mentionnés individuellement
+              for (String username : mentionedUsernames) {
+     User mentionedUser = userRepo.findByName(username);
+      if (mentionedUser != null) {
+      log.info("Mention detected: " + mentionedUser.getName());
+       try {
+      gmailService.sendMentionNotification(
+              mentionedUser.getEmail(),
+            comP.getEmail(),
+           comP.getContent()
+      );
+      log.info("Notification sent successfully to: " + mentionedUser.getEmail());
+      } catch (Exception e) {
+            log.error("Failed to send mention notification to " + mentionedUser.getEmail(), e);
+         }
+      } else {
+           log.warn("Mentioned user not found: " + username);
+       }
+       }
+     }
 
-        return comPost.save(comP);
-    }
+      return comPost.save(comP);
+     }
 
 
     @Override

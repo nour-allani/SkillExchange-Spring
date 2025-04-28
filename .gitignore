@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+src/main/java/tn/esprit/skillexchange/Service/GestionProduit/ProductIA/AiReviewService.java
+src/main/java/tn/esprit/skillexchange/Service/GestionProduit/ProductIA/IAiReviewService.java
+src/main/java/tn/esprit/skillexchange/Service/Mailing/GmailService.java

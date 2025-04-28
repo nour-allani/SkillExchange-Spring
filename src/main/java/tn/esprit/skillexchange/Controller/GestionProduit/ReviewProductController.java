@@ -34,18 +34,16 @@ public class ReviewProductController {
 
 
 
+    @GetMapping("/all-Reviews")
+    public List<ReviewProduct> getAllReviews() {
+        return revpS.retrieveReviewProducts();
+    }
 
     @GetMapping("/retrieve-reviews-by-product/{productId}")
     public List<ReviewProduct> getReviewsByProductId(@PathVariable("productId") Long productId) {
         return revpS.retrieveReviewsProductById(productId);
     }
-  /*  @PostMapping("/add-ReviewProduct")
-    public ReviewProduct addReviewProduct(@RequestBody ReviewProduct b) {
 
-
-        return revpS.addReviewProduct(b);
-
-    }*/
   @PostMapping("/add-ReviewProduct")
   public ReviewProduct addReviewProduct(@RequestBody ReviewProduct rev,
                                         @RequestParam Long productId) {
