@@ -4,13 +4,19 @@ import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
 import tn.esprit.skillexchange.Entity.GestionFormation.PaiementCoures;
 import tn.esprit.skillexchange.Entity.GestionFormation.PaiementCoures;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
+import tn.esprit.skillexchange.Service.GestionFormation.FormationService;
 import tn.esprit.skillexchange.Service.GestionFormation.PaiementCourseService;
 import tn.esprit.skillexchange.Service.GestionUser.IUserService;
 import tn.esprit.skillexchange.Service.Mailing.GmailService;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -19,8 +25,12 @@ import java.util.List;
 public class PaiementCourseRestController {
     @Autowired
     PaiementCourseService paiementCourseService ;
+    @Autowired
     IUserService userService ;
+    @Autowired
     GmailService gmailService ;
+    @Autowired
+    FormationService courseService ;
 
     @GetMapping("/retrieve-all-paiements")
     public List<PaiementCoures> getPaiements() {
@@ -35,18 +45,34 @@ public class PaiementCourseRestController {
     }
 
     @PostMapping("/add-paiement")
-    public PaiementCoures addParticipation(@RequestBody PaiementCoures p) throws MessagingException {
+    public PaiementCoures addParticipation(@RequestBody PaiementCoures p) throws MessagingException, IOException {
         PaiementCoures paiement = paiementCourseService.addPaiement(p);
 
+        User toUser = userService.retrieveUserById((long) p.getParticipant());
+        String to = toUser.getEmail();
+        String subject = "SkillExchange Transaction";
+        String userName = toUser.getName() != null ? toUser.getName() : "Utilisateur";
 
-//        User toUser = userService.retrieveUserById((long) p.getParticipant()) ;
-//
-//        // Send email to the User
-//        String to = toUser.getEmail(); // Use the email from the added supervisor
-//        String subject = "Transaction effectué ";
-//        String body = "Bonjour " + toUser.getName() + ",\n\nVous avez effectué un paiement avec un montant de : " + p.getPaid() +"!"+"\n\nCordialement";
-//
-//        gmailService.sendSimpleEmail(to, subject, body);
+        Courses course = courseService.retrieveCourse((long) p.getCourse().getId());
+
+
+        // Lire le template HTML
+        try (InputStream templateStream = getClass().getClassLoader()
+                .getResourceAsStream("templates/email/transactionEmail.html")) {
+            if (templateStream == null) {
+                throw new IOException("Template email non trouvé");
+            }
+            String htmlContent = new String(templateStream.readAllBytes(), StandardCharsets.UTF_8);
+
+            // Remplacer les variables
+            htmlContent = htmlContent.replace("${username}", userName)
+                    .replace("${amount}", String.valueOf(p.getPaid()))
+                    .replace("${titleCourse}", course.getTitle());
+
+            // Envoyer l'email
+            gmailService.sendHtmlEmail(to, subject, htmlContent);
+        }
+
         return paiement;
     }
 
