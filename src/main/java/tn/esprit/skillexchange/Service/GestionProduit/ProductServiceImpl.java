@@ -108,7 +108,10 @@ public class ProductServiceImpl implements  IProductService{
             return null;
         }
     }
-
+    @Override
+    public List<Product> getProductsByUserId(Long userId) {
+        return pRepo.findByPostedById(userId);
+    }
 
 }
 
