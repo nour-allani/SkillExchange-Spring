@@ -41,8 +41,16 @@ public class ParticipationCourseServiceImpl implements ParticipationCourseServic
     public ParticipationCourses addParticipation(ParticipationCourses p) {
         p.setDate_participation(java.sql.Date.valueOf(LocalDate.now()));
 
+        // Check if the user is already participating
+        boolean alreadyParticipating = participationCourseRepo.existsParticipation(p.getParticipant(), p.getCourse().getId());
+
+        if (alreadyParticipating) {
+            throw new IllegalStateException("User already participating in this course");
+        }
+
         return participationCourseRepo.save(p);
     }
+
 
 
     @Override
