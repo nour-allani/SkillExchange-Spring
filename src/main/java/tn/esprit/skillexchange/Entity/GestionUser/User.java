@@ -74,6 +74,7 @@ public class User implements UserDetails {
     private Set<Reclamations> reclamations;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Posts> posts;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
