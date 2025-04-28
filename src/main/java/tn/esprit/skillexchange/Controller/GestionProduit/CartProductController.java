@@ -68,7 +68,7 @@ public class CartProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(addedProduct);
     }
 
-    @PostMapping("/validate-cart")
+   /* @PostMapping("/validate-cart")
     public ResponseEntity<String> validateCart(@RequestBody Map<String, Long> payload) {
         Long cartId = payload.get("cartId");
 
@@ -76,7 +76,13 @@ public class CartProductController {
 
 
         return ResponseEntity.ok("✅ Cart validation process completed.");
-    }
+    }*/
+  ///2
+   @PostMapping("/validate-cart")
+   public ResponseEntity<String> validateCart(@RequestParam Long cartId) {
+       cartpS.validateCart(cartId);
+       return ResponseEntity.ok("Cart validated successfully");
+   }
 
 
     @DeleteMapping("/delete")
