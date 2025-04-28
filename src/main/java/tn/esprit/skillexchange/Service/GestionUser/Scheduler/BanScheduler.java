@@ -18,7 +18,7 @@ public class BanScheduler {
     @Autowired
     private BannedRepo bannedRepository;
 
-    //@Scheduled(cron = "0 0 * * * ?") // every hour
+    @Scheduled(cron = "0 0 * * * ?") // every hour
     //@Scheduled(cron = "0 * * * * ?") every min for testing
     public void checkExpiredBans() {
         Date now = new Date();
