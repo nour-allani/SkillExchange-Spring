@@ -23,17 +23,25 @@ public class Product  {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idProduct ;
     private String productName ;
-    private String type ;
+    @Enumerated(EnumType.STRING)
+    private ProductType type;
     private float price;
     private int stock;
+    @Enumerated(EnumType.STRING)
+    private CurrencyType currencyType;
+    @Column(name = "is_approved")
+    private boolean isApproved = false;
+    @JsonProperty("isApproved")
+    public boolean getIsApproved() {
+        return isApproved;}
 
     @ManyToOne
-
     private User postedBy;
 
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
 
+    @JsonIgnoreProperties("product")
 
     private Set<CartProduct> cartProducts= new HashSet<>();
 

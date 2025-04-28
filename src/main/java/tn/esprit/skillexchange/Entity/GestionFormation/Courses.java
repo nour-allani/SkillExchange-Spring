@@ -1,11 +1,14 @@
 package tn.esprit.skillexchange.Entity.GestionFormation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionEvents.ParticipationEvents;
+import tn.esprit.skillexchange.Entity.GestionQuiz.Quiz;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -14,19 +17,26 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Courses {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idCourse;
-    private String image;
+    private int id;
+    @Lob
+    private byte[] image;
+    private String imageType;
     private String title;
     private String description;
     private float duration;
     private String requiredSkills;
-    private String state;
+    private int state;
+    private Date date_ajout ;
+    private float price;
+    private int approoved;
+    //private int paid;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
     private User author;
 
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
@@ -43,4 +53,12 @@ public class Courses {
 
     @ManyToOne
     Category category ;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="course")
+    @JsonIgnore
+    private Set<CourseContent> coursesFormation;
+    @OneToOne
+    @JoinColumn(name = "quiz_id")
+    @JsonIgnore
+    private Quiz quiz;
 }

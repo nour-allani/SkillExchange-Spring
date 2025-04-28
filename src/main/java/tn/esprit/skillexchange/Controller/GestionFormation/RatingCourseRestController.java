@@ -50,6 +50,16 @@ public class RatingCourseRestController {
         return rating;
     }
 
+    @GetMapping("/average-rating/{course-id}")
+    public double getAverageRating(@PathVariable("course-id") Long courseId) {
+        return ratingCourseService.getAverageRatingForCourse(courseId);
+    }
+
+    @GetMapping("/rating-count/{course-id}")
+    public long getRatingCount(@PathVariable("course-id") Long courseId) {
+        return ratingCourseService.getRatingCountForCourse(courseId);
+    }
+
 
 
 }

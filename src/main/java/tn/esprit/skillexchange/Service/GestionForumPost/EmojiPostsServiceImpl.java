@@ -3,16 +3,35 @@ package tn.esprit.skillexchange.Service.GestionForumPost;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import tn.esprit.skillexchange.Entity.Emojis;
 import tn.esprit.skillexchange.Entity.GestionForumPost.EmojiPosts;
+import tn.esprit.skillexchange.Entity.GestionForumPost.Posts;
+import tn.esprit.skillexchange.Entity.GestionUser.User;
 import tn.esprit.skillexchange.Repository.GestionForumPost.EmojiPostsRepo;
+import tn.esprit.skillexchange.Repository.GestionForumPost.PostsRepo;
+import tn.esprit.skillexchange.Repository.GestionUser.UserRepo;
 
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class EmojiPostsServiceImpl implements IEmojiPostsService {
-    EmojiPostsRepo emoPost;
+
+    private final EmojiPostsRepo emoPost;
+    private final PostsRepo postR;
+    private final UserRepo UserR;
+
+    // Récupérer les utilisateurs ayant réagi avec un emoji spécifique pour un post donné
+    public List<User> getUsersByEmojiAndPostId(Long postId, Emojis emoji) {
+        return emoPost.findUsersByEmojiAndPostId(postId, emoji);
+    }
+
+
     @Override
     public List<EmojiPosts> retrieveEmojiPostss() {
         return emoPost.findAll();
@@ -30,11 +49,63 @@ public class EmojiPostsServiceImpl implements IEmojiPostsService {
 
     @Override
     public EmojiPosts retrieveEmojiPostsById(Long id) {
-        return emoPost.findById(id).get();
+        return emoPost.findById(id).orElse(null);
     }
 
     @Override
     public void remove(Long id) {
-    emoPost.deleteById(id);
+        emoPost.deleteById(id);
     }
+
+    @Override
+    public Map<String, Long> countEmojisByPostId(Long postId) {
+        List<Object[]> results = emoPost.countEmojisByPostId(postId);
+        Map<String, Long> counts = new HashMap<>();
+        for (Object[] result : results) {
+            String emoji = result[0].toString();
+            Long count = (Long) result[1];
+            counts.put(emoji, count);
+        }
+        return counts;
+    }
+
+    @Override
+    public EmojiPosts reactToPost(Long postId,/* Long userId,*/ String email, Emojis newEmoji) {
+        EmojiPosts existingReaction = emoPost.findByUserAndPost(email, postId);
+        if (existingReaction != null) {
+            existingReaction.setEmoji(newEmoji);
+            existingReaction.setReactedAt(LocalDateTime.now());
+            return emoPost.save(existingReaction);
+        } else {
+            EmojiPosts reaction = new EmojiPosts();
+            reaction.setEmoji(newEmoji);
+            reaction.setReactedAt(LocalDateTime.now());
+
+            Posts post = postR.findById(postId).orElseThrow(() -> new RuntimeException("Post non trouvé avec l'ID : " + postId));
+            reaction.setPost(post);
+
+
+            User user = UserR.findByEmail(email).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'ID : " + email));
+
+            reaction.setUser(user);
+
+            return emoPost.save(reaction);
+        }
+    }
+    @Override
+    public boolean hasUserReactedWithEmoji(Long postId, String email, Emojis emoji) {
+        EmojiPosts existingReaction = emoPost.findByUserAndPost(email, postId);
+        return existingReaction != null && existingReaction.getEmoji().equals(emoji);
+    }
+    @Override
+    public void removeReaction(Long postId, String email, Emojis emoji) {
+        EmojiPosts existingReaction = emoPost.findByUserAndPost(email, postId);
+
+        if (existingReaction != null && existingReaction.getEmoji().equals(emoji)) {
+            emoPost.delete(existingReaction);  // Supprimer la réaction existante
+        } else {
+            throw new RuntimeException("Réaction non trouvée à supprimer.");
+        }
+    }
+
 }

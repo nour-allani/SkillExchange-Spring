@@ -1,12 +1,28 @@
 package tn.esprit.skillexchange.Service.Gestionquizz;
 
+import tn.esprit.skillexchange.Entity.GestionFormation.Courses;
 import tn.esprit.skillexchange.Entity.GestionQuiz.Quiz;
 import java.util.List;
 
 public interface QuizService {
-    Quiz createQuiz(Quiz quiz);
+    // Create a new quiz with the title and base64 image string
+    Quiz createQuiz(String title, String base64Image);
+
+    // Retrieve a quiz by its ID
     Quiz getQuizById(Long id);
+
+    // Retrieve all quizzes
     List<Quiz> getAllQuizzes();
-    Quiz updateQuiz(Long id, Quiz quiz);
+
+    // Update an existing quiz's title and base64 image string
+    Quiz updateQuiz(Long id, String title, String base64Image);
+
+    // Delete a quiz by its ID
     void deleteQuiz(Long id);
+
+    // Update the image for an existing quiz (only image)
+    Quiz updateQuizImage(Long id, String base64Image);
+    public Courses assignQuizCourse(Long quizId, Long courseid);
+
+    Quiz getquizbycourseid(Long courseid);
 }

@@ -4,6 +4,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import tn.esprit.skillexchange.Entity.GestionUser.Badge;
 import tn.esprit.skillexchange.Entity.GestionUser.HistoricTransactions;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
+import tn.esprit.skillexchange.Entity.GestionUser.UserStatus;
 
 import java.util.Date;
 import java.util.List;
@@ -42,4 +43,5 @@ public interface IUserService {
 
     List<HistoricTransactions> getUserTransactions(Long userId);
 
+    void changeUserStatus(String email, UserStatus status);
 }

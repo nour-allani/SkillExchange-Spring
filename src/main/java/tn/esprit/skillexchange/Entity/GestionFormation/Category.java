@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
 
+import java.sql.Date;
 import java.util.Set;
 
 @Entity
@@ -19,9 +20,16 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String image;
+    @Lob
+    private byte[] image;
+    private String imageType;
     private String name;
+    private int status;
     private String description;
+    private Date date_ajout ;
+
+    @Transient // important : ce champ ne sera pas stocké en base
+    private Long courseCount;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -31,5 +39,12 @@ public class Category {
     @JsonIgnore
     private Set<Courses> courses ;
 
+    public Long getCourseCount() {
+        return courseCount;
+    }
+
+    public void setCourseCount(Long courseCount) {
+        this.courseCount = courseCount;
+    }
 
 }

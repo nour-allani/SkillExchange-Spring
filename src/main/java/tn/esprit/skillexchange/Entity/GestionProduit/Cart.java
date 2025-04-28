@@ -16,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,11 +24,15 @@ public class Cart {
 
    @ManyToOne
    @JoinColumn(name = "idUser")
+
    private User user;
 
 
    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+   @JsonIgnoreProperties("cart")
 
     private Set<CartProduct>  cartProducts= new HashSet<>();
+
+    private boolean isActive = true; // panier actif par défaut
 
 }

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.skillexchange.Entity.GestionEvents.EventComment;
 import tn.esprit.skillexchange.Repository.GestionEvents.EventCommentRepo;
-import tn.esprit.skillexchange.Repository.GestionEvents.EventImageRepo;
 
 import java.util.List;
 

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Invoice Confirmation</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background-color: #f97316;
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .content h2 {
+            color: #333;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .content p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #f97316;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .footer {
+            background-color: #f0f0f0;
+            padding: 20px;
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>SkillExchange</h1>
+    </div>
+    <div class="content">
+        <h2>Transaction Payment</h2>
+
+        <p>Dear customer <strong> ${username}</strong>, </p>
+        <p>Thank you for your recent payment of <strong style="color: green"> ${amount} 💰 </strong> for  <strong style="color: green"> ${titleCourse} Course </strong> on <strong>SkillExchange</strong>.</p>
+        <p>We appreciate your trust and support!</p>
+        <a class="btn" href="http://localhost:4200/">Visit SkillExchange</a>
+    </div>
+    <div class="footer">
+        © 2025 SkillExchange. All rights reserved. <br />
+        Contact: support@skillxchange.tn
+    </div>
+</div>
+</body>
+</html>

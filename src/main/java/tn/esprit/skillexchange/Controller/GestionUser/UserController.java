@@ -13,8 +13,10 @@ import tn.esprit.skillexchange.Entity.GestionUser.Badge;
 import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.ChangePasswordRequest;
 import tn.esprit.skillexchange.Entity.GestionUser.DTO.Authentication.ResetPasswordRequest;
 import tn.esprit.skillexchange.Entity.GestionUser.DTO.Ban.BanRequest;
+import tn.esprit.skillexchange.Entity.GestionUser.DTO.UserStatusUpdateRequest;
 import tn.esprit.skillexchange.Entity.GestionUser.HistoricTransactions;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
+import tn.esprit.skillexchange.Entity.GestionUser.UserStatus;
 import tn.esprit.skillexchange.Service.GestionUser.IUserService;
 
 import java.io.IOException;
@@ -78,6 +80,16 @@ public class UserController {
                 request.getCurrentPassword(),
                 request.getNewPassword()
         );
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PostMapping("/status")
+    public ResponseEntity<String> updateUserStatus(
+            @RequestBody UserStatusUpdateRequest request,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        userService.changeUserStatus(userDetails.getUsername(), request.getStatus());
         return ResponseEntity.ok().build();
     }
 
@@ -146,6 +158,11 @@ public class UserController {
     public ResponseEntity<List<HistoricTransactions>> getUserTransactions(@PathVariable Long userId) {
         List<HistoricTransactions> transactions = userService.getUserTransactions(userId);
         return ResponseEntity.ok(transactions);
+    }
+
+    @GetMapping("/everyone")
+    public List<User> getEveryone() {
+        return userService.retrieveUsers();
     }
 
 }
