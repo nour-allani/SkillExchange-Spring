@@ -1,7 +1,9 @@
 package tn.esprit.skillexchange.Service.Mailing;
-import com.google.zxing.common.BitMatrix;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -27,11 +29,11 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
+import java.util.Objects;
 @Slf4j
 @Service
 public class GmailService {
-
+    
     @Autowired
     private JavaMailSender mailSender;
 
@@ -84,10 +86,6 @@ public class GmailService {
         }
     }
 
-
-
-
-    ///////////////////////////////Gestion Produit /////////////////////////////////////////////////
     public void sendEmailWithAttachment(String to, String subject, String text, byte[] pdfContent, String filename)
             throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
@@ -102,21 +100,23 @@ public class GmailService {
 
         mailSender.send(message);
     }
+
     public void sendInvoiceHtmlEmail(String to, String subject, String htmlContent, byte[] pdfBytes, String filename)
             throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        helper.setFrom(fromEmail); 
+        helper.setFrom(fromEmail);
         helper.setTo(to);
         helper.setSubject(subject);
-        helper.setText(htmlContent, true); 
+        helper.setText(htmlContent, true);
 
         helper.addAttachment(filename, new ByteArrayResource(pdfBytes));
 
         mailSender.send(message);
         System.out.println("📧 Invoice HTML email sent to: " + to);
     }
+
     public void sendProductApprovalHtmlEmail(String to, String productName) throws Exception {
 
         MimeMessage message = mailSender.createMimeMessage();
@@ -132,6 +132,7 @@ public class GmailService {
 
         mailSender.send(message);
     }
+
     public void sendProductRejectionHtmlEmail(String to, String productName) throws Exception {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -145,14 +146,12 @@ public class GmailService {
 
         mailSender.send(message);
     }
+
     private String loadHtmlTemplateWithProduct(String path, String productName) throws IOException {
         InputStream input = new ClassPathResource(path).getInputStream();
         String html = new String(input.readAllBytes(), StandardCharsets.UTF_8);
         return html.replace("{{productName}}", productName);
     }
-
-
-
 
     public void sendEventConfirmationEmail(String to, String userName, String eventName, String startDate, String endDate, String place, String status, Long eventId, Long participationId) throws MessagingException, IOException, WriterException {
         log.info("Preparing event confirmation email for: to={}, userName={}, eventName={}, participationId={}", to, userName, eventName, participationId);
@@ -215,6 +214,7 @@ public class GmailService {
 
 
 
+
     private byte[] generateQRCode(String text, int width, int height) throws WriterException, IOException {
         log.info("Generating QR code with text: {}, width: {}, height: {}", text, width, height);
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
@@ -225,6 +225,7 @@ public class GmailService {
         log.info("QR code generated, size: {} bytes", qrCodeImage.length);
         return qrCodeImage;
     }
+
 
     private void testGenerateQRCode(String content, String filePath) throws WriterException, IOException {
         log.info("Testing QR code generation with content: {}", content);
@@ -237,13 +238,15 @@ public class GmailService {
 
 
 
-    public void sendMail(EmailRequest emailRequest) throws MessagingException {
+
+public void sendMail(EmailRequest emailRequest) throws MessagingException {
         if (emailRequest.getText().contains("<html>")) {
-            sendHtmlEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getText());
+        sendHtmlEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getText());
         } else {
-            sendSimpleEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getText());
+        sendSimpleEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getText());
         }
-    }
+        }
+
 
 
 
@@ -252,11 +255,13 @@ public class GmailService {
     public void sendMentionNotification(String to, String mentionedBy, String postContent) throws MessagingException {
         String subject = "Vous avez été mentionné dans un commentaire";
         String text = "Bonjour,\n\nVous avez été mentionné par " + mentionedBy +
-                " dans un commentaire :\n\n\"" + postContent + "\"\n\nConnectez-vous pour répondre.";
+        " dans un commentaire :\n\n\"" + postContent + "\"\n\nConnectez-vous pour répondre.";
 
         sendSimpleEmail(to, subject, text);
+
     }
     public void sendPostApprovalHtmlEmail(String to, String title) throws Exception {
+
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -268,6 +273,8 @@ public class GmailService {
         helper.addInline("logo25", new ClassPathResource("static/logo25.jpg").getFile());
 
         mailSender.send(message);
+
+
     }
     private String loadHtmlTemplateWithPost(String path, String title) throws IOException {
         InputStream input = new ClassPathResource(path).getInputStream();
@@ -275,6 +282,7 @@ public class GmailService {
         return html.replace("{{title}}", title);
     }
     public void sendPostRejectionHtmlEmail(String to, String title) throws Exception {
+
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -286,8 +294,13 @@ public class GmailService {
         helper.addInline("logo25", new ClassPathResource("static/logo25.jpg").getFile());
 
         mailSender.send(message);
-    }
+        }
+ 
 }
+
+
+
+
 
 
 

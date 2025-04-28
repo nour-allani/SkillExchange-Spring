@@ -106,6 +106,7 @@ public class ParticipationEventServiceImpl implements IParticipationEventsServic
         return savedParticipation;
     }
 
+
     @Override
     public List<ParticipationEvents> retrieveParticipationEvents() {
         return participationEventsRepository.findAll();
