@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tn.esprit.skillexchange.Entity.GestionForumPost.CommentPost;
+import tn.esprit.skillexchange.Entity.GestionForumPost.Posts;
 import tn.esprit.skillexchange.Repository.GestionForumPost.CommentPostRepo;
 import tn.esprit.skillexchange.Repository.GestionForumPost.PostsRepo;
 import tn.esprit.skillexchange.Entity.GestionUser.User;
@@ -22,9 +23,10 @@ import java.util.regex.Pattern;
 public class CommentPostServiceImpl implements ICommentPostService {
 
     private final CommentPostRepo comPost;
-    private final PostsRepo post;
+    private final PostsRepo postRepo;
     private final UserRepo userRepo;
     private final GmailService gmailService;
+    private final HuggingFaceService huggingFaceService;
 
 
     @Override
@@ -67,8 +69,30 @@ public class CommentPostServiceImpl implements ICommentPostService {
         }
         return usernames;
     }
+
     @Override
     public CommentPost add(CommentPost comP) {
+        // Récupérer le contenu du post associé au commentaire
+        Posts post = postRepo.findById(comP.getPost().getIdPost()).orElse(null);
+
+        if (post != null && post.getContent() != null && !post.getContent().trim().isEmpty()) {
+            // Générer un commentaire basé sur le contenu du post
+            huggingFaceService.generateComment(post.getContent())
+                    .doOnSuccess(generatedComment -> {
+                        if (generatedComment != null && !generatedComment.trim().isEmpty()) {
+                            // Créer un commentaire avec le texte généré
+                            comP.setContent(generatedComment);
+                            log.info("Generated comment: " + generatedComment);
+                        } else {
+                            log.warn("No comment generated.");
+                        }
+                    })
+                    .subscribe();  // Exécuter de manière asynchrone, en attendant la génération
+
+        } else {
+            log.warn("Post content is empty or null.");
+        }
+
         // Extraire les usernames mentionnés avec @
         Set<String> mentionedUsernames = extractMentionedUsernames(comP.getContent());
 
