@@ -80,13 +80,13 @@ public class ProductController {
        }
    }
 
-   @PatchMapping("/modify-product/{id}")
+    @PatchMapping("/modify-product/{id}")
     public Product modifyImageProduct(@RequestBody Product p) {
-       if (p.getImageProducts() != null) {
-           for (ImageProduct img : p.getImageProducts()) {
-               img.setProduct(p); // Ensure images are linked during update
-           }
-       }
+        if (p.getImageProducts() != null) {
+            for (ImageProduct img : p.getImageProducts()) {
+                img.setProduct(p);
+            }
+        }
         return pS.modifyProduct(p);
 
     }

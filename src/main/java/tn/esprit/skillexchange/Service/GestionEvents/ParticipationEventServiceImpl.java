@@ -14,6 +14,7 @@ import tn.esprit.skillexchange.Service.Mailing.GmailService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -33,6 +34,12 @@ public class ParticipationEventServiceImpl implements IParticipationEventsServic
 
     @Override
     public ParticipationEvents participateInEvent(Long eventId, String userEmail, Status status) {
+        // Valider le statut
+        if (status == null) {
+            log.error("Status cannot be null for eventId: {}", eventId);
+            throw new IllegalArgumentException("Status cannot be null");
+        }
+
         Optional<Events> eventOpt = eventsRepository.findById(eventId);
         Optional<User> userOpt = userRepository.findByEmail(userEmail);
 
@@ -43,15 +50,37 @@ public class ParticipationEventServiceImpl implements IParticipationEventsServic
         Events event = eventOpt.get();
         User user = userOpt.get();
 
-        ParticipationEvents participation = new ParticipationEvents();
-        participation.setEvent(event);
-        participation.setUser(user);
-        participation.setStatus(status);
+        // Vérifier si une participation existe déjà
+        Optional<ParticipationEvents> existingParticipation = participationEventsRepository
+                .findByEventIdEventAndUserEmail(eventId, userEmail);
+
+        ParticipationEvents participation;
+        if (existingParticipation.isPresent()) {
+            // Mise à jour de la participation existante
+            participation = existingParticipation.get();
+            if (status == Status.NOT_ATTENDING) {
+                // Supprimer la participation si le statut est NOT_ATTENDING
+                participationEventsRepository.delete(participation);
+                log.info("Deleted participation for user {} in event {}", userEmail, eventId);
+                return null; // Retourner null pour indiquer la suppression
+            }
+            participation.setStatus(status);
+        } else {
+            // Créer une nouvelle participation
+            if (status == Status.NOT_ATTENDING) {
+                log.info("No participation to create for NOT_ATTENDING status for user {} in event {}", userEmail, eventId);
+                return null; // Pas de participation à créer pour NOT_ATTENDING
+            }
+            participation = new ParticipationEvents();
+            participation.setEvent(event);
+            participation.setUser(user);
+            participation.setStatus(status);
+        }
 
         ParticipationEvents savedParticipation = participationEventsRepository.save(participation);
         log.info("Saved participation: {}", savedParticipation);
 
-        // Send confirmation email only if status is GOING
+        // Envoie d'email uniquement pour GOING
         if (status == Status.GOING) {
             try {
                 String userName = user.getUsername() != null ? user.getUsername() : userEmail;
@@ -114,4 +143,38 @@ public class ParticipationEventServiceImpl implements IParticipationEventsServic
     public List<ParticipationEvents> findByUserEmail(String userEmail) {
         return participationEventsRepository.findByUserEmail(userEmail);
     }
+
+    @Override
+    public long countByEventIdAndStatus(Long eventId, Status status) {
+        log.info("Counting participations for eventId: {} with status: {}", eventId, status);
+        return participationEventsRepository.countByEventIdEventAndStatus(eventId, status);
+    }
+
+
+    @Override
+    public Optional<ParticipationEvents> findByEventIdAndUserEmail(Long eventId, String userEmail) {
+        log.info("Fetching participation for eventId: {}, userEmail: {}", eventId, userEmail);
+        return participationEventsRepository.findByEventIdEventAndUserEmail(eventId, userEmail);
+    }
+
+// pour l AI
+@Override
+public List<Events> findEventsByUserEmail(String userEmail) {
+        List<ParticipationEvents> participations = participationEventsRepository.findByUserEmail(userEmail);
+        return participations.stream()
+                .filter(p -> p.getStatus() == Status.GOING || p.getStatus() == Status.INTERESTED)
+                .map(ParticipationEvents::getEvent)
+                .distinct()
+                .toList();
+    }
+
+// pour le profile
+    @Override
+    public List<Events> getEventsByUserAndStatus(String userEmail, Status status) {
+        List<ParticipationEvents> participations = participationEventsRepository.findByUserEmailAndStatus(userEmail, status);
+        return participations.stream()
+                .map(ParticipationEvents::getEvent)
+                .collect(Collectors.toList());
+    }
+
 }

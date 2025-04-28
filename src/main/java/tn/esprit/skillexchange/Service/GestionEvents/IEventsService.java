@@ -1,7 +1,6 @@
 package tn.esprit.skillexchange.Service.GestionEvents;
 
 import tn.esprit.skillexchange.Entity.GestionEvents.Events;
-import tn.esprit.skillexchange.Entity.GestionUser.User;
 
 import java.util.List;
 

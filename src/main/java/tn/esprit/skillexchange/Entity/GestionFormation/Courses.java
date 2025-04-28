@@ -53,6 +53,10 @@ public class Courses {
 
     @ManyToOne
     Category category ;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="course")
+    @JsonIgnore
+    private Set<CourseContent> coursesFormation;
     @OneToOne
     @JoinColumn(name = "quiz_id")
     @JsonIgnore

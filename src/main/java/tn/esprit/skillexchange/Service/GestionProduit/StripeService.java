@@ -30,41 +30,7 @@ public class StripeService {
     private CartRepo cartRepo;
     @Autowired
     private  PaymentRepo paymentRepo;
-    /*public String createCheckoutSessionSafe(float amount, String productName) {
-        try {
-            Stripe.apiKey = stripeSecretKey;
-            float tauxConversion = 0.32f; // 1 TND ≈ 0.32 USD (tu peux l’ajuster)
-            long montantUSDcents = (long) (amount * tauxConversion * 100); // Stripe attend les cents
-            SessionCreateParams params = SessionCreateParams.builder()
-                    .setMode(SessionCreateParams.Mode.PAYMENT)
-                    .setSuccessUrl(successUrl)
-                    .setCancelUrl(cancelUrl)
-                    .addLineItem(
-                            SessionCreateParams.LineItem.builder()
-                                    .setQuantity(1L)
-                                    .setPriceData(
-                                            SessionCreateParams.LineItem.PriceData.builder()
-                                                    .setCurrency("usd")
-                                                    .setUnitAmount((long) (amount * 100))
-                                                    .setProductData(
-                                                            SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                                                    .setName(productName)
-                                                                    .build()
-                                                    )
-                                                    .build()
-                                    )
-                                    .build()
-                    )
-                    .build();
 
-            Session session = Session.create(params);
-            return session.getUrl();
-
-        } catch (Exception e) {
-            System.err.println("Erreur Stripe : " + e.getMessage());
-            return null;
-        }
-    }*/
     public String createCheckoutSessionFromCart(float amount, Long cartId) {
         Stripe.apiKey = stripeSecretKey;
 

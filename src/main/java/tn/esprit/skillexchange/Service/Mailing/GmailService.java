@@ -1,5 +1,4 @@
 package tn.esprit.skillexchange.Service.Mailing;
-
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -7,42 +6,42 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
+
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
+import com.google.zxing.qrcode.QRCodeWriter;
 
-import lombok.extern.slf4j.Slf4j;
 import tn.esprit.skillexchange.Entity.Mailing.EmailRequest;
-
-
 import java.io.*;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-
-
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import java.util.Objects;
 @Slf4j
 @Service
 public class GmailService {
-    @Value("${frontend.base.url:http://localhost:4200}")
-    private String frontendBaseUrl;
+    
     @Autowired
     private JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")
     private String fromEmail;
+
+    @Value("${frontend.base.url:http://localhost:4200}")
+    private String frontendBaseUrl;
 
     public void sendSimpleEmail(String to, String subject, String text) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
@@ -86,11 +85,6 @@ public class GmailService {
             return FileCopyUtils.copyToString(reader);
         }
     }
-
-
-
-
-
 
     public void sendEmailWithAttachment(String to, String subject, String text, byte[] pdfContent, String filename)
             throws MessagingException {
@@ -158,68 +152,7 @@ public class GmailService {
         String html = new String(input.readAllBytes(), StandardCharsets.UTF_8);
         return html.replace("{{productName}}", productName);
     }
-    private byte[] generateQRCode(String text, int width, int height) throws WriterException, IOException {
-        log.info("Generating QR code with text: {}, width: {}, height: {}", text, width, height);
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
-        ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
-        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
-        byte[] qrCodeImage = pngOutputStream.toByteArray();
-        log.info("QR code generated, size: {} bytes", qrCodeImage.length);
-        return qrCodeImage;
-    }
 
-
-
-
-public void sendMail(EmailRequest emailRequest) throws MessagingException {
-        if (emailRequest.getText().contains("<html>")) {
-        sendHtmlEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getText());
-        } else {
-        sendSimpleEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getText());
-        }
-        }
-
-///////////////////////////////Gestion Post /////////////////////////////////////////////////
-public void sendMentionNotification(String to, String mentionedBy, String postContent) throws MessagingException {
-        String subject = "Vous avez été mentionné dans un commentaire";
-        String text = "Bonjour,\n\nVous avez été mentionné par " + mentionedBy +
-        " dans un commentaire :\n\n\"" + postContent + "\"\n\nConnectez-vous pour répondre.";
-
-        sendSimpleEmail(to, subject, text);
-        }
-public void sendPostApprovalHtmlEmail(String to, String title) throws Exception {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-        helper.setTo(to);
-        helper.setSubject("✅ Your post was approved");
-
-        String html = loadHtmlTemplateWithPost("templates/email/approve-post.html", title);
-        helper.setText(html, true);
-        helper.addInline("logo25", new ClassPathResource("static/logo25.jpg").getFile());
-
-        mailSender.send(message);
-        }
-
-private String loadHtmlTemplateWithPost(String path, String title) throws IOException {
-        InputStream input = new ClassPathResource(path).getInputStream();
-        String html = new String(input.readAllBytes(), StandardCharsets.UTF_8);
-        return html.replace("{{title}}", title);
-        }
-public void sendPostRejectionHtmlEmail(String to, String title) throws Exception {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-        helper.setTo(to);
-        helper.setSubject("❌ Your post was rejected");
-
-        String html = loadHtmlTemplateWithPost("templates/email/reject-post.html", title);
-        helper.setText(html, true);
-        helper.addInline("logo25", new ClassPathResource("static/logo25.jpg").getFile());
-
-        mailSender.send(message);
-        }
     public void sendEventConfirmationEmail(String to, String userName, String eventName, String startDate, String endDate, String place, String status, Long eventId, Long participationId) throws MessagingException, IOException, WriterException {
         log.info("Preparing event confirmation email for: to={}, userName={}, eventName={}, participationId={}", to, userName, eventName, participationId);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -278,6 +211,22 @@ public void sendPostRejectionHtmlEmail(String to, String title) throws Exception
         mailSender.send(message);
         log.info("Sent confirmation email with QR code to: {}", to);
     }
+
+
+
+
+    private byte[] generateQRCode(String text, int width, int height) throws WriterException, IOException {
+        log.info("Generating QR code with text: {}, width: {}, height: {}", text, width, height);
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
+        ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
+        byte[] qrCodeImage = pngOutputStream.toByteArray();
+        log.info("QR code generated, size: {} bytes", qrCodeImage.length);
+        return qrCodeImage;
+    }
+
+
     private void testGenerateQRCode(String content, String filePath) throws WriterException, IOException {
         log.info("Testing QR code generation with content: {}", content);
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
@@ -286,6 +235,67 @@ public void sendPostRejectionHtmlEmail(String to, String title) throws Exception
         log.info("QR code saved to: {}", filePath);
     }
 
+
+
+
+
+public void sendMail(EmailRequest emailRequest) throws MessagingException {
+        if (emailRequest.getText().contains("<html>")) {
+        sendHtmlEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getText());
+        } else {
+        sendSimpleEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getText());
+        }
+        }
+
+
+
+
+
+    ///////////////////////////////Gestion Post /////////////////////////////////////////////////
+    public void sendMentionNotification(String to, String mentionedBy, String postContent) throws MessagingException {
+        String subject = "Vous avez été mentionné dans un commentaire";
+        String text = "Bonjour,\n\nVous avez été mentionné par " + mentionedBy +
+        " dans un commentaire :\n\n\"" + postContent + "\"\n\nConnectez-vous pour répondre.";
+
+        sendSimpleEmail(to, subject, text);
+
+    }
+    public void sendPostApprovalHtmlEmail(String to, String title) throws Exception {
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(to);
+        helper.setSubject("✅ Your post was approved");
+
+        String html = loadHtmlTemplateWithPost("templates/email/approve-post.html", title);
+        helper.setText(html, true);
+        helper.addInline("logo25", new ClassPathResource("static/logo25.jpg").getFile());
+
+        mailSender.send(message);
+
+
+    }
+    private String loadHtmlTemplateWithPost(String path, String title) throws IOException {
+        InputStream input = new ClassPathResource(path).getInputStream();
+        String html = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+        return html.replace("{{title}}", title);
+    }
+    public void sendPostRejectionHtmlEmail(String to, String title) throws Exception {
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(to);
+        helper.setSubject("❌ Your post was rejected");
+
+        String html = loadHtmlTemplateWithPost("templates/email/reject-post.html", title);
+        helper.setText(html, true);
+        helper.addInline("logo25", new ClassPathResource("static/logo25.jpg").getFile());
+
+        mailSender.send(message);
+        }
+ 
 }
 
 

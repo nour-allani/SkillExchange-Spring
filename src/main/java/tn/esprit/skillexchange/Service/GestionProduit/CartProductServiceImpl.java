@@ -263,7 +263,7 @@ public class CartProductServiceImpl implements  ICartProductService{
         cartProduct.setQuantity(newQuantity);
         return cartProductRepo.save(cartProduct);
     }
-    @Transactional
+    /*@Transactional
     @Override
     public void validateCart(Long cartId) {
         Cart cart = cartRepo.findById(cartId).orElse(null);
@@ -297,7 +297,45 @@ public class CartProductServiceImpl implements  ICartProductService{
         cartRepo.save(cart);
 
         System.out.println("✅ Cart validated successfully.");
+    }*/
+    @Transactional
+    @Override
+    public void validateCart(Long cartId) {
+        Cart cart = cartRepo.findById(cartId).orElse(null);
+
+        if (cart == null) {
+            System.err.println("❌ Cart not found for ID: " + cartId);
+            return;
+        }
+
+        if (!cart.isActive()) {
+            System.out.println("⚠️ Cart already validated.");
+            return;
+        }
+
+        List<CartProduct> cartProducts = cartProductRepo.findByCart(cart);
+
+        for (CartProduct cp : cartProducts) {
+            Product product = cp.getProduct();
+            int quantityPurchased = cp.getQuantity();
+
+            if (product.getStock() >= quantityPurchased) {
+                product.setStock(product.getStock() - quantityPurchased);
+                productRepo.save(product);
+            } else {
+                System.err.println("⚠️ Not enough stock for product: " + product.getProductName());
+            }
+        }
+
+        cart.setActive(false);
+        cartRepo.save(cart);
+
+        
+        cartProductRepo.deleteByCart(cart);
+
+        System.out.println("✅ Cart validated and cleared successfully.");
     }
+
 
 }
 
