@@ -15,4 +15,5 @@ public interface IProductService {
     public void approveProduct(Long productId);
     public void rejectProduct(Long productId);
     List<Product> getAllApprovedProducts();
+    public List<Product> getProductsByUserId(Long userId);
 }
